@@ -207,7 +207,8 @@ class Get_Summary():
 
 if __name__=='__main__':
     # path = os.getcwd() + '\\test\\'
-    path = 'D:/download/analysis/gd001-210823/'
+    path = 'D:/work/data_analyze/'
+    csv_path = path + 'csv/'
     print(path)
 
     summary_file = 'summary'

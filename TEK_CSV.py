@@ -498,14 +498,13 @@ class tekCsv():
 
 if __name__=='__main__':
 
-    path = os.getcwd() + '\\'
-    # path = 'D:/PycharmProjects/FFT/'
-    # path = 'D:/download/analysis/gd003-210824/'
-    # path = 'D:/download/analysis/gd001-210823/'
+    # path = os.getcwd() + '\\'
+    path = 'D:/work/data_analyze/'
+    csv_path = path + 'csv/'
     print(path)
 
     LPF_factor = 0.5
-    tek = tekCsv(path=path, filter_factor=LPF_factor)
+    tek = tekCsv(path=csv_path, filter_factor=LPF_factor)
     csv_list = tek.get_csv_filelist()
     for idx, csv_file in enumerate(csv_list):
         print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
