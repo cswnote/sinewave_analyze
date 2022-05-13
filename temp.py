@@ -1,19 +1,15 @@
+import openpyxl
+import pandas as pd
 import numpy as np
+import os
 
-def sigmoid(x):
-  return 1 / (1 + np.exp(-x))
+path = 'D:/work/data_analyze/'
+csv_path = path + 'csv/'
 
-x = np.random.randn(1000, 50)
-nodes = 50
-hidden_layers = 6
-activation_values = {}
+filename = 'file name.xlsx'
 
-for i in range(hidden_layers):
-  if i != 0:
-    x = activation_values[i-1]
+wb = openpyxl.load_workbook(path + filename, data_only=True)
 
-  w = np.zeros((nodes, nodes))
-  a = np.dot(x, w)
-  z = sigmoid(a)
-  activation_values[i] = z
-  print(activation_values.keys())
+sheet_list = wb.get_sheet_names()
+w1 = wb[sheet_list[0]]
+print(w1)
