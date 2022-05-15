@@ -5,14 +5,14 @@ import openpyxl
 import csv
 import math
 import GET_SUMMARY
-import win32com.client
+# import win32com.client
 import matplotlib.pyplot as plt
 
 
 
 class tekCsv():
     def __init__(self, **kwargs):
-        self.filepath = kwargs.get('path', 'd:/csv to excel graph/')
+        self.filepath = kwargs.get('path', os.getcwd())
         self.filter_factor = kwargs.get('filter_factor', 0.2)
         self.record_length = 0
 
@@ -40,8 +40,8 @@ class tekCsv():
             return
 
         for i in range(number_of_field):
-            ws[chr(66 + i + number_of_field) + str(21)].value = 'LPF ' + ws[chr(66 + i) + str(13)].value
-            ws[chr(66 + i + number_of_field) + str(13)].value = ws[chr(66 + i) + str(13)].value
+            ws[chr(66 + i + number_of_field) + str(21)].value = 'LPF ' + ws[chr(66 + i) + str(21)].value
+            ws[chr(66 + i + number_of_field) + str(13)].value = 'LPF' + ws[chr(66 + i) + str(13)].value
 
 
             if data_only is False:
@@ -152,11 +152,21 @@ class tekCsv():
         num_of_chart = kwargs.get('num_of_channel', 1)
         num_of_data_len = kwargs.get('record_length', 10000)
         chart_title = kwargs.get('chart_title', 'chart_name')
+        crop_window = kwargs.get('crop_window', sys.maxsize)
+        crop_ratio = kwargs.get('crop_ratio', sys.maxsize)
 
-        chart1 = openpyxl.chart.LineChart()
-        chart2 = openpyxl.chart.LineChart()
+        if crop_window == sys.maxsize and crop_ratio == sys.maxsize:
+            num_of_data_len = num_of_data_len
+        elif crop_window == sys.maxsize and crop_ratio != sys.maxsize:
+            num_of_data_len = int(num_of_data_len / crop_ratio)
+        elif crop_window != sys.maxsize and crop_ratio == sys.maxsize:
+            num_of_data_len = crop_window
+        else:
+            num_of_data_len = crop_window
 
         if domain == 'time':
+            chart1 = openpyxl.chart.LineChart()
+            chart2 = openpyxl.chart.LineChart()
 
             if num_of_data_len > 1000000 - 21:
                 num_of_data_len = 1000000 - 21
@@ -223,8 +233,8 @@ class tekCsv():
             chart1.x_axis.title = "frequency"
 
             data1 = openpyxl.chart.Reference(ws, min_col=3, max_col=3, min_row=1,
-                                             max_row=num_of_data_len + 21)
-            cats = openpyxl.chart.Reference(ws, min_col=1, min_row=2, max_row=num_of_data_len + 21)  # 축 설정
+                                             max_row=num_of_data_len)
+            cats = openpyxl.chart.Reference(ws, min_col=1, min_row=2, max_row=num_of_data_len)  # 축 설정
 
             chart1.add_data(data1, titles_from_data=True)
             chart1.set_categories(cats)
@@ -238,7 +248,7 @@ class tekCsv():
             chart1.width = 30
             chart1.height = 18
 
-    def get_VI_delay(self, frequency, data_len, worksheet):
+    def get_VI_delay(self, frequency: object, data_len: object, worksheet: object) -> object:
         # print('in process: get_VI_delay')
         ws = worksheet
 
@@ -368,8 +378,8 @@ class tekCsv():
 
         if len(v_times) > len(i_times):
             times = len(i_times)
-            f_gap = abs(v_times[0] - i_times[0])
-            e_gap = abs(v_times[len(v_times) - 1] - i_times[len(i_times) - 1])
+            f_gap = abs(v_times[0] - i_times[0])    # first rising time gap
+            e_gap = abs(v_times[len(v_times) - 1] - i_times[len(i_times) - 1])  # last rising time gap
             if f_gap > e_gap:
                 del v_times[0]
                 del v_location[0]
@@ -498,90 +508,102 @@ class tekCsv():
 
 if __name__=='__main__':
 
-    # path = os.getcwd() + '\\'
-    path = 'D:/work/data_analyze/'
+    path = os.getcwd() + '/Evaluation/Osciloscope/'
     csv_path = path + 'csv/'
-    print(path)
+    excel_path = path + 'excel/'
 
-    LPF_factor = 0.5
-    tek = tekCsv(path=csv_path, filter_factor=LPF_factor)
-    csv_list = tek.get_csv_filelist()
-    for idx, csv_file in enumerate(csv_list):
-        print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = csv_file.split('.')[0]
+    csv_to_excel = True
+    get_summary = True
 
-        COL_SEPARATOR = ","
-        with open(tek.filepath + csv_file) as file:
-            reader = csv.reader(file)
-            for r, row in enumerate(reader):
-                for c, col in enumerate(row):
-                    for idx, val in enumerate(col.split(COL_SEPARATOR)):
-                        cell = ws.cell(row=r+1, column=c+1)
-                        cell.value = val
-                        cell.data_type = 'General'
+    if csv_to_excel:
+        lpf = False
+        LPF_factor = 0.5
+        tek = tekCsv(path=csv_path, filter_factor=LPF_factor)
+        csv_list = tek.get_csv_filelist()
+        csv_list.sort()
+        for idx, csv_file in enumerate(csv_list):
+            print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = csv_file.split(' ')[0]
 
-            tek.record_length = int(float(ws['b10'].value))
+            COL_SEPARATOR = ","
+            with open(tek.filepath + csv_file) as file:
+                reader = csv.reader(file)
+                for r, row in enumerate(reader):
+                    for c, col in enumerate(row):
+                        for idx, val in enumerate(col.split(COL_SEPARATOR)):
+                            cell = ws.cell(row=r+1, column=c+1)
+                            cell.value = val
+                            cell.data_type = 'General'
 
-            # # can use cal_fft() when data_only is True
-            ws = tek.apply_LPF(ws, data_only=True)
+                tek.record_length = int(float(ws['b10'].value))
 
-            num_channel = 0
-            for i in range(9, 0, -1):
-                # # get number of channel
-                # if ws.cell(21, i).value is not None:
+                # # can use cal_fft() when data_only is True
+                if lpf:
+                    ws = tek.apply_LPF(ws, data_only=True)
 
-                if ws.cell(21, i).value is not None:
-                    if ws.cell(21, i).value[:3] == 'LPF':
-                        num_channel = num_channel + 1
+                num_channel = 0
+                for i in range(9, 0, -1):
+                    # # get number of channel
+                    if lpf:
+                        if ws.cell(13, i).value is not None:
+                            if ws.cell(13, i).value[:3] == 'LPF':
+                                num_channel = num_channel + 1
+                    else:
+                        if ws.cell(13, i).value is not None:
+                            if ws.cell(13, i).value == 'V' or ws.cell(13, i).value == 'A':
+                                num_channel = num_channel + 1
 
-            chart_name = csv_file.split('.')[0]
-            tek.draw_chart(ws, num_of_channel=num_channel, record_length=tek.record_length, domain='time', chart_title=chart_name)
+                chart_name = csv_file.split('.')[0]
+                tek.draw_chart(ws, num_of_channel=num_channel, record_length=tek.record_length, domain='time',
+                               chart_title=chart_name)
 
-            for i in range(num_channel):
-                fft_column = chr(i + 98)
-                freq, amplitude = tek.cal_fft(ws, y_col=fft_column)
+                for i in range(num_channel):
+                    fft_column = chr(i + 98)
+                    freq, amplitude = tek.cal_fft(ws, y_col=fft_column)
 
-                ws_fft = wb.create_sheet(title='FFT_' + ws[fft_column + '21'].value)
+                    ws_fft = wb.create_sheet(title='FFT_' + ws[fft_column + '21'].value)
 
-                ws_fft['a1'].value = 'freq'
-                ws_fft['b1'].value = 'Y_complex'
-                ws_fft['c1'].value = 'Y_absolute'
+                    ws_fft['a1'].value = 'freq'
+                    ws_fft['b1'].value = 'Y_complex'
+                    ws_fft['c1'].value = 'Y_absolute'
 
-                ws_fft['e1'].value = 'F @ max Y'
-                ws_fft['e2'].value = 'max Y abs'
+                    ws_fft['e1'].value = 'F @ max Y'
+                    ws_fft['e2'].value = 'max Y abs'
 
-                for j in range(len(freq)):
-                    ws_fft.cell(j + 2, 1, value=freq[j])
-                    ws_fft.cell(j + 2, 2, value='= complex(' + str(amplitude[j].real) + ', ' + str(amplitude[j].imag) + ', "j")')
-                    ws_fft.cell(j + 2, 3, value=abs(amplitude[j]))
+                    for j in range(len(freq)):
+                        ws_fft.cell(j + 2, 1, value=freq[j])
+                        ws_fft.cell(j + 2, 2, value='= complex(' + str(amplitude[j].real) + ', ' + str(amplitude[j].imag) + ', "j")')
+                        ws_fft.cell(j + 2, 3, value=abs(amplitude[j]))
 
-                tek.draw_chart(ws_fft, record_length=tek.record_length / 2, domain='frequency')
+                    tek.draw_chart(ws_fft, record_length=tek.record_length / 2, domain='frequency', crop_window=500)
 
-                max_amplitude = 0
-                max_freq = 0
-                for j in range(len(freq)):
-                    if float(ws_fft.cell(j + 2, 3).value) > max_amplitude:
-                        max_amplitude = float(ws_fft.cell(j + 2, 3).value)
-                        max_freq = float(ws_fft.cell(j + 2, 1).value)
+                    max_amplitude = 0
+                    max_freq = 0
+                    for j in range(len(freq)):
+                        if float(ws_fft.cell(j + 2, 3).value) > max_amplitude:
+                            max_amplitude = float(ws_fft.cell(j + 2, 3).value)
+                            max_freq = float(ws_fft.cell(j + 2, 1).value)
 
-                ws_fft['f1'].value = max_freq
-                ws_fft['f2'].value = max_amplitude
+                    ws_fft['f1'].value = max_freq
+                    ws_fft['f2'].value = max_amplitude
 
-                wb.save(tek.filepath + csv_file.split('.csv')[0] + '.xlsx')
+                    wb.save(tek.filepath + csv_file.split('.csv')[0] + '.xlsx')
 
-            v_row_num, i_row_num = tek.get_VI_delay(max_freq, tek.record_length, ws)
-            if v_row_num != 0:
-                tek.get_rms(v_row_num, i_row_num, tek.record_length, ws)
+                v_row_num, i_row_num = tek.get_VI_delay(max_freq, tek.record_length, ws)
+                if v_row_num != 0:
+                    tek.get_rms(v_row_num, i_row_num, tek.record_length, ws)
 
-        wb.save(tek.filepath + csv_file.split('.csv')[0] + '.xlsx')
-        wb.close()
+            wb.save(excel_path + csv_file.split('.csv')[0] + '.xlsx')
+            wb.close()
 
-    summary = GET_SUMMARY.Get_Summary()
-    #
-    # file_list = os.listdir(path)
-    # excel_list = [file for file in file_list if file.endswith(".xlsx") and file[:3] == 'tek']
-    #
-    # summary.get_summary(excel_list, path)
-    # summary.copy_paste_graph(path=path, summary_file_name='summary')
+    if get_summary:
+        summary = GET_SUMMARY.Get_Summary()
+
+        file_list = os.listdir(excel_path)
+        excel_list = [file for file in file_list if file.endswith(".xlsx") and file[:3] == 'tek']
+        excel_list.sort()
+
+        summary.get_summary(excel_list, excel_path)
+        # summary.copy_paste_graph(path=path, summary_file_name='summary')
