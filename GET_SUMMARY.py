@@ -36,7 +36,7 @@ class Get_Summary():
         for idx, excel_file in enumerate(excel_list):
             print('in summary process: ', idx + 1, '/', len(excel_list), '    ', excel_file)
             wb = openpyxl.load_workbook(path + excel_file)
-            ws = wb[excel_file.split('.xlsx')[0]]
+            ws = wb[excel_file.split(' ')[0]]
             summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0]
 
             # # angle

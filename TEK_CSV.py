@@ -512,7 +512,7 @@ if __name__=='__main__':
     csv_path = path + 'csv/'
     excel_path = path + 'excel/'
 
-    csv_to_excel = True
+    csv_to_excel = False
     get_summary = True
 
     if csv_to_excel:
