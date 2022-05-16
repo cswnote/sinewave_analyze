@@ -108,6 +108,8 @@ class Get_Summary():
                         summary_ws.cell(idx + 2, 15).value = ws_fft['c2'].value / np.sqrt(2)
                     except:
                         summary_ws.cell(idx + 2, 15).value = ws_fft['c2'].value
+                elif v_flag and i_flag:
+                    break
 
             wb.close()
 
