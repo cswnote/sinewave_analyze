@@ -1,5 +1,6 @@
 import openpyxl
 import os
+import numpy as np
 from win32com.client import Dispatch
 
 
@@ -14,6 +15,7 @@ class Get_Summary():
 
         summary_wb = openpyxl.Workbook()
         summary_ws = summary_wb.active
+        summary_ws.title = 'summary'
 
         # summary_ws('a1').value = excel_file.spilt('.xlsx')[0]
 
@@ -24,11 +26,19 @@ class Get_Summary():
         summary_ws['e1'].value = 'Vrms'
         summary_ws['f1'].value = 'Irms'
         summary_ws['g1'].value = 'Real P[W]'
+        summary_ws['h1'].value = 'V dc'
+        summary_ws['i1'].value = 'I dc'
+        summary_ws['j1'].value = 'FFT V freq[MHz]'
+        summary_ws['k1'].value = 'FFT V rms'
+        summary_ws['l1'].value = 'FFT V dc abs'
+        summary_ws['m1'].value = 'FFT I freq[MHz]'
+        summary_ws['n1'].value = 'FFT I rms'
+        summary_ws['o1'].value = 'FFT I dc abs'
 
         for idx, excel_file in enumerate(excel_list):
             print('in summary process: ', idx + 1, '/', len(excel_list), '    ', excel_file)
             wb = openpyxl.load_workbook(path + excel_file)
-            ws = wb[excel_file.split('.xlsx')[0]]
+            ws = wb[excel_file.split(' ')[0]]
             summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0]
 
             # # angle
@@ -63,6 +73,41 @@ class Get_Summary():
                 if ws.cell(10, i).value is not None:
                     summary_ws.cell(idx + 2, 7).value = ws.cell(10, i).value
                     break
+
+            # # Vdc
+            summary_ws.cell(idx + 2, 8).value = ws.cell(11, 8).value
+
+            # # Idc
+            summary_ws.cell(idx + 2, 9).value = ws.cell(12, 8).value
+
+            # # get FFT info
+
+            v_flag = False
+            i_flag = False
+            for i in range(9, 1, -1):
+                if ws.cell(13, i).value == 'V' and not v_flag:
+                    ws_fft = wb['FFT_' + ws.cell(21, i).value]
+                    try:
+                        summary_ws.cell(idx + 2, 10).value = float(ws_fft['f1'].value / 10**6)
+                    except:
+                        summary_ws.cell(idx + 2, 10).value = ws_fft['f1'].value
+                    summary_ws.cell(idx + 2, 11).value = ws_fft['f2'].value
+                    try:
+                        summary_ws.cell(idx + 2, 12).value = ws_fft['c2'].value / np.sqrt(2)
+                    except:
+                        summary_ws.cell(idx + 2, 12).value = ws_fft['c2'].value
+                    v_flag = True
+                elif ws.cell(13, i).value == 'A' and not i_flag:
+                    ws_fft = wb['FFT_' + ws.cell(21, i).value]
+                    try:
+                        summary_ws.cell(idx + 2, 13).value = float(ws_fft['f1'].value / 10**6)
+                    except:
+                        summary_ws.cell(idx + 2, 13).value = ws_fft['f1'].value
+                    summary_ws.cell(idx + 2, 14).value = ws_fft['f2'].value
+                    try:
+                        summary_ws.cell(idx + 2, 15).value = ws_fft['c2'].value / np.sqrt(2)
+                    except:
+                        summary_ws.cell(idx + 2, 15).value = ws_fft['c2'].value
 
             wb.close()
 
