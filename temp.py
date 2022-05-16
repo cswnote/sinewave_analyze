@@ -1,28 +1,41 @@
-import os
-import sys
-import pyautogui as pag
-import time
 import openpyxl
-import FILE_MANAGEMENT
-from datetime import datetime
-# import keyboard # homebrew에서 설치되었을 때는 되었는데 지금은 안됨
+import pandas as pd
+import numpy as np
+import os
+import math
 
-path = os.getcwd() + '/Evaluation/Osciloscope/'
-csv_path = path + 'csv/'
-# path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/autotest/Evaluation'
-filelist = os.listdir(csv_path)
+path = 'D:/work/data_analyze/'
+csv_path = path + 'csv/1/'
+excel_path = path + 'excel/'
+
+filename = 'file name.xlsx'
+
+csv_list = os.listdir(csv_path)
+
+csv_list = [file for file in csv_list if file[:3] == 'tek' and file[-3:] == 'csv']
+
+# for file in csv_list:
+#     ohm = file.split('ohm')[0]
+#     ohm = file.split(' ')[-1]
+#     ohm = int(round(ohm))
+#
+#     scr = csv_list + file
+#     dst = csv_list
+
+
+df = pd.read_excel(path + filename)
+
+for file in csv_list:
+    for i in range(len(df)):
+        if df.iloc[i, 0] <= int(file[3:7]) <= df.iloc[i, 1]:
+            scr = csv_path + file
+            dst = csv_path + file[:7] + ' RFAMP_01 ' + str(df.iloc[i, 2]) + ' ' + str(df.iloc[i, 3]) + 'ohm ' + 'PWM' + str(df.iloc[i, 4]) + '.csv'
+            os.rename(scr, dst)
 
 
 
-for file in filelist:
-    if file[:3] == 'tek':
-        a.append(file.split('tek')[1][:4])
 
 
-filelist = [int(file.split('tek')[1].split('_kmonCap')[0]) for file in filelist if file[:3] == 'tek']
 
-for file in filelist:
-    src = os.path.join(path, file + '.png')
-    dst = file + '_kmonCap.png'
-    dst = os.path.join(path, dst)
-    os.rename(src, dst)
+
+
