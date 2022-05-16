@@ -19,66 +19,95 @@ class Get_Summary():
 
         # summary_ws('a1').value = excel_file.spilt('.xlsx')[0]
 
-        summary_ws['a1'].value = 'filename'
-        summary_ws['b1'].value = 'V Frequency[MHz]'
-        summary_ws['c1'].value = 'Delay(degree)'
-        summary_ws['d1'].value = 'Ave. RP Coff'
-        summary_ws['e1'].value = 'Vrms'
-        summary_ws['f1'].value = 'Irms'
-        summary_ws['g1'].value = 'Real P[W]'
-        summary_ws['h1'].value = 'V dc'
-        summary_ws['i1'].value = 'I dc'
-        summary_ws['j1'].value = 'FFT V freq[MHz]'
-        summary_ws['k1'].value = 'FFT V rms'
-        summary_ws['l1'].value = 'FFT V dc abs'
-        summary_ws['m1'].value = 'FFT I freq[MHz]'
-        summary_ws['n1'].value = 'FFT I rms'
-        summary_ws['o1'].value = 'FFT I dc abs'
+        # summary_ws['a1'].value = 'filename'
+        # summary_ws['b1'].value = 'V Frequency[MHz]'
+        # summary_ws['c1'].value = 'Delay(degree)'
+        # summary_ws['d1'].value = 'Ave. RP Coff'
+        # summary_ws['e1'].value = 'Vrms'
+        # summary_ws['f1'].value = 'Irms'
+        # summary_ws['g1'].value = 'Real P[W]'
+        # summary_ws['h1'].value = 'V dc'
+        # summary_ws['i1'].value = 'I dc'
+        # summary_ws['j1'].value = 'FFT V freq[MHz]'
+        # summary_ws['k1'].value = 'FFT V rms'
+        # summary_ws['l1'].value = 'FFT V dc abs'
+        # summary_ws['m1'].value = 'FFT I freq[MHz]'
+        # summary_ws['n1'].value = 'FFT I rms'
+        # summary_ws['o1'].value = 'FFT I dc abs'
 
         for idx, excel_file in enumerate(excel_list):
             print('in summary process: ', idx + 1, '/', len(excel_list), '    ', excel_file)
             wb = openpyxl.load_workbook(path + excel_file)
-            ws = wb[excel_file.split(' ')[0]]
+            try:
+                ws = wb[excel_file.split(' ')[0]]
+            except:
+                ws = wb[excel_file.split('.')[0]]
             summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0]
 
-            # # angle
+            file_space = len(excel_file.split('.')[0].split(' '))
+
+            summary_name = False
+            if not summary_name:
+
+                summary_ws['a1'].value = 'filename'
+                summary_ws.cell(1, file_space + 1).value = 'V Frequency[MHz]'
+                summary_ws.cell(1, file_space + 2).value = 'Delay(degree)'
+                summary_ws.cell(1, file_space + 3).value = 'Ave. RP Coff'
+                summary_ws.cell(1, file_space + 4).value = 'Vrms'
+                summary_ws.cell(1, file_space + 5).value = 'Irms'
+                summary_ws.cell(1, file_space + 6).value = 'Real P[W]'
+                summary_ws.cell(1, file_space + 7).value = 'V dc'
+                summary_ws.cell(1, file_space + 8).value = 'I dc'
+                summary_ws.cell(1, file_space + 9).value = 'FFT V freq[MHz]'
+                summary_ws.cell(1, file_space + 10).value = 'FFT V rms'
+                summary_ws.cell(1, file_space + 11).value = 'FFT V dc abs'
+                summary_ws.cell(1, file_space + 12).value = 'FFT I freq[MHz]'
+                summary_ws.cell(1, file_space + 13).value = 'FFT I rms'
+                summary_ws.cell(1, file_space + 14).value = 'FFT I dc abs'
+                summary_name = True
+
+
+            for i in range(file_space):
+                summary_ws.cell(idx + 2, i + 1).value = excel_file.split('.')[0].split(' ')[i]
+
+            # # Delay(degree)
             for i in range(100, 8, -1):
                 if ws.cell(5, i).value is not None:
-                    summary_ws.cell(idx + 2, 3).value = ws.cell(5, i).value
+                    summary_ws.cell(idx + 2, file_space + 2).value = ws.cell(5, i).value
                     break
 
             # # V freq
             for i in range(100, 8, -1):
                 if ws.cell(1, i).value is not None:
-                    summary_ws.cell(idx + 2, 2).value = ws.cell(1, i).value
+                    summary_ws.cell(idx + 2, file_space + 1).value = ws.cell(1, i).value
                     break
 
             # # Ave. RP Coff
-            summary_ws.cell(idx + 2, 4).value = ws.cell(7, 8).value
+            summary_ws.cell(idx + 2, file_space + 3).value = ws.cell(7, 8).value
 
             # # Vrms
             for i in range(100, 8, -1):
                 if ws.cell(8, i).value is not None:
-                    summary_ws.cell(idx + 2, 5).value = ws.cell(8, i).value
+                    summary_ws.cell(idx + 2, file_space + 4).value = ws.cell(8, i).value
                     break
 
             # # Irms
             for i in range(100, 8, -1):
                 if ws.cell(9, i).value is not None:
-                    summary_ws.cell(idx + 2, 6).value = ws.cell(9, i).value
+                    summary_ws.cell(idx + 2, file_space + 5).value = ws.cell(9, i).value
                     break
 
             # # real power
             for i in range(100, 8 , -1):
                 if ws.cell(10, i).value is not None:
-                    summary_ws.cell(idx + 2, 7).value = ws.cell(10, i).value
+                    summary_ws.cell(idx + 2, file_space + 6).value = ws.cell(10, i).value
                     break
 
             # # Vdc
-            summary_ws.cell(idx + 2, 8).value = ws.cell(11, 8).value
+            summary_ws.cell(idx + 2, file_space + 7).value = ws.cell(11, 8).value
 
             # # Idc
-            summary_ws.cell(idx + 2, 9).value = ws.cell(12, 8).value
+            summary_ws.cell(idx + 2, file_space + 8).value = ws.cell(12, 8).value
 
             # # get FFT info
 
@@ -88,26 +117,26 @@ class Get_Summary():
                 if ws.cell(13, i).value == 'V' and not v_flag:
                     ws_fft = wb['FFT_' + ws.cell(21, i).value]
                     try:
-                        summary_ws.cell(idx + 2, 10).value = float(ws_fft['f1'].value / 10**6)
+                        summary_ws.cell(idx + 2, file_space + 9).value = float(ws_fft['f1'].value / 10**6)
                     except:
-                        summary_ws.cell(idx + 2, 10).value = ws_fft['f1'].value
-                    summary_ws.cell(idx + 2, 11).value = ws_fft['f2'].value
+                        summary_ws.cell(idx + 2, file_space + 9).value = ws_fft['f1'].value
+                    summary_ws.cell(idx + 2, file_space + 10).value = ws_fft['f2'].value
                     try:
-                        summary_ws.cell(idx + 2, 12).value = ws_fft['c2'].value / np.sqrt(2)
+                        summary_ws.cell(idx + 2, file_space + 11).value = ws_fft['c2'].value / np.sqrt(2)
                     except:
-                        summary_ws.cell(idx + 2, 12).value = ws_fft['c2'].value
+                        summary_ws.cell(idx + 2, file_space + 11).value = ws_fft['c2'].value
                     v_flag = True
                 elif ws.cell(13, i).value == 'A' and not i_flag:
                     ws_fft = wb['FFT_' + ws.cell(21, i).value]
                     try:
-                        summary_ws.cell(idx + 2, 13).value = float(ws_fft['f1'].value / 10**6)
+                        summary_ws.cell(idx + 2, file_space + 12).value = float(ws_fft['f1'].value / 10**6)
                     except:
-                        summary_ws.cell(idx + 2, 13).value = ws_fft['f1'].value
-                    summary_ws.cell(idx + 2, 14).value = ws_fft['f2'].value
+                        summary_ws.cell(idx + 2, file_space + 12).value = ws_fft['f1'].value
+                    summary_ws.cell(idx + 2, file_space + 13).value = ws_fft['f2'].value
                     try:
-                        summary_ws.cell(idx + 2, 15).value = ws_fft['c2'].value / np.sqrt(2)
+                        summary_ws.cell(idx + 2, file_space + 14).value = ws_fft['c2'].value / np.sqrt(2)
                     except:
-                        summary_ws.cell(idx + 2, 15).value = ws_fft['c2'].value
+                        summary_ws.cell(idx + 2, file_space + 14).value = ws_fft['c2'].value
                 elif v_flag and i_flag:
                     break
 

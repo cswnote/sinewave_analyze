@@ -116,6 +116,7 @@ class tekCsv():
 
         return freq, Y
 
+
     def cal_fft(self, worksheet, **kwargs):
         # print('in process: cal_fft')
 
@@ -145,6 +146,7 @@ class tekCsv():
         Y = Y[range(int(n / 2))] * 2 / np.sqrt(2)
 
         return freq, Y
+
 
     def draw_chart(self, worksheet, **kwargs):
         # print('in process: draw_chart')
@@ -276,6 +278,7 @@ class tekCsv():
             ws.add_chart(chart1, 'e6')
             chart1.width = 30
             chart1.height = 18
+
 
     def get_VI_delay(self, frequency, data_len, worksheet):
         # print('in process: get_VI_delay')
@@ -410,8 +413,8 @@ class tekCsv():
         ws.cell(5, 7, value='angle')
         ws.cell(6, 7, value='real power Coefficient')
         ws.cell(7, 7, value='ave.RP Co')
-        ws.cell(11, 7, value='V DC')
-        ws.cell(12, 7, value='I DC')
+        ws.cell(1, 5, value='V DC')
+        ws.cell(3, 5, value='I DC')
 
         if len(v_times) > len(i_times):
             times = len(i_times)
@@ -487,8 +490,10 @@ class tekCsv():
                 i_trigger = True
             elif v_trigger and i_trigger:
                 break
-        ws.cell(11, 8, value=v_mean)
-        ws.cell(12, 8, value=i_mean)
+        # ws.cell(11, 8, value=v_mean)
+        ws.cell(1, 6, value=v_mean)
+        # ws.cell(12, 8, value=i_mean)
+        ws.cell(3, 6, value=i_mean)
 
         return v_location, i_location
 
@@ -558,6 +563,7 @@ class tekCsv():
             ws.cell(9, 8 + len(i_rms) + 1).value = (sum(i_rms, 0)/len(i_rms))
             ws.cell(10, 8 + len(rp_rms) + 1).value = (sum(rp_rms, 0) / len(rp_rms))
 
+
     def get_y_axis_min_max(self, max, min):
         max_scaled = 0
         min_scaled = 0
@@ -581,6 +587,21 @@ class tekCsv():
             return max_scaled, min_scaled
 
 
+    def get_pulse_width(self, wb, **kwargs):
+        ch_num1 = kwargs.get('ch_num1', 'CH3')
+        ch_num2 = kwargs.get('ch_num2', 'CH4')
+
+        ws = wb['FFT_' + ch_num1]
+        ch_num1_freq = ws['f1'].value
+        ch_num1_bias = (ws['c2'].value) / np.sqrt(2)
+        ws = wb['FFT_' + ch_num2]
+        ch_num2_freq = ws['f1'].value
+        ch_num2_bias = (ws['c2'].value) / np.sqrt(2)
+        ws = wb[wb.get_sheet_names()[0]]
+
+        print(ws)
+
+
 
 if __name__=='__main__':
 
@@ -591,11 +612,13 @@ if __name__=='__main__':
     print(path)
 
     get_cvs_to_excel = False
-    get_summary = True
+    get_summary = False
     lpf = False
+    LPF_factor = 0.5
+
+    tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
 
     if get_cvs_to_excel:
-        LPF_factor = 0.5
         tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
         csv_list = tek.get_csv_filelist()
         for idx, csv_file in enumerate(csv_list):
@@ -667,6 +690,9 @@ if __name__=='__main__':
 
             wb.save(tek.excel_path + csv_file.split('.csv')[0] + '.xlsx')
             wb.close()
+
+    wb = openpyxl.open(excel_path + 'tek0033 RFAMP_01 ch4 500.0ohm PWM100.xlsx', data_only=True, read_only=False)
+    tek.get_pulse_width(wb, ch_num1='CH1', ch_num2='CH2')
 
     if get_summary:
         summary = GET_SUMMARY.Get_Summary()
