@@ -44,11 +44,10 @@ class Get_Summary():
                 ws = wb[excel_file.split('.')[0]]
             summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0]
 
-            file_space = len(excel_file.split('.')[0].split(' '))
+            file_space = len(excel_file.split('.xlsx')[0].split(' '))
 
             summary_name = False
             if not summary_name:
-
                 summary_ws['a1'].value = 'filename'
                 summary_ws.cell(1, file_space + 1).value = 'V Frequency[MHz]'
                 summary_ws.cell(1, file_space + 2).value = 'Delay(degree)'
@@ -56,8 +55,8 @@ class Get_Summary():
                 summary_ws.cell(1, file_space + 4).value = 'Vrms'
                 summary_ws.cell(1, file_space + 5).value = 'Irms'
                 summary_ws.cell(1, file_space + 6).value = 'Real P[W]'
-                summary_ws.cell(1, file_space + 7).value = 'V dc'
-                summary_ws.cell(1, file_space + 8).value = 'I dc'
+                summary_ws.cell(1, file_space + 7).value = 'Vmean'
+                summary_ws.cell(1, file_space + 8).value = 'Imean'
                 summary_ws.cell(1, file_space + 9).value = 'FFT V freq[MHz]'
                 summary_ws.cell(1, file_space + 10).value = 'FFT V rms'
                 summary_ws.cell(1, file_space + 11).value = 'FFT V dc abs'
@@ -68,7 +67,12 @@ class Get_Summary():
 
 
             for i in range(file_space):
-                summary_ws.cell(idx + 2, i + 1).value = excel_file.split('.')[0].split(' ')[i]
+                summary_ws.cell(idx + 2, i + 1).value = excel_file.split('.xlsx')[0].split(' ')[i]
+                if i == file_space - 2:
+                    summary_ws.cell(idx + 2, i + 1).value = float(
+                        (excel_file.split('.xlsx')[0].split(' ')[i]).split('ohm')[0])
+                if i == file_space - 1:
+                    summary_ws.cell(idx + 2, i + 1).value = int((excel_file.split('.xlsx')[0].split(' ')[i]).split('PWM')[1])
 
             # # Delay(degree)
             for i in range(100, 8, -1):
@@ -104,10 +108,10 @@ class Get_Summary():
                     break
 
             # # Vdc
-            summary_ws.cell(idx + 2, file_space + 7).value = ws.cell(11, 8).value
+            summary_ws.cell(idx + 2, file_space + 7).value = ws['f1'].value
 
             # # Idc
-            summary_ws.cell(idx + 2, file_space + 8).value = ws.cell(12, 8).value
+            summary_ws.cell(idx + 2, file_space + 8).value = ws['f3'].value
 
             # # get FFT info
 

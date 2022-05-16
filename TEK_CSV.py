@@ -413,8 +413,8 @@ class tekCsv():
         ws.cell(5, 7, value='angle')
         ws.cell(6, 7, value='real power Coefficient')
         ws.cell(7, 7, value='ave.RP Co')
-        ws.cell(1, 5, value='V DC')
-        ws.cell(3, 5, value='I DC')
+        ws.cell(1, 5, value='Vmean')
+        ws.cell(3, 5, value='Imean')
 
         if len(v_times) > len(i_times):
             times = len(i_times)
@@ -566,7 +566,7 @@ class tekCsv():
 
     def get_y_axis_min_max(self, max, min):
         max_scaled = 0
-        min_scaled = 0
+        max_scaled = 0
 
         digits = len(str(float(abs(max))).split('.')[0])
         if max > 0:
@@ -579,7 +579,12 @@ class tekCsv():
         if min > 0:
             min_scaled = math.ceil(min / (10 ** (digits - 1))) * 10 ** (digits - 1)
         else:
-            min_scaled = math.floor(min / (10 ** (digits - 1))) * 10 ** (digits - 1) * 1
+            min_scaled = math.floor(min / (10 ** (digits))) * 10 ** (digits)
+
+        if abs(max_scaled) > abs(min_scaled):
+            min_scaled = -max_scaled
+        else:
+            max_scaled = -min_scaled
 
         if max_scaled == min_scaled or max_scaled < min_scaled:
             return max, min
@@ -606,20 +611,21 @@ class tekCsv():
 if __name__=='__main__':
 
     # path = os.getcwd() + '\\'
-    path = 'D:/work/data_analyze/sample/'
-    csv_path = path + 'csv/'
+    path = 'D:/work/data_analyze/'
+    csv_path = path + 'csv/1/'
     excel_path = path + 'excel/'
     print(path)
 
-    get_cvs_to_excel = False
-    get_summary = False
+    get_cvs_to_excel = True
+    get_summary = True
+    get_period = False
     lpf = False
     LPF_factor = 0.5
 
     tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
 
     if get_cvs_to_excel:
-        tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
+        # tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
         csv_list = tek.get_csv_filelist()
         for idx, csv_file in enumerate(csv_list):
             print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
@@ -691,8 +697,9 @@ if __name__=='__main__':
             wb.save(tek.excel_path + csv_file.split('.csv')[0] + '.xlsx')
             wb.close()
 
-    wb = openpyxl.open(excel_path + 'tek0033 RFAMP_01 ch4 500.0ohm PWM100.xlsx', data_only=True, read_only=False)
-    tek.get_pulse_width(wb, ch_num1='CH1', ch_num2='CH2')
+    if get_period:
+        wb = openpyxl.open(excel_path + 'tek0033 RFAMP_01 ch4 500.0ohm PWM100.xlsx', data_only=True, read_only=False)
+        tek.get_pulse_width(wb, ch_num1='CH1', ch_num2='CH2')
 
     if get_summary:
         summary = GET_SUMMARY.Get_Summary()

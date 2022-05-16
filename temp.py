@@ -2,9 +2,10 @@ import openpyxl
 import pandas as pd
 import numpy as np
 import os
+import math
 
 path = 'D:/work/data_analyze/'
-csv_path = path + 'csv/2/'
+csv_path = path + 'csv/1/'
 excel_path = path + 'excel/'
 
 filename = 'file name.xlsx'
@@ -12,6 +13,15 @@ filename = 'file name.xlsx'
 csv_list = os.listdir(csv_path)
 
 csv_list = [file for file in csv_list if file[:3] == 'tek' and file[-3:] == 'csv']
+
+# for file in csv_list:
+#     ohm = file.split('ohm')[0]
+#     ohm = file.split(' ')[-1]
+#     ohm = int(round(ohm))
+#
+#     scr = csv_list + file
+#     dst = csv_list
+
 
 df = pd.read_excel(path + filename)
 
