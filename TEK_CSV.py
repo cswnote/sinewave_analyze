@@ -674,7 +674,8 @@ if __name__=='__main__':
                     if ws.cell(13, i).value is not None:
                             num_channel = num_channel + 1
 
-                chart_name = csv_file.split('.')[0]
+                # chart_name = csv_file.split('.')[0]
+                chart_name = ws.title
                 tek.draw_chart(ws, num_of_channel=num_channel, record_length=tek.record_length, domain='time', chart_title=chart_name, crop_window=10000)
 
                 for i in range(num_channel):
