@@ -721,10 +721,9 @@ if __name__=='__main__':
         tek.get_pulse_width(wb, ch_num1='CH1', ch_num2='CH2')
 
     if get_summary:
-        summary = GET_SUMMARY.Get_Summary()
-
         file_list = os.listdir(excel_path)
         excel_list = [file for file in file_list if file.endswith(".xlsx") and file[:3] == 'tek']
 
-        summary.get_summary(excel_list, excel_path)
+        summary = GET_SUMMARY.Get_Summary(excel_list, excel_path)
+        summary.get_summary()
         # summary.copy_paste_graph(path=path, summary_file_name='summary')
