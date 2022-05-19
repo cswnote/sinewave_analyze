@@ -1,17 +1,22 @@
 import openpyxl
 import os
 import numpy as np
+import pandas as pd
 from win32com.client import Dispatch
 
 
 
 
 class Get_Summary():
-    def __init__(self):
+    def __init__(self, file_list, path):
         super().__init__()
 
-    def get_summary(self, file_list, path):
-        excel_list = file_list
+        self.path = path
+        self.excel_list = file_list
+
+    def get_summary(self):
+        excel_list = self.excel_list
+        path = self.path
 
         summary_wb = openpyxl.Workbook()
         summary_ws = summary_wb.active
@@ -283,15 +288,143 @@ class Get_Summary():
 
             summary_wb.save(path + idx + ' - ' + summary + '.xlsx')
 
+    def delete_by_df_column_value(self, new_sheet, data_items, df, sheet_name, filename, exclusive=True):
+        if exclusive:
+            for i in data_items[list(data_items.keys())[0]]:
+                if list(data_items.keys())[0].lower() == 'pwm':
+                    if 'PWM' in sheet_name:
+                        sheet_name = sheet_name[:sheet_name.find('PWM')] + 'PWM_' + '{0:04d}'.format(i)
+                    else:
+                        sheet_name = sheet_name + ' ' + 'PWM_' +  '{0:04d}'.format(i)
+                elif list(data_items.keys())[0].lower() == 'ohm':
+                    if 'ohm' in sheet_name:
+                        sheet_name = sheet_name[:sheet_name.find('ohm') - 6] + ' ' + str(i) + 'ohm'
+                    else:
+                        sheet_name = sheet_name + ' ' + str(i) + 'ohm'
+                elif list(data_items.keys())[0].lower() == 'ch':
+                    if 'ch' in sheet_name:
+                        sheet_name = sheet_name[:sheet_name.find('ch')] + str(i)
+                    else:
+                        sheet_name = str(i)
 
+                sheet_name = sheet_name.lstrip()
+
+                df_remain = df[df[list(data_items.keys())[0]] == i]
+
+                if 0 != len(list(data_items.keys())) - 1:
+                    data_items_delivery = data_items.copy()
+                    del data_items_delivery[list(data_items_delivery.keys())[0]]
+                    self.delete_by_df_column_value(new_sheet, data_items_delivery, df_remain, sheet_name, filename)
+                else:
+                    if not os.path.exists(self.path + filename):
+                        with pd.ExcelWriter(self.path + filename, mode='w', engine='openpyxl') as writer:
+                                            df_remain.to_excel(writer, sheet_name='total')
+                    else:
+                        with pd.ExcelWriter(self.path + filename, mode='a', engine='openpyxl') as writer:
+                            df_remain.to_excel(writer, sheet_name=sheet_name)
+                    # df.to_excel(self.path + filename, sheet_name=sheet_name)
+                    print(sheet_name)
+
+        return df
+
+
+    def get_seperated_data(self, items, summary, path):
+        df_summary = pd.read_excel(path + summary, sheet_name='summary')
+        data_items = {}
+
+        for item in items:
+            if item.lower() != 'and' and item.lower() != 'or':
+                if item == 'pwm':
+                    item = item.upper()
+                label = df_summary[item].unique()
+                data_items[item] = list(label)
+
+        if items[-1].lower() == 'and':
+            sheet_name = ''
+            if item[0] == 'pwm':
+                item[0] = 'PWM'
+            sheet_clean = items[0].upper()
+            self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, filename)
+
+
+    def draw_chart(self, filename, sheet_head):
+        wb = openpyxl.open(self.path + filename, read_only=False)
+        sheets = wb.sheetnames
+        sheets = [sheet for sheet in sheets if sheet[:2] == sheet_head[0]]
+
+        data_length = 1
+        for sheet in sheets:
+            ws = wb[sheet]
+            # i = 0
+            while True:
+                if ws.cell(data_length, 2).value is None:
+                    break
+                data_length += 1
+            data_length -= 2
+
+            for i in range(5):
+                if ws.cell(data_length + 1, 11) is None:
+                    ws.cell(data_length + 1, 11)
+                if ws.cell(data_length + 1, 12) is None:
+                    ws.cell(data_length + 1, 12)
+
+            chart1 = openpyxl.chart.LineChart()
+            chart2 = openpyxl.chart.LineChart()
+
+            chart1.title = ws.cell(1, 11).value + '  -  ' + ws.cell(1, 12).value
+            chart1.style = 10
+            # chart1.series[0].marker.symbol = 'circle'
+            # chart1.series[0].marker.graphicalProperties.solidFill = "FF0000"
+
+            chart1.x_axis.title = ws.cell(1, 6).value
+            # chart1.y_axis.scaling.min = v_min
+            # chart1.y_axis.scaling.max = v_max
+            data1 = openpyxl.chart.Reference(ws, min_col=11,
+                                             min_row=1, max_row=data_length + 1)
+            cats = openpyxl.chart.Reference(ws, min_col=6, min_row=2, max_row=data_length + 1)  # 축 설정
+            chart1.add_data(data1, titles_from_data=True)
+            chart1.set_categories(cats)
+            chart1.series[0].graphicalProperties.line.width = 0
+            chart1.y_axis.majorGridlines = None
+
+            chart2.style = 10
+            chart2.x_axis.title = ws.cell(1, 11).value
+            # chart1.y_axis.scaling.min = v_min
+            # chart1.y_axis.scaling.max = v_max
+            data2 = openpyxl.chart.Reference(ws, min_col=12,
+                                             min_row=1, max_row=data_length + 1)
+            cats = openpyxl.chart.Reference(ws, min_col=6, min_row=2, max_row=data_length + 1)  # 축 설정
+            chart2.add_data(data2, titles_from_data=True)
+            chart2.set_categories(cats)
+            chart2.series[0].graphicalProperties.line.width = 0
+            chart2.y_axis.majorGridlines = None
+
+            chart2.y_axis.axId = 200
+            chart2.y_axis.crosses = 'max'
+
+            chart1 += chart2
+
+            chart_location = str(data_length + 5)
+            ws.add_chart(chart1, 'c' + chart_location)
+            chart1.width = 30
+            chart1.height = 18
+
+        wb.save(self.path + filename)
 
 if __name__=='__main__':
     # path = os.getcwd() + '\\test\\'
-    path = 'D:/work/data_analyze/'
-    csv_path = path + 'csv/'
-    print(path)
+    path = 'D:/work/data_analyze/excel/'
+    filename = 'summary.xlsx'
+    label_file = 'label.xlsx'
+    label_info = []
 
-    summary_file = 'summary'
-    summary = Get_Summary()
+    summary = Get_Summary([], path)
 
-    summary.copy_paste_graph(path=path, summary_file_name=summary_file)
+    # items = ['ch', 'ohm', 'and']
+    # summary.get_seperated_data(items, filename, path)
+    #
+    items = ['pwm', 'ohm', 'and']
+    summary.get_seperated_data(items, filename, path)
+
+    # sheet = ['ch']
+    # summary.draw_chart(filename, sheet)

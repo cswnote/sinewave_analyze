@@ -280,7 +280,7 @@ class tekCsv():
             chart1.height = 18
 
 
-    def get_VI_delay(self, frequency, data_len, worksheet):
+    def get_VI_delay(self, frequency, data_len, worksheet, wieghting_num=30):
         # print('in process: get_VI_delay')
         ws = worksheet
 
@@ -340,14 +340,23 @@ class tekCsv():
                 while j < (data_len + 22):
                     # rising
                     if float(ws.cell(j - 1, i).value) <= vc_in_window <= float(ws.cell(j, i).value):
-                        if abs(float(ws.cell(j - 1, i).value) - vc_in_window) > abs(float(ws.cell(j, i).value) - vc_in_window):
-                            v_times.append(float(ws.cell(j, 1).value))
-                            v_location.append(j)
-                            j = j + sample_times
-                        else:
-                            v_times.append(float(ws.cell(j - 1, 1).value))
-                            v_location.append(j)
-                            j = j + sample_times
+                        flag = True
+                        for k in range(wieghting_num):
+                            try:
+                                if float(ws.cell(j - 1, i).value) > float(ws.cell(j + k, i).value):
+                                    flag = False
+                                    break
+                            except:
+                                pass
+                        if flag:
+                            if abs(float(ws.cell(j - 1, i).value) - vc_in_window) >= abs(float(ws.cell(j, i).value) - vc_in_window):
+                                v_times.append(float(ws.cell(j, 1).value))
+                                v_location.append(j)
+                                j = j + sample_times
+                            else:
+                                v_times.append(float(ws.cell(j - 1, 1).value))
+                                v_location.append(j - 1)
+                                j = j + sample_times
                     # falling
                     # elif float(ws.cell(j - 1, i).value) >= vc_in_window >= float(ws.cell(j, i).value):
                     #     if abs(float(ws.cell(j - 1, i).value) - vc_in_window) > abs(float(ws.cell(j, i).value) - vc_in_window):
@@ -372,7 +381,7 @@ class tekCsv():
                     if min_value > float(ws.cell(j, i).value):
                         min_value = float(ws.cell(j, i).value)
 
-                ic_in_window = (max_value + min_value) / 2
+                ic_in_window = round((max_value + min_value) / 2, 8)
 
                 # for j in range(23, data_len + 22):
                 #     if float(ws.cell(j - 1, i).value) <= vc_in_window <= float(ws.cell(j, i).value):
@@ -386,14 +395,23 @@ class tekCsv():
                 while j < (data_len + 22):
                     # rising
                     if float(ws.cell(j - 1, i).value) <= ic_in_window <= float(ws.cell(j, i).value):
-                        if abs(float(ws.cell(j - 1, i).value) - ic_in_window) > abs(float(ws.cell(j, i).value) - ic_in_window):
-                            i_times.append(float(ws.cell(j, 1).value))
-                            i_location.append(j)
-                            j = j + sample_times
-                        else:
-                            i_times.append(float(ws.cell(j - 1, 1).value))
-                            i_location.append(j)
-                            j = j + sample_times
+                        flag = True
+                        for k in range(wieghting_num):
+                            try:
+                                if float(ws.cell(j - 1, i).value) > float(ws.cell(j + k, i).value):
+                                    flag = False
+                                    break
+                            except:
+                                pass
+                        if flag:
+                            if abs(float(ws.cell(j - 1, i).value) - ic_in_window) >= abs(float(ws.cell(j, i).value) - ic_in_window):
+                                i_times.append(float(ws.cell(j, 1).value))
+                                i_location.append(j)
+                                j = j + sample_times
+                            else:
+                                i_times.append(float(ws.cell(j - 1, 1).value))
+                                i_location.append(j - 1)
+                                j = j + sample_times
                     # falling
                     # elif float(ws.cell(j - 1, i).value) >= vc_in_window >= float(ws.cell(j, i).value):
                     #     if abs(float(ws.cell(j - 1, i).value) - vc_in_window) > abs(float(ws.cell(j, i).value) - vc_in_window):
@@ -579,7 +597,7 @@ class tekCsv():
         if min > 0:
             min_scaled = math.ceil(min / (10 ** (digits - 1))) * 10 ** (digits - 1)
         else:
-            min_scaled = math.floor(min / (10 ** (digits))) * 10 ** (digits)
+            min_scaled = math.floor(min / (10 ** (digits - 1))) * 10 ** (digits - 1)
 
         if abs(max_scaled) > abs(min_scaled):
             min_scaled = -max_scaled
@@ -617,7 +635,7 @@ if __name__=='__main__':
     print(path)
 
     get_cvs_to_excel = True
-    get_summary = True
+    get_summary = False
     get_period = False
     lpf = False
     LPF_factor = 0.5
@@ -627,6 +645,7 @@ if __name__=='__main__':
     if get_cvs_to_excel:
         # tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
         csv_list = tek.get_csv_filelist()
+        csv_list = ['tek0158 RFAMP_01 ch4 292.2ohm PWM2200.csv']
         for idx, csv_file in enumerate(csv_list):
             print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
             wb = openpyxl.Workbook()
@@ -655,7 +674,8 @@ if __name__=='__main__':
                     if ws.cell(13, i).value is not None:
                             num_channel = num_channel + 1
 
-                chart_name = csv_file.split('.')[0]
+                # chart_name = csv_file.split('.')[0]
+                chart_name = ws.title
                 tek.draw_chart(ws, num_of_channel=num_channel, record_length=tek.record_length, domain='time', chart_title=chart_name, crop_window=10000)
 
                 for i in range(num_channel):
@@ -702,10 +722,9 @@ if __name__=='__main__':
         tek.get_pulse_width(wb, ch_num1='CH1', ch_num2='CH2')
 
     if get_summary:
-        summary = GET_SUMMARY.Get_Summary()
-
         file_list = os.listdir(excel_path)
         excel_list = [file for file in file_list if file.endswith(".xlsx") and file[:3] == 'tek']
 
-        summary.get_summary(excel_list, excel_path)
+        summary = GET_SUMMARY.Get_Summary(excel_list, excel_path)
+        summary.get_summary()
         # summary.copy_paste_graph(path=path, summary_file_name='summary')
