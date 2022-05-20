@@ -8,6 +8,7 @@ import GET_SUMMARY
 import win32com.client
 import matplotlib.pyplot as plt
 import math
+import FILE_MANAGEMENT
 
 
 
@@ -625,24 +626,38 @@ class tekCsv():
         print(ws)
 
 
+    def get_test_file_list(self, df):
+        for i in range(len(df)):
+            print(df[df[i]])
+
 
 if __name__=='__main__':
 
     # path = os.getcwd() + '\\'
     path = 'D:/work/data_analyze/'
-    csv_path = path + 'csv/1/'
-    excel_path = path + 'excel/'
+    csv_path = path + 'csv/auto mode test'
+    excel_path = path + 'excel/auto mode test'
     print(path)
+    test_info = 1
 
-    get_cvs_to_excel = True
+    get_test_info = True
+    cvs_to_excel = False
     get_summary = False
     get_period = False
     lpf = False
     LPF_factor = 0.5
 
     tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
+    fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
 
-    if get_cvs_to_excel:
+    if get_test_info:
+        test_info =  fm.get_test_information(path)
+
+    csv_list = []
+    csv_list = tek.get_test_file_list(test_info)
+
+
+    if cvs_to_excel:
         # tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
         csv_list = tek.get_csv_filelist()
         csv_list = ['tek0158 RFAMP_01 ch4 292.2ohm PWM2200.csv']

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import gc
 import openpyxl
-import math
+import sys
 
 class FILE_MANAGEMENT():
     def __init__(self):
@@ -209,50 +209,29 @@ class FILE_MANAGEMENT():
         del df
         gc.collect()
 
-    def change_file_name_from_excel(self, files_path, sheet_name='None', excel_name='None', path='None'):
-        if path == 'None':
-            path = os.getcwd() + '/'
-        if excel_name == 'None':
-            excel_name = 'naming'
 
-        wb = openpyxl.load_workbook(path + excel_name + '.xlsx')
+    def get_test_information(self, path):
+        files = os.listdir((path))
+        files = [file for file in files if file[-5:] == '.xlsx' and 'info_test_' in file]
 
-        if sheet_name == 'None':
-            sheet = wb.active
-            sheet_name = sheet.title
+        columns = []
+        if len(files):
+            df = pd.read_excel(path + files[0])
         else:
-            sheet = wb[sheet_name]
+            print('info 파일이 없습니다.')
+            print('죵료 합니다.')
+            sys.exit()
 
-        wb.close()
-        del wb
+        try:
+            for i in range(1, len(files)):
+                df1 = pd.read_excel(path + files[i])
+                df = pd.concat([df, df1], ignore_index=True)
+                print(df)
+        except:
+            pass
+            print('df 병합 실패')
 
-        file_list = os.listdir(files_path)
-
-        df = pd.read_excel(path + excel_name + '.xlsx', engine='openpyxl', sheet_name=sheet_name)
-
-        changes = len(df.index)
-
-        for i in range(changes):
-            if math.isnan(df.loc[i, 'tek_num_step']):
-                tek_num_step = 1
-            pwm = df.loc[i, 'PWM_Start']
-            for tek_num in range(df.loc[i, 'tek_start_num'], df.loc[i, 'tek_end_num'] + 1, tek_num_step):
-                if pwm == 2500:
-                    pwm = 2450
-                filename = 'tek' + format(tek_num, '04')
-                src = os.path.join(files_path, filename + '.csv')
-                filename = filename + ' ' + df.loc[i, 'board_name'] + ' ' + df.loc[i, 'ch'] + ' ' + str(df.loc[i, 'R']) + 'R ' + 'PWM' + str(pwm)
-                dst = os.path.join(files_path, filename + '.csv')
-                os.rename(src, dst)
-                pwm += df.loc[i, 'PWM_Step']
-
-        print('============')
+        return df
 
 if __name__ == '__main__':
-    path = os.getcwd() + '/Evaluation/Osciloscope/'
-    csv_path = path + 'csv/'
-    excel_name = 'file name'
-
-    fm = FILE_MANAGEMENT()
-
-    fm.change_file_name_from_excel(csv_path, path=path)
+    print('in FILE_MANAGEMENT')
