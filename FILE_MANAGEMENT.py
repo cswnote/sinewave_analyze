@@ -211,7 +211,7 @@ class FILE_MANAGEMENT():
 
 
     def get_test_information(self, path):
-        files = os.listdir((path))
+        files = os.listdir(path)
         files = [file for file in files if file[-5:] == '.xlsx' and 'info_test_' in file]
 
         columns = []
@@ -232,6 +232,7 @@ class FILE_MANAGEMENT():
             print('df 병합 실패')
 
         return df
+
 
 if __name__ == '__main__':
     print('in FILE_MANAGEMENT')

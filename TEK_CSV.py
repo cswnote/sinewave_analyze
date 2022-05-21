@@ -4,8 +4,11 @@ import numpy as np
 import openpyxl
 import csv
 import math
+
+import pandas as pd
+
 import GET_SUMMARY
-import win32com.client
+# import win32com.client
 import matplotlib.pyplot as plt
 import math
 import FILE_MANAGEMENT
@@ -14,14 +17,32 @@ import FILE_MANAGEMENT
 
 class tekCsv():
     def __init__(self, **kwargs):
-        self.filepath = kwargs.get('csv_path', 'd:/csv to excel graph/')
+        self.csv_path = kwargs.get('csv_path', 'd:/csv to excel graph/')
         self.excel_path = kwargs.get('excel_path', 'd:/csv to excel graph/')
+        self.time_graph = kwargs.get('graph_time', True)
+        self.fft_graph = kwargs.get('graph_FFT', True)
         self.filter_factor = kwargs.get('filter_factor', 0.2)
+        self.lpf = kwargs.get('LPF', False)
+        self.fft = kwargs.get('FFT', False)
+        self.time_window_size = kwargs.get('time_window', 10000)
+        self.time_window_type = kwargs.get('time_window_type', 'crop')
+        self.fft_window_size = kwargs.get('fft_window', 5000)
+        self.fft_window_type = kwargs.get('time_window_type', 'crop')
+        self.FFT = kwargs.get('FFT', True)
+
+
         self.record_length = 0
 
+
     def get_csv_filelist(self):
-        file_list = os.listdir(self.filepath)
+        file_list = os.listdir(self.csv_path)
         return [file for file in file_list if file.endswith(".csv")]
+
+
+    def get_filetype_list(self, filetype, path):
+        file_list = os.listdir(path)
+        return [file for file in file_list if file.endswith(filetype)]
+
 
     def apply_LPF(self, worksheet, data_only=False):
         # print('in process: apply_LPF')
@@ -631,6 +652,126 @@ class tekCsv():
             print(df[df[i]])
 
 
+    def add_info_file(self, path):
+        file_list = self.get_filetype_list('xlsx', path)
+        file_list.sort()
+        file_list = [file for file in file_list if file[:10] == 'info_test_']
+
+        if 'info_test_all.xlsx' in file_list:
+            df = pd.read_excel(path + 'info_test_all.xlsx')
+            file_list.remove('info_test_all.xlsx')
+        else:
+            if len(file_list):
+                print('''this directory has not none 'info_test' file''')
+                return
+            else:
+                df = pd.read_excel(path + file_list[0])
+                file_list.remove(file_list[0])
+
+        try:
+            for idx, file in enumerate(file_list):
+                df_add = pd.read_excel(path + file)
+                df = pd.concat([df, df_add], ignore_index=True)
+        except:
+            print('fail to merge info data')
+
+        df.set_index(keys=df.columns[0], drop=True, inplace=True)
+        df.to_excel(path + 'info_test_all.xlsx', index_label=df.columns[0])
+
+        print('end add_info_file')
+
+    def csv_to_excel(self, lpf_factor=0.5, lpf=False):
+        # csv_list = self.get_csv_filelist()
+        # csv_list.sort()
+
+        csv_list = self.get_filetype_list('csv', self.csv_path)
+        csv_list.sort()
+
+        for idx, csv_file in enumerate(csv_list):
+            print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = csv_file.split('.')[0]
+
+            COL_SEPARATOR = ","
+            with open(self.csv_path + csv_file) as file:
+                reader = csv.reader(file)
+                for r, row in enumerate(reader):
+                    for c, col in enumerate(row):
+                        for idx, val in enumerate(col.split(COL_SEPARATOR)):
+                            cell = ws.cell(row=r+1, column=c+1)
+                            cell.value = val
+                            cell.data_type = 'General'
+
+                self.record_length = int(float(ws['b10'].value))
+
+                # # can use cal_fft() when data_only is True
+                if self.lpf:
+                    ws = self.apply_LPF(ws, data_only=True)
+
+                num_channel = 0
+                for i in range(9, 1, -1):
+                    # # get number of channel
+                    if ws.cell(13, i).value is not None:
+                            num_channel = num_channel + 1
+
+                if self.time_graph:
+                    chart_name = ws.title
+                    if self.time_window_type == 'crop':
+                        self.draw_chart(ws, num_of_channel=num_channel, record_length=self.record_length, domain='time',
+                                        chart_title=chart_name, crop_window=self.time_window_size)
+                    else:
+                        self.draw_chart(ws, num_of_channel=num_channel, record_length=self.record_length, domain='time',
+                                        chart_title=chart_name, crop_ratio=self.time_window_size)
+
+                if self.FFT:
+                    for i in range(num_channel):
+                        fft_column = chr(i + 98)
+                        freq, amplitude = self.cal_fft(ws, y_col=fft_column)
+
+                        ws_fft = wb.create_sheet(title='FFT_' + ws[fft_column + '21'].value)
+
+                        ws_fft['a1'].value = 'freq'
+                        ws_fft['b1'].value = 'Y_complex'
+                        ws_fft['c1'].value = 'Y_absolute'
+
+                        ws_fft['e1'].value = 'F @ max Y'
+                        ws_fft['e2'].value = 'max Y abs'
+
+                        for j in range(len(freq)):
+                            ws_fft.cell(j + 2, 1, value=freq[j])
+                            ws_fft.cell(j + 2, 2, value='= complex(' + str(amplitude[j].real) + ', ' + str(amplitude[j].imag) + ', "j")')
+                            ws_fft.cell(j + 2, 3, value=abs(amplitude[j]))
+
+                        if self.fft_graph:
+                            if self.fft_window_type == 'crop':
+                                self.draw_chart(ws_fft, record_length=self.record_length / 2, domain='frequency',
+                                                crop_window=self.fft_window_size)
+                            else:
+                                self.draw_chart(ws_fft, record_length=self.record_length / 2, domain='frequency',
+                                                crop_ratio=self.fft_window_size)
+
+                        max_amplitude = 0
+                        max_freq = 0
+                        for j in range(len(freq)):
+                            if float(ws_fft.cell(j + 2, 3).value) > max_amplitude:
+                                max_amplitude = float(ws_fft.cell(j + 2, 3).value)
+                                max_freq = float(ws_fft.cell(j + 2, 1).value)
+
+                        ws_fft['f1'].value = max_freq
+                        ws_fft['f2'].value = max_amplitude
+
+                        wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
+
+                    v_row_num, i_row_num = self.get_VI_delay(max_freq, self.record_length, ws)
+                    if v_row_num != 0:
+                        self.get_rms(v_row_num, i_row_num, self.record_length, ws)
+
+            wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
+            wb.close()
+
+
+
 if __name__=='__main__':
 
     # path = os.getcwd() + '\\'
@@ -655,7 +796,78 @@ if __name__=='__main__':
 
     csv_list = []
     csv_list = tek.get_test_file_list(test_info)
+    for idx, csv_file in enumerate(csv_list):
+        print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = csv_file.split('.')[0]
 
+        COL_SEPARATOR = ","
+        with open(tek.csv_path + csv_file) as file:
+            reader = csv.reader(file)
+            for r, row in enumerate(reader):
+                for c, col in enumerate(row):
+                    for idx, val in enumerate(col.split(COL_SEPARATOR)):
+                        cell = ws.cell(row=r + 1, column=c + 1)
+                        cell.value = val
+                        cell.data_type = 'General'
+
+            tek.record_length = int(float(ws['b10'].value))
+
+            # # can use cal_fft() when data_only is True
+            if lpf:
+                ws = tek.apply_LPF(ws, data_only=True)
+
+            num_channel = 0
+            for i in range(9, 1, -1):
+                # # get number of channel
+                if ws.cell(13, i).value is not None:
+                    num_channel = num_channel + 1
+
+            # chart_name = csv_file.split('.')[0]
+            chart_name = ws.title
+            tek.draw_chart(ws, num_of_channel=num_channel, record_length=tek.record_length, domain='time',
+                           chart_title=chart_name, crop_window=10000)
+
+            for i in range(num_channel):
+                fft_column = chr(i + 98)
+                freq, amplitude = tek.cal_fft(ws, y_col=fft_column)
+
+                ws_fft = wb.create_sheet(title='FFT_' + ws[fft_column + '21'].value)
+
+                ws_fft['a1'].value = 'freq'
+                ws_fft['b1'].value = 'Y_complex'
+                ws_fft['c1'].value = 'Y_absolute'
+
+                ws_fft['e1'].value = 'F @ max Y'
+                ws_fft['e2'].value = 'max Y abs'
+
+                for j in range(len(freq)):
+                    ws_fft.cell(j + 2, 1, value=freq[j])
+                    ws_fft.cell(j + 2, 2,
+                                value='= complex(' + str(amplitude[j].real) + ', ' + str(amplitude[j].imag) + ', "j")')
+                    ws_fft.cell(j + 2, 3, value=abs(amplitude[j]))
+
+                tek.draw_chart(ws_fft, record_length=tek.record_length / 2, domain='frequency', crop_window=1000)
+
+                max_amplitude = 0
+                max_freq = 0
+                for j in range(len(freq)):
+                    if float(ws_fft.cell(j + 2, 3).value) > max_amplitude:
+                        max_amplitude = float(ws_fft.cell(j + 2, 3).value)
+                        max_freq = float(ws_fft.cell(j + 2, 1).value)
+
+                ws_fft['f1'].value = max_freq
+                ws_fft['f2'].value = max_amplitude
+
+                wb.save(tek.excel_path + csv_file.split('.csv')[0] + '.xlsx')
+
+            v_row_num, i_row_num = tek.get_VI_delay(max_freq, tek.record_length, ws)
+            if v_row_num != 0:
+                tek.get_rms(v_row_num, i_row_num, tek.record_length, ws)
+
+        wb.save(tek.excel_path + csv_file.split('.csv')[0] + '.xlsx')
+        wb.close()
 
     if cvs_to_excel:
         # tek = tekCsv(csv_path=csv_path, excel_path=excel_path, filter_factor=LPF_factor)
@@ -668,7 +880,7 @@ if __name__=='__main__':
             ws.title = csv_file.split('.')[0]
 
             COL_SEPARATOR = ","
-            with open(tek.filepath + csv_file) as file:
+            with open(tek.csv_path + csv_file) as file:
                 reader = csv.reader(file)
                 for r, row in enumerate(reader):
                     for c, col in enumerate(row):
@@ -690,6 +902,7 @@ if __name__=='__main__':
                             num_channel = num_channel + 1
 
                 # chart_name = csv_file.split('.')[0]
+
                 chart_name = ws.title
                 tek.draw_chart(ws, num_of_channel=num_channel, record_length=tek.record_length, domain='time', chart_title=chart_name, crop_window=10000)
 
