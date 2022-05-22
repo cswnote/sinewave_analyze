@@ -36,7 +36,10 @@ for i in range(len(df_name)):
                     # file = file + ' ' + str(column) + ' ' + str(df_test_info.at[idx, column])
                     file = file + ' ' + str(column).split(' ')[1] + ' ' + str(df_test_info.at[idx, column])
                 else:
-                    file = file + ' ' + str(df_name.at[i, df_name.columns[j]])
+                    if 'ohm' == df_name.columns[j].lower():
+                        file = file + ' ' + str(df_name.at[i, df_name.columns[j]]) + 'ohm'
+                    else:
+                        file = file + ' ' + str(df_name.at[i, df_name.columns[j]])
                     # file = file + str(df_name.iat[i, j]) # 위와 동일
 
             dst = path_excel + file + '.' + extension

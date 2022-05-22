@@ -11,3 +11,4 @@ if mac_m1:
     path_summary = path + 'summary/'
     path_information = path + 'test infomation/'
     path_kmon = path + 'kmon_csv'
+
