@@ -16,7 +16,7 @@ df_name = pd.read_excel(path + 'name.xlsx')
 info_files = os.listdir(path_information)
 info_files = [file for file in info_files if file[:10] == 'info_test_' and not('all' in file)]
 test_files = os.listdir(path_excel)
-test_files = [file for file in test_files if file.endswith('xlsx')]
+test_files = [file for file in test_files if file.endswith('xlsx') and file[:3] == 'tek']
 
 for i in range(len(df_name)):
     df_test_info = pd.read_excel(path_information + df_name.at[i, 'filename'] + '.xlsx')
@@ -34,7 +34,7 @@ for i in range(len(df_name)):
                 if 'field' in df_name.columns[j]:
                     column = df_name.at[i, df_name.columns[j]]
                     # file = file + ' ' + str(column) + ' ' + str(df_test_info.at[idx, column])
-                    file = file + ' ' + str(column).split(' ')[1] + ' ' + str(df_test_info.at[idx, column])
+                    file = file + ' ' + str(column).split(' ')[1] + str(df_test_info.at[idx, column])
                 else:
                     if 'ohm' == df_name.columns[j].lower():
                         file = file + ' ' + str(df_name.at[i, df_name.columns[j]]) + 'ohm'
@@ -44,3 +44,5 @@ for i in range(len(df_name)):
 
             dst = path_excel + file + '.' + extension
             os.rename(scr, dst)
+
+# if __name__ == '__main__':

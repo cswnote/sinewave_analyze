@@ -2,6 +2,7 @@ import openpyxl
 import os
 import numpy as np
 import pandas as pd
+import re
 # from win32com.client import Dispatch
 
 
@@ -46,13 +47,14 @@ class Get_Summary():
                 ws = wb[excel_file.split(' ')[0]]
             except:
                 ws = wb[excel_file.split('.')[0]]
-            summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0]
+            # summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0]
 
             file_space = len(excel_file.split('.xlsx')[0].split(' '))
 
             summary_name = False
             if not summary_name:
                 summary_ws['a1'].value = 'filename'
+                summary_ws['b1'].value = 'Board'
                 summary_ws.cell(1, file_space + 1).value = 'V Frequency[MHz]'
                 summary_ws.cell(1, file_space + 2).value = 'Delay(degree)'
                 summary_ws.cell(1, file_space + 3).value = 'Ave. RP Coff'
@@ -67,16 +69,48 @@ class Get_Summary():
                 summary_ws.cell(1, file_space + 12).value = 'FFT I freq[MHz]'
                 summary_ws.cell(1, file_space + 13).value = 'FFT I rms'
                 summary_ws.cell(1, file_space + 14).value = 'FFT I dc abs'
+
+                fields = []
+                for i, name in enumerate(excel_file.split('.xlsx')[0].split(' ')):
+                    if i > 1:
+                        if name[:2].lower() == 'ch':
+                            summary_ws.cell(1, i + 1).value = 'ch'
+                            ch = i + 1
+                        elif name[-3:].lower() == 'ohm':
+                            summary_ws.cell(1, i + 1).value = 'ohm'
+                            ohm = i + 1
+                        else:
+                            temp = re.findall('[0-9]+', name)
+                            summary_ws.cell(1, i + 1).value = name[:-len(temp[0])]
+                            fields.append(name[:-len(temp[0])])
+
                 summary_name = True
 
+            # for i, name in enumerate(excel_file.split('.xlsx')[0].split(' ')):
+            #     if name[:2].lower() == 'ch':
+            #         summary_ws.cell(idx + 2, i + 1).value = 'ch'
+            #         ch = i + 1
+            #     elif name[-3:].lower() == 'ohm':
+            #         summary_ws.cell(idx + 2, i + 1).value = 'ohm'
+            #         ohm = i + 1
 
-            for i in range(file_space):
-                summary_ws.cell(idx + 2, i + 1).value = excel_file.split('.xlsx')[0].split(' ')[i]
-                if i == file_space - 2:
-                    summary_ws.cell(idx + 2, i + 1).value = float(
-                        (excel_file.split('.xlsx')[0].split(' ')[i]).split('ohm')[0])
-                if i == file_space - 1:
-                    summary_ws.cell(idx + 2, i + 1).value = int((excel_file.split('.xlsx')[0].split(' ')[i]).split('PWM')[1])
+            summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0].split(' ')[0]
+            summary_ws.cell(idx + 2, 2).value = excel_file.split('.xlsx')[0].split(' ')[1]
+            summary_ws.cell(idx + 2, ch).value = excel_file.split('.xlsx')[0].split(' ')[ch - 1]
+            summary_ws.cell(idx + 2, ohm).value = excel_file.split('.xlsx')[0].split(' ')[ohm - 1]
+            for i in range(len(fields)):
+                if ch > ohm:
+                    item = ch
+                else:
+                    item = ohm
+                summary_ws.cell(idx + 2, item + i + 1).value = excel_file.split('.xlsx')[0].split(' ')[item + i]
+
+
+                # if i == file_space - 2:
+                #     summary_ws.cell(idx + 2, i + 1).value = float(
+                #         (excel_file.split('.xlsx')[0].split(' ')[i]).split('ohm')[0])
+                # if i == file_space - 1:
+                #     summary_ws.cell(idx + 2, i + 1).value = int((excel_file.split('.xlsx')[0].split(' ')[i]).split('PWM')[1])
 
             # # Delay(degree)
             for i in range(100, 8, -1):
