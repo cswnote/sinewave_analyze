@@ -6,13 +6,15 @@ import GET_SUMMARY
 # import name_change
 
 if __name__ == '__main__':
-    mac_m1 = True
+    mac_m1 = False
 
     get_test_info = False
     csv_to_excel = False
     # csv_to_excel = False
     # add_info_file = True
     add_info_file = False
+    kmon_csv = True
+
     if csv_to_excel:
         fft = True
         graph_time = True
@@ -23,7 +25,7 @@ if __name__ == '__main__':
         get_period = False
         graph_FFT = True
     change_file_name = False
-    get_summary = True
+    get_summary = False
     if get_summary:
         get_by_option = True
 
@@ -34,6 +36,12 @@ if __name__ == '__main__':
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/sample/'
         path_csv = path + 'csv/'
         path_excel = path + 'excel/'
+        path_summary = path + 'summary/'
+        path_information = path + 'test infomation/'
+    else:
+        path = 'D:/work/data_analyze/'
+        path_csv = path + 'csv/auto mode test/'
+        path_excel = path + 'excel/auto mode test/'
         path_summary = path + 'summary/'
         path_information = path + 'test infomation/'
 
@@ -56,3 +64,17 @@ if __name__ == '__main__':
 
         summary = GET_SUMMARY.Get_Summary(excel_list, path_excel)
         summary.get_summary()
+
+    if kmon_csv:
+
+        path_kmon = path_excel[:path_excel.find('excel')] + 'kmon_csv/'
+        csv_list = os.listdir(path_kmon)
+        csv_list = [file for file in csv_list if file[:10] == 'info_test_' and file.endswith('.csv')]
+        kmon_columns_name = ['Control', 'RF Volt Set Ch 1', 'RF Volt Set Ch 2', 'RF Volt Set Ch 3', 'RF Volt Set Ch 4',
+                             'RF Curr Set Ch 1', 'RF Curr Set Ch 2', 'RF Curr Set Ch 3', 'RF Curr Set Ch 4',
+                             'RF Volt Ch 1', 'RF Volt Ch 2', 'RF Volt Ch 3', 'RF Volt Ch 4',
+                             'RF Curr Ch 1', 'RF Volt Ch 2', 'RF Volt Ch 3', 'RF Volt Ch 4',
+                             'CP Pwm Ch 1', 'CP Pwm Ch 2', 'CP Pwm Ch 3', 'CP Pwm Ch 4',
+                             'Loop Time 0.1 us']
+        merge_kmon = GET_SUMMARY.Get_Summary(csv_list, path_kmon)
+        merge_kmon.combine_kmon_data()
