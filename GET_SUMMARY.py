@@ -444,6 +444,75 @@ class Get_Summary():
 
         wb.save(self.path + filename)
 
+
+    def combine_kmon_data(self):
+        # df = pd.read_csv(self.path + self.excel_list[0])
+        df = 1
+        num = -1
+
+        info_test = {}
+        previous = -1
+        for idx, file in enumerate(self.excel_list):
+            file = file.split('.csv')[0]
+            if file.split('_')[2] != previous:
+                info_test[file.split('_')[2]] = []
+                info_test[file.split('_')[2]].append(file.split('_')[3])
+                previous = file.split('_')[2]
+            else:
+                info_test[file.split('_')[2]].append(file.split('_')[3])
+
+        # for idx, file in enumerate(self.excel_list):
+        #     if idx:
+        #         if num == file.split('_')[2].split('.')[0]:
+        #             df1 = pd.read_csv(self.path + file)
+        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
+        #         else:
+        #             df1 = pd.read_csv(self.path + file)
+        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
+        #             num = file.split('_')[2].split('.')[0]
+        #     else:
+        #         df = pd.read_csv(self.path + file)
+        #         num = file.split('_')[2].split('.')[0]
+
+        df_num = []
+        for idx, key in enumerate(info_test):
+            previous = -1
+            if previous != key:
+                df = 0
+                for i, value in enumerate(info_test[key]):
+                    if i:
+                        df_1 =pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
+                        df = pd.concat([df, df_1], ignore_index=True, axis=1)
+                    else:
+                        df = pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
+                df_num.append(df)
+
+        for i in range(len(df) - 1, -1, -1):
+            df.drop([df.index[i]], inplace=True)
+
+        for i in range(len(df_num)):
+            df = pd.concat([df, df_num[i]], ignore_index=True)
+
+        for i in range(len(df.columns) - 1, 0, -1):
+            if i % 2 == 0:
+                df.drop([df.columns[i]], axis=1, inplace=True)
+
+
+        # =======================
+        for i in range(len(df.columns) - 1, 0, -1):
+            if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
+                print('asdfasf')
+
+
+
+        print(df)
+        # df = 0
+        # for i, in range(1, df_num):
+
+
+
+
+
 if __name__=='__main__':
     # path = os.getcwd() + '\\test\\'
     path = 'D:/work/data_analyze/excel/'
