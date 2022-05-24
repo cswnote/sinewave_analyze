@@ -39,7 +39,7 @@ if __name__ == '__main__':
         path_summary = path + 'summary/'
         path_information = path + 'test infomation/'
     else:
-        path = 'D:/work/data_analyze/'
+        path = 'D:/winston/OneDrive - (주)필드큐어/data_analyze/'
         path_csv = path + 'csv/auto mode test/'
         path_excel = path + 'excel/auto mode test/'
         path_summary = path + 'summary/'
@@ -66,7 +66,6 @@ if __name__ == '__main__':
         summary.get_summary()
 
     if kmon_csv:
-
         path_kmon = path_excel[:path_excel.find('excel')] + 'kmon_csv/'
         csv_list = os.listdir(path_kmon)
         csv_list = [file for file in csv_list if file[:10] == 'info_test_' and file.endswith('.csv')]
@@ -77,4 +76,5 @@ if __name__ == '__main__':
                              'CP Pwm Ch 1', 'CP Pwm Ch 2', 'CP Pwm Ch 3', 'CP Pwm Ch 4',
                              'Loop Time 0.1 us']
         merge_kmon = GET_SUMMARY.Get_Summary(csv_list, path_kmon)
-        merge_kmon.combine_kmon_data()
+        ch_name = path_csv + 'ch_name.xlsx'
+        merge_kmon.combine_kmon_data(ch_name)

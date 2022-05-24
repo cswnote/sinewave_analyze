@@ -445,7 +445,7 @@ class Get_Summary():
         wb.save(self.path + filename)
 
 
-    def combine_kmon_data(self):
+    def combine_kmon_data(self, ch_names):
         # df = pd.read_csv(self.path + self.excel_list[0])
         df = 1
         num = -1
@@ -456,7 +456,8 @@ class Get_Summary():
             file = file.split('.csv')[0]
             if file.split('_')[2] != previous:
                 info_test[file.split('_')[2]] = []
-                info_test[file.split('_')[2]].append(file.split('_')[3])
+                if file.split('_')[2] != 'all':
+                    info_test[file.split('_')[2]].append(file.split('_')[3])
                 previous = file.split('_')[2]
             else:
                 info_test[file.split('_')[2]].append(file.split('_')[3])
@@ -475,10 +476,10 @@ class Get_Summary():
         #         num = file.split('_')[2].split('.')[0]
 
         df_num = []
+        df = 0
         for idx, key in enumerate(info_test):
             previous = -1
             if previous != key:
-                df = 0
                 for i, value in enumerate(info_test[key]):
                     if i:
                         df_1 =pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
