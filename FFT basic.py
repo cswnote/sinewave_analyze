@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sinClass
+import openpyxl
+import os
+
+path = os.getcwd() + '/Evaluation/Osciloscope/'
 
 test1 = sinClass.sinWaveForm(amp=1, freq=1, endTime=5)
 test2 = sinClass.sinWaveForm(amp=2, freq=5, endTime=5)
@@ -15,7 +19,7 @@ Ts = test1.sampleTime 			# sampling interval
 Fs = 1/Ts 						# sampling rate
 t = test1.calcDomain()			# time vector
 
-y = resultTest1 + resultTest2 + resultTest3
+y = resultTest1 #+ resultTest2 + resultTest3
 
 n = len(y) 					# length of the signal
 k = np.arange(n)
@@ -24,8 +28,10 @@ freq = k/T 					        # two sides frequency range
 freq = freq[range(int(n/2))] 		# one side frequency range
 
 Y = np.fft.fft(y)/n 				# fft computing and normalization
-Y = Y[range(int(n/2))] * 2 * 0.707
+Y = Y[range(int(n/2))] * 2 * 0.707106781
 print(Y)
+
+
 
 fig, ax = plt.subplots(2, 1)
 ax[0].plot(t, y)
