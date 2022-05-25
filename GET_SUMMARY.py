@@ -3,6 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 import re
+import math
+import gc
 # from win32com.client import Dispatch
 
 
@@ -445,7 +447,7 @@ class Get_Summary():
         wb.save(self.path + filename)
 
 
-    def combine_kmon_data(self, ch_names):
+    def combine_kmon_data(self, set_file):
         # df = pd.read_csv(self.path + self.excel_list[0])
         df = 1
         num = -1
@@ -455,8 +457,8 @@ class Get_Summary():
         for idx, file in enumerate(self.excel_list):
             file = file.split('.csv')[0]
             if file.split('_')[2] != previous:
-                info_test[file.split('_')[2]] = []
                 if file.split('_')[2] != 'all':
+                    info_test[file.split('_')[2]] = []
                     info_test[file.split('_')[2]].append(file.split('_')[3])
                 previous = file.split('_')[2]
             else:
@@ -504,12 +506,55 @@ class Get_Summary():
             if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
                 print('asdfasf')
 
+        df_kmon_set = pd.read_excel(set_file)
+
+        for i in range(len(df_kmon_set), 20):
+            df_kmon_set = df_kmon_set.append(pd.Series(name=i))
 
 
-        print(df)
-        # df = 0
-        # for i, in range(1, df_num):
+        # df_kmon_set = df_kmon_set.to_dict()
 
+        # remove_list = {}
+        # for key, values in df_kmon_set.items():
+        #     for in_key, in_value in values.items():
+        #         try:
+        #             if math.isnan(in_value):
+        #                 # if key in remove_list:
+        #                 #     # remove_list[key].append(in_key)
+        #                 values[in_key] = (int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1
+        #
+        #                 # else:
+        #                 #     a = int(key.split('Graph ')[1])
+        #                 #     remove_list.setdefault(key, [(int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1])
+        #         except:
+        #             pass
+
+        # for remove_key, value in remove_list.items():
+        #     if max(value) < 20:
+        #         for i in range(max(value), 21):
+        #             value.appned(i * 2 + 1 + int(remove_key.split('Graph ')) * 2)
+
+        columns_name = []
+        for idx, values in enumerate(df_kmon_set.columns):
+            for idx, value in enumerate(df_kmon_set[values]):
+                columns_name.append(value)
+
+        for i in range(1, len(list(df.columns))):
+            df = df.rename(columns={list(df.columns)[i]:columns_name[i - 1]})
+
+        for i in range(len(df.columns) - 1, 1, -1):
+            if math.isnan(df.columns[i]):
+                df = df.drop(df.columns[i], axis=1)
+                break
+
+        df = df.drop(df.columns[0], axis=1)
+
+        # del df_1
+        # del df_kmon_set
+        # del df_num
+        # gc.collect()
+
+        return df
 
 
 

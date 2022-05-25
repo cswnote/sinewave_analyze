@@ -1,5 +1,5 @@
 import os
-
+import pandas as pd
 import FILE_MANAGEMENT
 import TEK_CSV
 import GET_SUMMARY
@@ -69,12 +69,22 @@ if __name__ == '__main__':
         path_kmon = path_excel[:path_excel.find('excel')] + 'kmon_csv/'
         csv_list = os.listdir(path_kmon)
         csv_list = [file for file in csv_list if file[:10] == 'info_test_' and file.endswith('.csv')]
-        kmon_columns_name = ['Control', 'RF Volt Set Ch 1', 'RF Volt Set Ch 2', 'RF Volt Set Ch 3', 'RF Volt Set Ch 4',
-                             'RF Curr Set Ch 1', 'RF Curr Set Ch 2', 'RF Curr Set Ch 3', 'RF Curr Set Ch 4',
-                             'RF Volt Ch 1', 'RF Volt Ch 2', 'RF Volt Ch 3', 'RF Volt Ch 4',
-                             'RF Curr Ch 1', 'RF Volt Ch 2', 'RF Volt Ch 3', 'RF Volt Ch 4',
-                             'CP Pwm Ch 1', 'CP Pwm Ch 2', 'CP Pwm Ch 3', 'CP Pwm Ch 4',
-                             'Loop Time 0.1 us']
+        # kmon_columns_name = [['Control', 'RF Volt Set Ch 1', 'RF Volt Set Ch 2', 'RF Volt Set Ch 3', 'RF Volt Set Ch 4',
+        #                      'RF Curr Set Ch 1', 'RF Curr Set Ch 2', 'RF Curr Set Ch 3', 'RF Curr Set Ch 4',
+        #                      'CP Pwm Set Ch 1', 'CP Pwm Set Ch 2', 'CP Pwm Set Ch  3', 'CP Pwm Set Ch 4', 'RF Pwm Set'],
+        #                      ['RF Volt Ch 1', 'RF Volt Ch 2', 'RF Volt Ch 3', 'RF Volt Ch 4',
+        #                      'RF Curr Ch 1', 'RF Curr Ch 2', 'RF Curr Ch 3', 'RF Curr Ch 4',
+        #                      'CP Pwm Ch 1', 'CP Pwm Ch 2', 'CP Pwm Ch 3', 'CP Pwm Ch 4',
+        #                      'Loop Time 0.1 us']]
         merge_kmon = GET_SUMMARY.Get_Summary(csv_list, path_kmon)
-        ch_name = path_csv + 'ch_name.xlsx'
-        merge_kmon.combine_kmon_data(ch_name)
+        kmon_set_file = path_kmon + 'kmon_monitoring_set.xlsx'
+
+        df = merge_kmon.combine_kmon_data(kmon_set_file)
+
+        filename = 'kmon_all.xlsx'
+        if not os.path.exists(path_kmon + filename):
+            with pd.ExcelWriter(path_kmon + filename, mode='w', engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name='total')
+        else:
+            with pd.ExcelWriter(path_kmon + filename, mode='a', engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name='total')
