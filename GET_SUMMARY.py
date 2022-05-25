@@ -1,4 +1,3 @@
-
 import openpyxl
 import os
 import numpy as np
@@ -162,7 +161,7 @@ class Get_Summary():
                 if ws.cell(13, i).value == 'V' and not v_flag:
                     ws_fft = wb['FFT_' + ws.cell(21, i).value]
                     try:
-                        summary_ws.cell(idx + 2, file_space + 9).value = float(ws_fft['f1'].value / 1 0* *6)
+                        summary_ws.cell(idx + 2, file_space + 9).value = float(ws_fft['f1'].value / 10**6)
                     except:
                         summary_ws.cell(idx + 2, file_space + 9).value = ws_fft['f1'].value
                     summary_ws.cell(idx + 2, file_space + 10).value = ws_fft['f2'].value
@@ -174,7 +173,7 @@ class Get_Summary():
                 elif ws.cell(13, i).value == 'A' and not i_flag:
                     ws_fft = wb['FFT_' + ws.cell(21, i).value]
                     try:
-                        summary_ws.cell(idx + 2, file_space + 12).value = float(ws_fft['f1'].value / 1 0* *6)
+                        summary_ws.cell(idx + 2, file_space + 12).value = float(ws_fft['f1'].value / 10**6)
                     except:
                         summary_ws.cell(idx + 2, file_space + 12).value = ws_fft['f1'].value
                     summary_ws.cell(idx + 2, file_space + 13).value = ws_fft['f2'].value
@@ -322,7 +321,7 @@ class Get_Summary():
     #             mychart.Chart.Export(Filename=graph_folder + str(idx + 1) + ' - ' + graph + '.jpg')
     #         excel.Quit()
 
-    # summary_wb.save(path + idx + ' - ' + summary + '.xlsx')
+            # summary_wb.save(path + idx + ' - ' + summary + '.xlsx')
 
     def delete_by_df_column_value(self, new_sheet, data_items, df, sheet_name, filename, exclusive=True):
         if exclusive:
@@ -354,7 +353,7 @@ class Get_Summary():
                 else:
                     if not os.path.exists(self.path + filename):
                         with pd.ExcelWriter(self.path + filename, mode='w', engine='openpyxl') as writer:
-                            df_remain.to_excel(writer, sheet_name='total')
+                                            df_remain.to_excel(writer, sheet_name='total')
                     else:
                         with pd.ExcelWriter(self.path + filename, mode='a', engine='openpyxl') as writer:
                             df_remain.to_excel(writer, sheet_name=sheet_name)
@@ -557,6 +556,120 @@ class Get_Summary():
 
 
 if __name__ == '__main__':
+
+    def combine_kmon_data(self, set_file):
+        # df = pd.read_csv(self.path + self.excel_list[0])
+        df = 1
+        num = -1
+
+        info_test = {}
+        previous = -1
+        for idx, file in enumerate(self.excel_list):
+            file = file.split('.csv')[0]
+            if file.split('_')[2] != previous:
+                if file.split('_')[2] != 'all':
+                    info_test[file.split('_')[2]] = []
+                    info_test[file.split('_')[2]].append(file.split('_')[3])
+                previous = file.split('_')[2]
+            else:
+                info_test[file.split('_')[2]].append(file.split('_')[3])
+
+        # for idx, file in enumerate(self.excel_list):
+        #     if idx:
+        #         if num == file.split('_')[2].split('.')[0]:
+        #             df1 = pd.read_csv(self.path + file)
+        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
+        #         else:
+        #             df1 = pd.read_csv(self.path + file)
+        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
+        #             num = file.split('_')[2].split('.')[0]
+        #     else:
+        #         df = pd.read_csv(self.path + file)
+        #         num = file.split('_')[2].split('.')[0]
+
+        df_num = []
+        df = 0
+        for idx, key in enumerate(info_test):
+            previous = -1
+            if previous != key:
+                for i, value in enumerate(info_test[key]):
+                    if i:
+                        df_1 =pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
+                        df = pd.concat([df, df_1], ignore_index=True, axis=1)
+                    else:
+                        df = pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
+                df_num.append(df)
+
+        for i in range(len(df) - 1, -1, -1):
+            df.drop([df.index[i]], inplace=True)
+
+        for i in range(len(df_num)):
+            df = pd.concat([df, df_num[i]], ignore_index=True)
+
+        for i in range(len(df.columns) - 1, 0, -1):
+            if i % 2 == 0:
+                df.drop([df.columns[i]], axis=1, inplace=True)
+
+
+        # =======================
+        for i in range(len(df.columns) - 1, 0, -1):
+            if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
+                print('asdfasf')
+
+        df_kmon_set = pd.read_excel(set_file)
+
+        for i in range(len(df_kmon_set), 20):
+            df_kmon_set = df_kmon_set.append(pd.Series(name=i))
+
+
+        # df_kmon_set = df_kmon_set.to_dict()
+
+        # remove_list = {}
+        # for key, values in df_kmon_set.items():
+        #     for in_key, in_value in values.items():
+        #         try:
+        #             if math.isnan(in_value):
+        #                 # if key in remove_list:
+        #                 #     # remove_list[key].append(in_key)
+        #                 values[in_key] = (int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1
+        #
+        #                 # else:
+        #                 #     a = int(key.split('Graph ')[1])
+        #                 #     remove_list.setdefault(key, [(int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1])
+        #         except:
+        #             pass
+
+        # for remove_key, value in remove_list.items():
+        #     if max(value) < 20:
+        #         for i in range(max(value), 21):
+        #             value.appned(i * 2 + 1 + int(remove_key.split('Graph ')) * 2)
+
+        columns_name = []
+        for idx, values in enumerate(df_kmon_set.columns):
+            for idx, value in enumerate(df_kmon_set[values]):
+                columns_name.append(value)
+
+        for i in range(1, len(list(df.columns))):
+            df = df.rename(columns={list(df.columns)[i]:columns_name[i - 1]})
+
+        for i in range(len(df.columns) - 1, 1, -1):
+            if math.isnan(df.columns[i]):
+                df = df.drop(df.columns[i], axis=1)
+                break
+
+        df = df.drop(df.columns[0], axis=1)
+
+        # del df_1
+        # del df_kmon_set
+        # del df_num
+        # gc.collect()
+
+        return df
+
+
+
+
+if __name__=='__main__':
     # path = os.getcwd() + '\\test\\'
     path = 'D:/work/data_analyze/excel/'
     filename = 'summary.xlsx'
