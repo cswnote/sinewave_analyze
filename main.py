@@ -3,10 +3,14 @@ import pandas as pd
 import FILE_MANAGEMENT
 import TEK_CSV
 import GET_SUMMARY
+import platform
 # import name_change
 
 if __name__ == '__main__':
-    mac_m1 = False
+    if platform.platform()[:3].lower() == 'mac':
+        mac_m1 = True
+    elif platform.platform()[:3].lower() == 'win':
+        mac_m1 = False
 
     get_test_info = False
     csv_to_excel = False
