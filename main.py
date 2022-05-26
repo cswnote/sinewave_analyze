@@ -47,7 +47,7 @@ if __name__ == '__main__':
         path_csv = path + 'csv/auto mode test/'
         path_excel = path + 'excel/auto mode test/'
         path_summary = path + 'summary/'
-        path_information = path + 'test infomation/'
+        path_information = path + 'test information/'
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
