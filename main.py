@@ -37,7 +37,7 @@ if __name__ == '__main__':
     crop_fft_window = 5000
 
     if mac_m1:
-        path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/sample/'
+        path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
         path_csv = path + 'csv/'
         path_excel = path + 'excel/'
         path_summary = path + 'summary/'
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         path_kmon = path_excel[:path_excel.find('excel')] + 'kmon_csv/'
         csv_list = os.listdir(path_kmon)
         csv_list = [file for file in csv_list if file[:10] == 'info_test_' and file.endswith('.csv')]
+        csv_list.sort()
         # kmon_columns_name = [['Control', 'RF Volt Set Ch 1', 'RF Volt Set Ch 2', 'RF Volt Set Ch 3', 'RF Volt Set Ch 4',
         #                      'RF Curr Set Ch 1', 'RF Curr Set Ch 2', 'RF Curr Set Ch 3', 'RF Curr Set Ch 4',
         #                      'CP Pwm Set Ch 1', 'CP Pwm Set Ch 2', 'CP Pwm Set Ch  3', 'CP Pwm Set Ch 4', 'RF Pwm Set'],
