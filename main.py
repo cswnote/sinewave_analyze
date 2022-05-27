@@ -12,6 +12,8 @@ if __name__ == '__main__':
     elif platform.platform()[:3].lower() == 'win':
         mac_m1 = False
 
+    evaluation_control_file = 'eval_control.xlsx'
+
     get_test_info = False
     csv_to_excel = False
     # csv_to_excel = False
@@ -66,7 +68,7 @@ if __name__ == '__main__':
         excel_list = os.listdir(path_excel)
         excel_list = [file for file in excel_list if file[:3] == 'tek' and file.endswith('.xlsx')]
 
-        summary = GET_SUMMARY.Get_Summary(excel_list, path_excel)
+        summary = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
         summary.get_summary()
 
     if kmon_csv:
@@ -74,15 +76,10 @@ if __name__ == '__main__':
         csv_list = os.listdir(path_kmon)
         csv_list = [file for file in csv_list if file[:10] == 'info_test_' and file.endswith('.csv')]
         csv_list.sort()
-        # kmon_columns_name = [['Control', 'RF Volt Set Ch 1', 'RF Volt Set Ch 2', 'RF Volt Set Ch 3', 'RF Volt Set Ch 4',
-        #                      'RF Curr Set Ch 1', 'RF Curr Set Ch 2', 'RF Curr Set Ch 3', 'RF Curr Set Ch 4',
-        #                      'CP Pwm Set Ch 1', 'CP Pwm Set Ch 2', 'CP Pwm Set Ch  3', 'CP Pwm Set Ch 4', 'RF Pwm Set'],
-        #                      ['RF Volt Ch 1', 'RF Volt Ch 2', 'RF Volt Ch 3', 'RF Volt Ch 4',
-        #                      'RF Curr Ch 1', 'RF Curr Ch 2', 'RF Curr Ch 3', 'RF Curr Ch 4',
-        #                      'CP Pwm Ch 1', 'CP Pwm Ch 2', 'CP Pwm Ch 3', 'CP Pwm Ch 4',
-        #                      'Loop Time 0.1 us']]
-        merge_kmon = GET_SUMMARY.Get_Summary(csv_list, path_kmon)
-        kmon_set_file = path_kmon + 'kmon_monitoring_set.xlsx'
+
+        merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+
+        kmon_set_file = 'eval_control.xlsx'
 
         df = merge_kmon.combine_kmon_data(kmon_set_file)
 

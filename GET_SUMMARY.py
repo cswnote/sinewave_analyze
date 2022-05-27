@@ -10,15 +10,21 @@ import gc
 
 
 class Get_Summary():
-    def __init__(self, file_list, path):
+    def __init__(self, path, eval_file):
         super().__init__()
 
         self.path = path
-        self.excel_list = file_list
+        self.tek_excel_path = path + 'tek_excel/auto mode test/'
+        self.kmon_csv_path = path + 'kmon_csv/'
+        self.test_info_path = path + 'test information/'
+        self.eval_file = eval_file
 
     def get_summary(self):
-        excel_list = self.excel_list
-        path = self.path
+        path = self.tek_excel_path # excel path로 변경
+
+        excel_list = os.listdir(self.tek_excel_path)
+        excel_list = [file for file in excel_list if file[:3] == 'tek' and file.endswith('.xlsx')]
+        excel_list.sort()
 
         summary_wb = openpyxl.Workbook()
         summary_ws = summary_wb.active
@@ -351,13 +357,13 @@ class Get_Summary():
                     del data_items_delivery[list(data_items_delivery.keys())[0]]
                     self.delete_by_df_column_value(new_sheet, data_items_delivery, df_remain, sheet_name, filename)
                 else:
-                    if not os.path.exists(self.path + filename):
-                        with pd.ExcelWriter(self.path + filename, mode='w', engine='openpyxl') as writer:
+                    if not os.path.exists(self.tek_excel_path + filename): # excel.path로 변경
+                        with pd.ExcelWriter(self.tek_excel_path + filename, mode='w', engine='openpyxl') as writer:
                                             df_remain.to_excel(writer, sheet_name='total')
                     else:
-                        with pd.ExcelWriter(self.path + filename, mode='a', engine='openpyxl') as writer:
+                        with pd.ExcelWriter(self.tek_excel_path + filename, mode='a', engine='openpyxl') as writer:
                             df_remain.to_excel(writer, sheet_name=sheet_name)
-                    # df.to_excel(self.path + filename, sheet_name=sheet_name)
+                    # df.to_excel(self.tek_excel_path + filename, sheet_name=sheet_name)
                     print(sheet_name)
 
         return df
@@ -383,7 +389,7 @@ class Get_Summary():
 
 
     def draw_chart(self, filename, sheet_head):
-        wb = openpyxl.open(self.path + filename, read_only=False)
+        wb = openpyxl.open(self.tek_excel_path + filename, read_only=False)
         sheets = wb.sheetnames
         sheets = [sheet for sheet in sheets if sheet[:2] == sheet_head[0]]
 
@@ -444,17 +450,19 @@ class Get_Summary():
             chart1.width = 30
             chart1.height = 18
 
-        wb.save(self.path + filename)
+        wb.save(self.tek_excel_path + filename)
 
 
     def combine_kmon_data(self, set_file):
-        # df = pd.read_csv(self.path + self.excel_list[0])
         df = 1
         num = -1
+        file_list = os.listdir(self.kmon_csv_path)
+        file_list = [file for file in file_list if file[:10] == 'info_test_' and file.endswith('.csv')]
+        file_list.sort()
 
         info_test = {}
         previous = -1
-        for idx, file in enumerate(self.excel_list):
+        for idx, file in enumerate(file_list):
             file = file.split('.csv')[0]
             if file.split('_')[2] != previous:
                 if file.split('_')[2] != 'all':
@@ -464,17 +472,17 @@ class Get_Summary():
             else:
                 info_test[file.split('_')[2]].append(file.split('_')[3])
 
-        # for idx, file in enumerate(self.excel_list):
+        # for idx, file in enumerate(file_list):
         #     if idx:
         #         if num == file.split('_')[2].split('.')[0]:
-        #             df1 = pd.read_csv(self.path + file)
+        #             df1 = pd.read_csv(self.kmon_csv_path + file)
         #             df = pd.concat([df, df1], axis=1, ignore_index=True)
         #         else:
-        #             df1 = pd.read_csv(self.path + file)
+        #             df1 = pd.read_csv(self.kmon_csv_path + file)
         #             df = pd.concat([df, df1], axis=1, ignore_index=True)
         #             num = file.split('_')[2].split('.')[0]
         #     else:
-        #         df = pd.read_csv(self.path + file)
+        #         df = pd.read_csv(self.kmon_csv_path + file)
         #         num = file.split('_')[2].split('.')[0]
 
         df_num = []
@@ -484,10 +492,10 @@ class Get_Summary():
             if previous != key:
                 for i, value in enumerate(info_test[key]):
                     if i:
-                        df_1 =pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
+                        df_1 =pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
                         df = pd.concat([df, df_1], ignore_index=True, axis=1)
                     else:
-                        df = pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
+                        df = pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
                 df_num.append(df)
 
         for i in range(len(df) - 1, -1, -1):
@@ -505,7 +513,7 @@ class Get_Summary():
             if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
                 print('asdfasf')
 
-        df_kmon_set = pd.read_excel(set_file)
+        df_kmon_set = pd.read_excel(self.path + set_file, sheet_name='kmon monitoring set')
 
         for i in range(len(df_kmon_set), 20):
             df_kmon_set = df_kmon_set.append(pd.Series(name=i))
@@ -552,119 +560,66 @@ class Get_Summary():
         # del df_num
         # gc.collect()
 
-        return df
+        self.merge_kmon_and_summary(df)
 
 
-if __name__ == '__main__':
+    def merge_kmon_and_summary(self, df_kmon):
+        try:
+            df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='summary')
+        except:
+            print('something wrong: summary')
 
-    def combine_kmon_data(self, set_file):
-        # df = pd.read_csv(self.path + self.excel_list[0])
-        df = 1
-        num = -1
+        test_info_files = pd.read_excel(self.path + self.eval_file, sheet_name='info_test files')
+        test_info_files = test_info_files.iloc[:, 0].tolist()
+        evaluation_set = pd.read_excel(self.path + self.eval_file, sheet_name='evaluation set')
+        evaluation_set = evaluation_set.iloc[:, 0].tolist()
 
-        info_test = {}
-        previous = -1
-        for idx, file in enumerate(self.excel_list):
-            file = file.split('.csv')[0]
-            if file.split('_')[2] != previous:
-                if file.split('_')[2] != 'all':
-                    info_test[file.split('_')[2]] = []
-                    info_test[file.split('_')[2]].append(file.split('_')[3])
-                previous = file.split('_')[2]
-            else:
-                info_test[file.split('_')[2]].append(file.split('_')[3])
+        absent_list = []
+        control_value = {}
+        control_value_pre = {}
+        for control in evaluation_set:
+            control_value.setdefault(control)
+            control_value_pre.setdefault(control)
 
-        # for idx, file in enumerate(self.excel_list):
-        #     if idx:
-        #         if num == file.split('_')[2].split('.')[0]:
-        #             df1 = pd.read_csv(self.path + file)
-        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
-        #         else:
-        #             df1 = pd.read_csv(self.path + file)
-        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
-        #             num = file.split('_')[2].split('.')[0]
-        #     else:
-        #         df = pd.read_csv(self.path + file)
-        #         num = file.split('_')[2].split('.')[0]
-
-        df_num = []
-        df = 0
-        for idx, key in enumerate(info_test):
-            previous = -1
-            if previous != key:
-                for i, value in enumerate(info_test[key]):
-                    if i:
-                        df_1 =pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
-                        df = pd.concat([df, df_1], ignore_index=True, axis=1)
-                    else:
-                        df = pd.read_csv(self.path + 'info_test_' + key + '_' + value + '.csv')
-                df_num.append(df)
-
-        for i in range(len(df) - 1, -1, -1):
-            df.drop([df.index[i]], inplace=True)
-
-        for i in range(len(df_num)):
-            df = pd.concat([df, df_num[i]], ignore_index=True)
-
-        for i in range(len(df.columns) - 1, 0, -1):
-            if i % 2 == 0:
-                df.drop([df.columns[i]], axis=1, inplace=True)
+        measure_value = {}
+        for item in df_kmon.columns.tolist():
+            if not (item in evaluation_set):
+                measure_value.setdefault(item, [])
 
 
-        # =======================
-        for i in range(len(df.columns) - 1, 0, -1):
-            if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
-                print('asdfasf')
+        for idx, test_info_file in enumerate(test_info_files):
+            row = 0
+            try:
+                df_test_file = pd.read_excel(self.test_info_path + test_info_file + '.xlsx')
+            except:
+                print("can't find {}.".format(test_info_file))
 
-        df_kmon_set = pd.read_excel(set_file)
+            for i in range(df_test_file):
+                for item in evaluation_set:
+                    control_value[item] = df_test_file.at[1, item]
 
-        for i in range(len(df_kmon_set), 20):
-            df_kmon_set = df_kmon_set.append(pd.Series(name=i))
+                for j in range(row, len(df_kmon)):
+                    all_same = True
+                    for key, value in control_value.items():
+                        if df_kmon.at[row, key] != value:
+                            row += 1
+                            all_same = False
+                            break
+                    if all_same:
+                        same_test_condition = 0
+                        while all_same:
+                            for key, value in control_value.items():
+                                if df_kmon.at[row, key] == value:
+                                    same_test_condition += 1
+                                else:
+                                    break
 
 
-        # df_kmon_set = df_kmon_set.to_dict()
 
-        # remove_list = {}
-        # for key, values in df_kmon_set.items():
-        #     for in_key, in_value in values.items():
-        #         try:
-        #             if math.isnan(in_value):
-        #                 # if key in remove_list:
-        #                 #     # remove_list[key].append(in_key)
-        #                 values[in_key] = (int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1
-        #
-        #                 # else:
-        #                 #     a = int(key.split('Graph ')[1])
-        #                 #     remove_list.setdefault(key, [(int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1])
-        #         except:
-        #             pass
 
-        # for remove_key, value in remove_list.items():
-        #     if max(value) < 20:
-        #         for i in range(max(value), 21):
-        #             value.appned(i * 2 + 1 + int(remove_key.split('Graph ')) * 2)
+            print("==================")
 
-        columns_name = []
-        for idx, values in enumerate(df_kmon_set.columns):
-            for idx, value in enumerate(df_kmon_set[values]):
-                columns_name.append(value)
 
-        for i in range(1, len(list(df.columns))):
-            df = df.rename(columns={list(df.columns)[i]:columns_name[i - 1]})
-
-        for i in range(len(df.columns) - 1, 1, -1):
-            if math.isnan(df.columns[i]):
-                df = df.drop(df.columns[i], axis=1)
-                break
-
-        df = df.drop(df.columns[0], axis=1)
-
-        # del df_1
-        # del df_kmon_set
-        # del df_num
-        # gc.collect()
-
-        return df
 
 
 
