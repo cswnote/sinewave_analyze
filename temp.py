@@ -1,14 +1,23 @@
 import openpyxl
 import os
 
-path = 'D:/work/data_analyze/excel/'
-file = 'summary.xlsx'
+path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
+path_csv = path + 'csv/'
+path_excel = path + 'excel/'
+path_summary = path + 'summary/'
+path_information = path + 'test information/'
 
-wb = openpyxl.load_workbook(path + file)
-ws = wb.active
+file_list = os.listdir(path_information)
+file_list = [file for file in file_list if file[-5:] == '.xlsx']
+file_list.sort()
 
-sheets = wb.get_sheet_names()
+for file in file_list:
+    wb = openpyxl.load_workbook(path_information + file)
+    ws = wb.active
 
-name = ws.title
+    ws['ac1'].value = 'CP Pwm Set Ch 1'
+    ws['ad1'].value = 'CP Pwm Set Ch 2'
+    ws['ae1'].value = 'CP Pwm Set Ch 3'
+    ws['af1'].value = 'CP Pwm Set Ch 4'
 
-print(sheets)
+    wb.save(path_information + file)

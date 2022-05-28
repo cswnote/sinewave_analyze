@@ -50,6 +50,7 @@ if __name__ == '__main__':
         path_excel = path + 'excel/auto mode test/'
         path_summary = path + 'summary/'
         path_information = path + 'test information/'
+        path_kmon = path + 'kmon_csv/'
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:

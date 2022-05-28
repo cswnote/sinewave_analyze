@@ -14,7 +14,9 @@ class Get_Summary():
         super().__init__()
 
         self.path = path
-        self.tek_excel_path = path + 'tek_excel/auto mode test/'
+        # self.tek_excel_path = path + 'tek_excel/auto mode test/'
+        self.tek_csv = path + 'tek_csv/'
+        self.tek_excel_path = path + 'tek_excel/'
         self.kmon_csv_path = path + 'kmon_csv/'
         self.test_info_path = path + 'test information/'
         self.eval_file = eval_file
@@ -508,10 +510,10 @@ class Get_Summary():
             if i % 2 == 0:
                 df.drop([df.columns[i]], axis=1, inplace=True)
 
-        # =======================
-        for i in range(len(df.columns) - 1, 0, -1):
-            if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
-                print('asdfasf')
+        # # 왜 넣읐을까.. 삭제 대상
+        # for i in range(len(df.columns) - 1, 0, -1):
+        #     if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
+        #         print('asdfasf')
 
         df_kmon_set = pd.read_excel(self.path + set_file, sheet_name='kmon monitoring set')
 
@@ -555,10 +557,18 @@ class Get_Summary():
 
         df = df.drop(df.columns[0], axis=1)
 
-        # del df_1
-        # del df_kmon_set
-        # del df_num
-        # gc.collect()
+        del df_1
+        del df_kmon_set
+        del df_num
+        gc.collect()
+
+        # filename = 'kmon_all.xlsx'
+        # if not os.path.exists(self.kmon_csv_path + filename):  # excel.path로 변경
+        #     with pd.ExcelWriter(self.kmon_csv_path + filename, mode='w', engine='openpyxl') as writer:
+        #         df.to_excel(writer, sheet_name='total')
+        # else:
+        #     with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
+        #         df.to_excel(writer, sheet_name='all')
 
         self.merge_kmon_and_summary(df)
 
@@ -578,8 +588,12 @@ class Get_Summary():
         control_value = {}
         control_value_pre = {}
         for control in evaluation_set:
-            control_value.setdefault(control)
-            control_value_pre.setdefault(control)
+            if control[:-1] != 'CP Pwm Ch ':
+                control_value.setdefault(control)
+                control_value_pre.setdefault(control)
+            else:
+                control_value.setdefault('CP Pwm Set Ch ' + control[-1])
+                control_value_pre.setdefault('CP Pwm Set Ch ' + control[-1])
 
         measure_value = {}
         for item in df_kmon.columns.tolist():
@@ -594,27 +608,37 @@ class Get_Summary():
             except:
                 print("can't find {}.".format(test_info_file))
 
-            for i in range(df_test_file):
+            for i in range(len(df_test_file)):
                 for item in evaluation_set:
-                    control_value[item] = df_test_file.at[1, item]
+                    try:
+                        control_value[item] = df_test_file.at[i, item]
+                    except:
+                        print("테스트 파일에 있는 항목 {}과 제어내용이 서로 다릅니다.".format(item))
 
                 for j in range(row, len(df_kmon)):
-                    all_same = True
                     for key, value in control_value.items():
+                        all_same = True
+                        a = df_kmon.at[row, key]
+                        if row == 62:
+                            print('bla')
                         if df_kmon.at[row, key] != value:
                             row += 1
                             all_same = False
                             break
+                    same_test_condition = 0
                     if all_same:
-                        same_test_condition = 0
                         while all_same:
                             for key, value in control_value.items():
+                                print(key, value, df_kmon.at[row, key])
                                 if df_kmon.at[row, key] == value:
-                                    same_test_condition += 1
+                                    pass
                                 else:
+                                    all_same = False
                                     break
-
-
+                            same_test_condition += 1
+                            row += 1
+                            # break
+                    print(same_test_condition)
 
 
             print("==================")
