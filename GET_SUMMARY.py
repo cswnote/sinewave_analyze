@@ -605,8 +605,9 @@ class Get_Summary():
             row = 0
             try:
                 df_test_file = pd.read_excel(self.test_info_path + test_info_file + '.xlsx')
+                print("open test list:\t{}".format(test_info_file))
             except:
-                print("can't find {}.".format(test_info_file))
+                print("can't find test list {}.".format(test_info_file))
 
             for i in range(len(df_test_file)):
                 for item in evaluation_set:
@@ -615,12 +616,10 @@ class Get_Summary():
                     except:
                         print("테스트 파일에 있는 항목 {}과 제어내용이 서로 다릅니다.".format(item))
 
-                for j in range(row, len(df_kmon)):
+                while True:
                     for key, value in control_value.items():
                         all_same = True
                         a = df_kmon.at[row, key]
-                        if row == 62:
-                            print('bla')
                         if df_kmon.at[row, key] != value:
                             row += 1
                             all_same = False
@@ -629,19 +628,41 @@ class Get_Summary():
                     if all_same:
                         while all_same:
                             for key, value in control_value.items():
-                                print(key, value, df_kmon.at[row, key])
                                 if df_kmon.at[row, key] == value:
                                     pass
                                 else:
                                     all_same = False
                                     break
-                            same_test_condition += 1
-                            row += 1
-                            # break
-                    print(same_test_condition)
+                            if all_same:
+                                same_test_condition += 1
+                                row += 1
 
-
-            print("==================")
+                        for key, value in measure_value.items():
+                            temp = []
+                            for k in range(row - same_test_condition, row):
+                                temp.append(df_kmon.at[k, key])
+                            temp.remove(min(temp))
+                            standardization = np.std(temp)
+                            if standardization > 5:
+                                std = False
+                                while not std:
+                                    odd = True
+                                    if odd:
+                                        temp.remove(min(temp))
+                                        odd = False
+                                    else:
+                                        temp.remove(max(temp))
+                                        odd = True
+                                    standardization = np.std(temp)
+                                    if standardization < 5:
+                                        std = True
+                            try:
+                                measure_value[key].append(np.mean(temp))
+                            except:
+                                measure_value[key].append(np.nan)
+                                print("값들의 편차가 클 가능성이 높습니다. 확인 필요합니다. {}:\t{}".format(test_info_file, key))
+                        break
+        print("==================")
 
 
 
