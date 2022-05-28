@@ -44,6 +44,7 @@ if __name__ == '__main__':
         path_excel = path + 'excel/'
         path_summary = path + 'summary/'
         path_information = path + 'test infomation/'
+        path_kmon = path + 'kmon_csv'
     else:
         path = 'D:/winston/OneDrive - (주)필드큐어/data_analyze/'
         path_csv = path + 'csv/auto mode test/'
@@ -80,9 +81,11 @@ if __name__ == '__main__':
 
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
 
-        kmon_set_file = 'eval_control.xlsx'
+        test_files = pd.read_excel(path + evaluation_control_file, sheet_name='info_test files')
+        test_files = test_files[test_files.columns[0]]
 
-        df = merge_kmon.combine_kmon_data(kmon_set_file)
+        df = merge_kmon.combine_kmon_data(test_files)
+        merge_kmon.merge_kmon_and_summary(df, test_files)
 
         filename = 'kmon_all.xlsx'
         if not os.path.exists(path_kmon + filename):

@@ -21,6 +21,8 @@ class Get_Summary():
         self.test_info_path = path + 'test information/'
         self.eval_file = eval_file
 
+        self.measure_value = {}
+
     def get_summary(self):
         path = self.tek_excel_path # excel path로 변경
 
@@ -455,24 +457,40 @@ class Get_Summary():
         wb.save(self.tek_excel_path + filename)
 
 
-    def combine_kmon_data(self, set_file):
+    def combine_kmon_data(self, files):
         df = 1
         num = -1
-        file_list = os.listdir(self.kmon_csv_path)
-        file_list = [file for file in file_list if file[:10] == 'info_test_' and file.endswith('.csv')]
-        file_list.sort()
-
         info_test = {}
         previous = -1
-        for idx, file in enumerate(file_list):
-            file = file.split('.csv')[0]
-            if file.split('_')[2] != previous:
-                if file.split('_')[2] != 'all':
-                    info_test[file.split('_')[2]] = []
-                    info_test[file.split('_')[2]].append(file.split('_')[3])
-                previous = file.split('_')[2]
-            else:
-                info_test[file.split('_')[2]].append(file.split('_')[3])
+
+        test_files = files
+
+        files = os.listdir(self.kmon_csv_path)
+        files.sort()
+
+        for test_file in test_files:
+            count = 0
+            for file in files:
+                file = file.split('.csv')[0]
+                if test_file in file:
+                    if info_test.get(test_file.split('_')[2]):
+                        info_test[test_file.split('_')[2]].append(file.split('_')[3])
+                    else:
+                        info_test.setdefault(test_file.split('_')[2], [file.split('_')[3]])
+
+
+        # files = os.listdir(self.kmon_csv_path)
+        # files.sort()
+        # files = [file for file in files if file[-4:] == '.csv' and file[:10] == 'info_test_']
+        # for file in files:
+        #     file = file.split('.csv')[0]
+        #     if file.split('_')[2] != previous:
+        #         if file.split('_')[2] != 'all':
+        #             info_test[file.split('_')[2]] = []
+        #             info_test[file.split('_')[2]].append(file.split('_')[3])
+        #         previous = file.split('_')[2]
+        #     else:
+        #         info_test[file.split('_')[2]].append(file.split('_')[3])
 
         # for idx, file in enumerate(file_list):
         #     if idx:
@@ -498,7 +516,7 @@ class Get_Summary():
                         df = pd.concat([df, df_1], ignore_index=True, axis=1)
                     else:
                         df = pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
-                df_num.append(df)
+                df_num.append(df.copy())
 
         for i in range(len(df) - 1, -1, -1):
             df.drop([df.index[i]], inplace=True)
@@ -515,32 +533,10 @@ class Get_Summary():
         #     if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
         #         print('asdfasf')
 
-        df_kmon_set = pd.read_excel(self.path + set_file, sheet_name='kmon monitoring set')
+        df_kmon_set = pd.read_excel(self.path + self.eval_file, sheet_name='kmon monitoring set')
 
         for i in range(len(df_kmon_set), 20):
             df_kmon_set = df_kmon_set.append(pd.Series(name=i))
-
-        # df_kmon_set = df_kmon_set.to_dict()
-
-        # remove_list = {}
-        # for key, values in df_kmon_set.items():
-        #     for in_key, in_value in values.items():
-        #         try:
-        #             if math.isnan(in_value):
-        #                 # if key in remove_list:
-        #                 #     # remove_list[key].append(in_key)
-        #                 values[in_key] = (int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1
-        #
-        #                 # else:
-        #                 #     a = int(key.split('Graph ')[1])
-        #                 #     remove_list.setdefault(key, [(int(key.split('Graph ')[1]) - 1) * 20 + in_key * 2 + 1])
-        #         except:
-        #             pass
-
-        # for remove_key, value in remove_list.items():
-        #     if max(value) < 20:
-        #         for i in range(max(value), 21):
-        #             value.appned(i * 2 + 1 + int(remove_key.split('Graph ')) * 2)
 
         columns_name = []
         for idx, values in enumerate(df_kmon_set.columns):
@@ -562,18 +558,10 @@ class Get_Summary():
         del df_num
         gc.collect()
 
-        # filename = 'kmon_all.xlsx'
-        # if not os.path.exists(self.kmon_csv_path + filename):  # excel.path로 변경
-        #     with pd.ExcelWriter(self.kmon_csv_path + filename, mode='w', engine='openpyxl') as writer:
-        #         df.to_excel(writer, sheet_name='total')
-        # else:
-        #     with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
-        #         df.to_excel(writer, sheet_name='all')
-
-        self.merge_kmon_and_summary(df)
+        return df
 
 
-    def merge_kmon_and_summary(self, df_kmon):
+    def merge_kmon_and_summary(self, df_kmon, test_files):
         try:
             df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='summary')
         except:
@@ -598,11 +586,12 @@ class Get_Summary():
         measure_value = {}
         for item in df_kmon.columns.tolist():
             if not (item in evaluation_set):
+                measure_value.setdefault('filename', [])
                 measure_value.setdefault(item, [])
+                self.measure_value.setdefault(item, [])
 
-
+        row = 0
         for idx, test_info_file in enumerate(test_info_files):
-            row = 0
             try:
                 df_test_file = pd.read_excel(self.test_info_path + test_info_file + '.xlsx')
                 print("open test list:\t{}".format(test_info_file))
@@ -610,6 +599,7 @@ class Get_Summary():
                 print("can't find test list {}.".format(test_info_file))
 
             for i in range(len(df_test_file)):
+                print('tesmp')
                 for item in evaluation_set:
                     try:
                         control_value[item] = df_test_file.at[i, item]
@@ -618,12 +608,17 @@ class Get_Summary():
 
                 while True:
                     for key, value in control_value.items():
-                        all_same = True
-                        a = df_kmon.at[row, key]
-                        if df_kmon.at[row, key] != value:
-                            row += 1
-                            all_same = False
-                            break
+                        if key != 'filename':
+                            all_same = True
+                            if df_kmon.at[row, key] != value:
+                                if row == len(df_kmon) - 1:
+                                    all_same = False
+                                    break
+                                row += 1
+                                all_same = False
+                                break
+                    if row == len(df_kmon) - 1:
+                        break
                     same_test_condition = 0
                     if all_same:
                         while all_same:
@@ -634,6 +629,9 @@ class Get_Summary():
                                     all_same = False
                                     break
                             if all_same:
+                                if row == len(df_kmon) - 1:
+                                    same_test_condition += 1
+                                    break
                                 same_test_condition += 1
                                 row += 1
 
@@ -662,6 +660,11 @@ class Get_Summary():
                                 measure_value[key].append(np.nan)
                                 print("값들의 편차가 클 가능성이 높습니다. 확인 필요합니다. {}:\t{}".format(test_info_file, key))
                         break
+                if row == len(df_kmon) - 1:
+                    break
+
+        for key, value in self.measure_value.items():
+            self.measure_value[key].extend(measure_value[key])
         print("==================")
 
 
