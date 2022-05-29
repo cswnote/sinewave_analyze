@@ -16,7 +16,7 @@ class Get_Summary():
         self.path = path
         # self.tek_excel_path = path + 'tek_excel/auto mode test/'
         self.tek_csv = path + 'tek_csv/'
-        self.tek_excel_path = path + 'tek_excel/'
+        self.tek_excel_path = path + 'tek_excel/auto mode test/'
         self.kmon_csv_path = path + 'kmon_csv/'
         self.test_info_path = path + 'test information/'
         self.eval_file = eval_file
@@ -374,8 +374,11 @@ class Get_Summary():
         return df
 
 
-    def get_seperated_data(self, items, summary, path):
-        df_summary = pd.read_excel(path + summary, sheet_name='summary')
+    def get_seperated_data(self, sheet, file):
+        items = pd.read_excel(self.path + self.eval_file, sheet_name='seperate summary')
+        items = items.iloc[:, 0].tolist()
+
+        df_summary = pd.read_excel(self.path + summary, sheet_name='summary')
         data_items = {}
 
         for item in items:

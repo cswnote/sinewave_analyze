@@ -47,8 +47,8 @@ if __name__ == '__main__':
         path_kmon = path + 'kmon_csv'
     else:
         path = 'D:/winston/OneDrive - (주)필드큐어/data_analyze/'
-        path_csv = path + 'csv/auto mode test/'
-        path_excel = path + 'excel/auto mode test/'
+        path_csv = path + 'tek_csv/auto mode test/'
+        path_excel = path + 'tek_excel/auto mode test/'
         path_summary = path + 'summary/'
         path_information = path + 'test information/'
         path_kmon = path + 'kmon_csv/'
@@ -74,18 +74,21 @@ if __name__ == '__main__':
         summary.get_summary()
 
     if kmon_csv:
-        path_kmon = path_excel[:path_excel.find('excel')] + 'kmon_csv/'
+        path_kmon = path_excel[:path_excel.find('tek_excel')] + 'kmon_csv/'
         csv_list = os.listdir(path_kmon)
         csv_list = [file for file in csv_list if file[:10] == 'info_test_' and file.endswith('.csv')]
         csv_list.sort()
 
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
 
-        test_files = pd.read_excel(path + evaluation_control_file, sheet_name='info_test files')
-        test_files = test_files.iloc[:, 0].tolist()
-
-        for file in test_files:
-            df = merge_kmon.combine_kmon_data(file)
-            merge_kmon.check_kmon_and_testfile(df, file)
-
-        merge_kmon.merge_kmon_and_summary()
+        # test_files = pd.read_excel(path + evaluation_control_file, sheet_name='info_test files')
+        # test_files = test_files.iloc[:, 0].tolist()
+        #
+        # for file in test_files:
+        #     df = merge_kmon.combine_kmon_data(file)
+        #     merge_kmon.check_kmon_and_testfile(df, file)
+        #
+        # merge_kmon.merge_kmon_and_summary()
+        filename = 'summary.xlsx'
+        sheetname = 'with kmon'
+        merge_kmon.get_seperated_data(sheetname, filename)
