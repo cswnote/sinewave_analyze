@@ -22,6 +22,7 @@ class Get_Summary():
         self.eval_file = eval_file
 
         self.measure_value = {}
+        self.lost_files = []
 
     def get_summary(self):
         path = self.tek_excel_path # excel path로 변경
@@ -586,7 +587,7 @@ class Get_Summary():
         measure_value = {}
         for item in df_kmon.columns.tolist():
             if not (item in evaluation_set):
-                measure_value.setdefault('filename', [])
+                # measure_value.setdefault('filename', [])
                 measure_value.setdefault(item, [])
                 self.measure_value.setdefault(item, [])
 
@@ -598,30 +599,36 @@ class Get_Summary():
             except:
                 print("can't find test list {}.".format(test_info_file))
 
+            filenames = []
+
             for i in range(len(df_test_file)):
-                print('tesmp')
                 for item in evaluation_set:
                     try:
                         control_value[item] = df_test_file.at[i, item]
                     except:
-                        print("테스트 파일에 있는 항목 {}과 제어내용이 서로 다릅니다.".format(item))
+                        print("테스트 파일에 있는 항목 {}과 제어내용이 동일하지 않습니다.".format(item))
 
                 while True:
                     for key, value in control_value.items():
                         if key != 'filename':
                             all_same = True
                             if df_kmon.at[row, key] != value:
-                                if row == len(df_kmon) - 1:
-                                    all_same = False
-                                    break
-                                row += 1
                                 all_same = False
-                                break
-                    if row == len(df_kmon) - 1:
+                                if row != len(df_kmon) - 1:
+                                    row += 1
+                                    print(row)
+                                    break
+                                else:
+                                    print(row)
+                                    break
+
+                    if not all_same and row == len(df_kmon) - 1:
                         break
-                    same_test_condition = 0
+
                     if all_same:
-                        while all_same:
+                        row += 1
+                        same_test_condition = 1
+                        while all_same and row != len(df_kmon):
                             for key, value in control_value.items():
                                 if df_kmon.at[row, key] == value:
                                     pass
@@ -629,11 +636,10 @@ class Get_Summary():
                                     all_same = False
                                     break
                             if all_same:
-                                if row == len(df_kmon) - 1:
-                                    same_test_condition += 1
-                                    break
                                 same_test_condition += 1
                                 row += 1
+                                if row == len(df_kmon):
+                                    break
 
                         for key, value in measure_value.items():
                             temp = []
@@ -659,12 +665,26 @@ class Get_Summary():
                             except:
                                 measure_value[key].append(np.nan)
                                 print("값들의 편차가 클 가능성이 높습니다. 확인 필요합니다. {}:\t{}".format(test_info_file, key))
+                        print(i, df_test_file.at[i, 'filename'])
+                        if df_test_file.at[i, 'filename'] == 'tek1124':
+                            print('------')
+                        filenames.append(df_test_file.at[i, df_test_file.columns[0]])
                         break
                 if row == len(df_kmon) - 1:
                     break
 
-        for key, value in self.measure_value.items():
-            self.measure_value[key].extend(measure_value[key])
+            if 'filename' in self.measure_value:
+                self.measure_value['filename'].extend[filenames]
+            else:
+                self.measure_value.setdefault('filename', filenames)
+
+            for key, value in self.measure_value.items():
+                if key != 'filename':
+                    self.measure_value[key].extend(measure_value[key])
+
+            for i in range(len(df_test_file['filename'])):
+                if not (df_test_file.at[i, 'filename'] in filenames):
+                    self.lost_files.append(df_test_file.at[i, 'filename'])
         print("==================")
 
 
