@@ -21,7 +21,7 @@ class Get_Summary():
         self.test_info_path = path + 'test information/'
         self.eval_file = eval_file
 
-        self.measure_value = {}
+        self.measure_value = {'filename': []}
         self.lost_files = []
 
     def get_summary(self):
@@ -458,53 +458,26 @@ class Get_Summary():
         wb.save(self.tek_excel_path + filename)
 
 
-    def combine_kmon_data(self, files):
+    def combine_kmon_data(self, file):
         df = 1
         num = -1
         info_test = {}
         previous = -1
 
-        test_files = files
+        kmon_file = file
 
         files = os.listdir(self.kmon_csv_path)
         files.sort()
 
-        for test_file in test_files:
-            count = 0
-            for file in files:
-                file = file.split('.csv')[0]
-                if test_file in file:
-                    if info_test.get(test_file.split('_')[2]):
-                        info_test[test_file.split('_')[2]].append(file.split('_')[3])
-                    else:
-                        info_test.setdefault(test_file.split('_')[2], [file.split('_')[3]])
+        files = [file for file in files if file[-4:] == '.csv']
 
-
-        # files = os.listdir(self.kmon_csv_path)
-        # files.sort()
-        # files = [file for file in files if file[-4:] == '.csv' and file[:10] == 'info_test_']
-        # for file in files:
-        #     file = file.split('.csv')[0]
-        #     if file.split('_')[2] != previous:
-        #         if file.split('_')[2] != 'all':
-        #             info_test[file.split('_')[2]] = []
-        #             info_test[file.split('_')[2]].append(file.split('_')[3])
-        #         previous = file.split('_')[2]
-        #     else:
-        #         info_test[file.split('_')[2]].append(file.split('_')[3])
-
-        # for idx, file in enumerate(file_list):
-        #     if idx:
-        #         if num == file.split('_')[2].split('.')[0]:
-        #             df1 = pd.read_csv(self.kmon_csv_path + file)
-        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
-        #         else:
-        #             df1 = pd.read_csv(self.kmon_csv_path + file)
-        #             df = pd.concat([df, df1], axis=1, ignore_index=True)
-        #             num = file.split('_')[2].split('.')[0]
-        #     else:
-        #         df = pd.read_csv(self.kmon_csv_path + file)
-        #         num = file.split('_')[2].split('.')[0]
+        for file in files:
+            file = file.split('.csv')[0]
+            if kmon_file in file:
+                if info_test.get(kmon_file.split('_')[2]):
+                    info_test[kmon_file.split('_')[2]].append(file.split('_')[3])
+                else:
+                    info_test.setdefault(kmon_file.split('_')[2], [file.split('_')[3]])
 
         df_num = []
         df = 0
@@ -513,14 +486,18 @@ class Get_Summary():
             if previous != key:
                 for i, value in enumerate(info_test[key]):
                     if i:
-                        df_1 =pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
+                        df_1 = pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
                         df = pd.concat([df, df_1], ignore_index=True, axis=1)
                     else:
                         df = pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
                 df_num.append(df.copy())
 
-        for i in range(len(df) - 1, -1, -1):
-            df.drop([df.index[i]], inplace=True)
+        df = pd.DataFrame()
+        for i in range(len(df_num[0].columns)):
+            df[i] = np.nan
+
+        # for i in range(len(df) - 1, -1, -1):
+        #     df.drop([df.index[i]], inplace=True)
 
         for i in range(len(df_num)):
             df = pd.concat([df, df_num[i]], ignore_index=True)
@@ -559,15 +536,21 @@ class Get_Summary():
         del df_num
         gc.collect()
 
+        filename = kmon_file + '.xlsx'
+        try:
+            if not os.path.exists(self.kmon_csv_path + filename):
+                with pd.ExcelWriter(self.kmon_csv_path + filename, mode='w', engine='openpyxl') as writer:
+                    df.to_excel(writer)
+            else:
+                with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
+                    df.to_excel(writer)
+        except:
+            print('can not save kmon excel file')
+
         return df
 
 
-    def merge_kmon_and_summary(self, df_kmon, test_files):
-        try:
-            df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='summary')
-        except:
-            print('something wrong: summary')
-
+    def check_kmon_and_testfile(self, df_kmon, test_file):
         test_info_files = pd.read_excel(self.path + self.eval_file, sheet_name='info_test files')
         test_info_files = test_info_files.iloc[:, 0].tolist()
         evaluation_set = pd.read_excel(self.path + self.eval_file, sheet_name='evaluation set')
@@ -584,108 +567,139 @@ class Get_Summary():
                 control_value.setdefault('CP Pwm Set Ch ' + control[-1])
                 control_value_pre.setdefault('CP Pwm Set Ch ' + control[-1])
 
-        measure_value = {}
+        add_item = ['deviation']     # # kmon 수집 항목에서 추가 계하여 넣을 항목들
+        measure_value = {}        # # kmon 수집항목 중 필요한 것만 사용하기 위함
+        measure_item = []
         for item in df_kmon.columns.tolist():
             if not (item in evaluation_set):
-                # measure_value.setdefault('filename', [])
+                measure_item.append(item)
                 measure_value.setdefault(item, [])
+                for add in add_item:
+                    measure_value.setdefault(item + ' ' + add, [])
                 self.measure_value.setdefault(item, [])
+                for add in add_item:
+                    self.measure_value.setdefault(item + ' ' + add, [])
 
         row = 0
-        for idx, test_info_file in enumerate(test_info_files):
-            try:
-                df_test_file = pd.read_excel(self.test_info_path + test_info_file + '.xlsx')
-                print("open test list:\t{}".format(test_info_file))
-            except:
-                print("can't find test list {}.".format(test_info_file))
+        try:
+            df_test_file = pd.read_excel(self.test_info_path + test_file + '.xlsx')
+            print("open test list:\t{}".format(test_file))
+        except:
+            print("can't find test list {}.".format(test_file))
 
-            filenames = []
+        # # # kmon 수집 항목 초기화
+        # for key in measure_value.keys():
+        #     measure_value[key] = []
 
-            for i in range(len(df_test_file)):
-                for item in evaluation_set:
-                    try:
-                        control_value[item] = df_test_file.at[i, item]
-                    except:
-                        print("테스트 파일에 있는 항목 {}과 제어내용이 동일하지 않습니다.".format(item))
+        filenames = []
 
-                while True:
-                    for key, value in control_value.items():
-                        if key != 'filename':
-                            all_same = True
-                            if df_kmon.at[row, key] != value:
-                                all_same = False
-                                if row != len(df_kmon) - 1:
-                                    row += 1
-                                    print(row)
-                                    break
-                                else:
-                                    print(row)
-                                    break
+        for i in range(len(df_test_file)):
+            for item in evaluation_set:
+                try:
+                    control_value[item] = df_test_file.at[i, item]
+                except:
+                    print("테스트 파일에 있는 항목 {}과 제어내용이 동일하지 않습니다.".format(item))
 
-                    if not all_same and row == len(df_kmon) - 1:
-                        break
-
-                    if all_same:
-                        row += 1
-                        same_test_condition = 1
-                        while all_same and row != len(df_kmon):
-                            for key, value in control_value.items():
-                                if df_kmon.at[row, key] == value:
-                                    pass
-                                else:
-                                    all_same = False
-                                    break
-                            if all_same:
-                                same_test_condition += 1
+            while True:
+                for key, value in control_value.items():
+                    if key != 'filename':
+                        all_same = True
+                        if df_kmon.at[row, key] != value:
+                            all_same = False
+                            if row != len(df_kmon) - 1:
                                 row += 1
-                                if row == len(df_kmon):
-                                    break
+                                break
+                            else:
+                                break
 
-                        for key, value in measure_value.items():
-                            temp = []
-                            for k in range(row - same_test_condition, row):
-                                temp.append(df_kmon.at[k, key])
-                            temp.remove(min(temp))
-                            standardization = np.std(temp)
-                            if standardization > 5:
-                                std = False
-                                while not std:
-                                    odd = True
-                                    if odd:
-                                        temp.remove(min(temp))
-                                        odd = False
-                                    else:
-                                        temp.remove(max(temp))
-                                        odd = True
-                                    standardization = np.std(temp)
-                                    if standardization < 5:
-                                        std = True
-                            try:
-                                measure_value[key].append(np.mean(temp))
-                            except:
-                                measure_value[key].append(np.nan)
-                                print("값들의 편차가 클 가능성이 높습니다. 확인 필요합니다. {}:\t{}".format(test_info_file, key))
-                        print(i, df_test_file.at[i, 'filename'])
-                        if df_test_file.at[i, 'filename'] == 'tek1124':
-                            print('------')
-                        filenames.append(df_test_file.at[i, df_test_file.columns[0]])
-                        break
-                if row == len(df_kmon) - 1:
+                if not all_same and row == len(df_kmon) - 1:
                     break
 
-            if 'filename' in self.measure_value:
-                self.measure_value['filename'].extend[filenames]
-            else:
-                self.measure_value.setdefault('filename', filenames)
+                if all_same:
+                    row += 1
+                    same_test_condition = 1
+                    while all_same and row != len(df_kmon):
+                        for key, value in control_value.items():
+                            if df_kmon.at[row, key] == value:
+                                pass
+                            else:
+                                all_same = False
+                                break
+                        if all_same:
+                            same_test_condition += 1
+                            row += 1
+                            if row == len(df_kmon):
+                                break
 
-            for key, value in self.measure_value.items():
-                if key != 'filename':
-                    self.measure_value[key].extend(measure_value[key])
+                    for key in measure_item:
+                        temp = []
+                        for k in range(row - same_test_condition, row):
+                            temp.append(df_kmon.at[k, key])
+                        temp.pop(0)
+                        standardization = np.std(temp)
 
-            for i in range(len(df_test_file['filename'])):
-                if not (df_test_file.at[i, 'filename'] in filenames):
-                    self.lost_files.append(df_test_file.at[i, 'filename'])
-        print("==================")
+                        for j in add_item:
+                            measure_value[key + ' ' + j].append(standardization)
+
+                        # if standardization > 5:
+                        #     std = False
+                        #     while not std:
+                        #         odd = True
+                        #         if odd:
+                        #             temp.remove(min(temp))
+                        #             odd = False
+                        #         else:
+                        #             temp.remove(max(temp))
+                        #             odd = True
+                        #         standardization = np.std(temp)
+                        #         if standardization < 5:
+                        #             std = True
+                        try:
+                            measure_value[key].append(np.mean(temp))
+                        except:
+                            measure_value[key].append(np.nan)
+                            print("값들의 편차가 클 가능성이 높습니다. 확인 필요합니다. {}:\t{}".format(test_file, key))
+                    filenames.append(df_test_file.at[i, df_test_file.columns[0]])
+                    break
+
+            if row == len(df_kmon) - 1:
+                break
+
+        self.measure_value['filename'].extend(filenames)
+
+        for key, value in self.measure_value.items():
+            if key != 'filename':
+                self.measure_value[key].extend(measure_value[key])
+
+        for i in range(len(df_test_file['filename'])):
+            if not (df_test_file.at[i, 'filename'] in filenames):
+                self.lost_files.append(df_test_file.at[i, 'filename'])
+
+    def merge_kmon_and_summary(self):
+        try:
+            df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='summary')
+        except:
+            print('something wrong: summary')
+
+        for key in self.measure_value.keys():
+            if key != 'filename':
+                df_summary[key] = np.nan
+
+        row_sum = 0
+        for i in range(len(self.measure_value['filename'])):
+            for j in range(len(df_summary)):
+                if self.measure_value['filename'][i] == df_summary.at[j, 'filename']:
+                    for key in self.measure_value.keys():
+                        df_summary.at[j, key] = self.measure_value[key][i]
+                    break
+
+        filename = 'summary.xlsx'
+        if not os.path.exists(self.tek_excel_path + filename):
+            with pd.ExcelWriter(self.tek_excel_path + filename, mode='w', engine='openpyxl') as writer:
+                df_summary.to_excel(writer, sheet_name='with kmon')
+        else:
+            with pd.ExcelWriter(self.tek_excel_path + filename, mode='a', engine='openpyxl') as writer:
+                df_summary.to_excel(writer, sheet_name='with kmon')
 
 
 

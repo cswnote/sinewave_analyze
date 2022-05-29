@@ -82,15 +82,10 @@ if __name__ == '__main__':
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
 
         test_files = pd.read_excel(path + evaluation_control_file, sheet_name='info_test files')
-        test_files = test_files[test_files.columns[0]]
+        test_files = test_files.iloc[:, 0].tolist()
 
-        df = merge_kmon.combine_kmon_data(test_files)
-        merge_kmon.merge_kmon_and_summary(df, test_files)
+        for file in test_files:
+            df = merge_kmon.combine_kmon_data(file)
+            merge_kmon.check_kmon_and_testfile(df, file)
 
-        filename = 'kmon_all.xlsx'
-        if not os.path.exists(path_kmon + filename):
-            with pd.ExcelWriter(path_kmon + filename, mode='w', engine='openpyxl') as writer:
-                df.to_excel(writer, sheet_name='total')
-        else:
-            with pd.ExcelWriter(path_kmon + filename, mode='a', engine='openpyxl') as writer:
-                df.to_excel(writer, sheet_name='total')
+        merge_kmon.merge_kmon_and_summary()
