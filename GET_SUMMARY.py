@@ -117,7 +117,7 @@ class Get_Summary():
                     item = ch
                 else:
                     item = ohm
-                if fields[i].lopwer() == 'pwm':
+                if fields[i].lower() == 'pwm':
                     # # 확인 필요
                     summary_ws.cell(idx + 2, item + i + 1).value = int(excel_file.split('.xlsx')[0].split(' ')[item + i].split(fields[i])[-1])
                 else:
