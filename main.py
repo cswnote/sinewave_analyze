@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     # csv_to_excel = False
     # add_info_file = True
     add_info_file = False
@@ -30,7 +30,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
         graph_FFT = True
-    change_file_name = True
+    change_file_name = False
     get_summary = True
     if get_summary:
         get_by_option = False
@@ -48,14 +48,14 @@ if __name__ == '__main__':
     else:
         path = 'D:/winston/OneDrive - (주)필드큐어/data_analyze/'
         path_csv = path + 'tek_csv/'
-        path_excel = path + 'tek_excel/temp/'
+        path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
         path_information = path + 'test information/'
         path_kmon = path + 'kmon_csv/'
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
-        tek = TEK_CSV.tekCsv(path=path, excel_path=path_excel, time_window_type='ratio', time_window=1,
+        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=1,
                              fft_window_type='ratio', fft_window=1)
         tek.csv_to_excel(graph_time, graph_FFT)
         print('end csv_to_excel')
