@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # csv_to_excel = False
     # add_info_file = True
     add_info_file = False
-    kmon_csv = True
+    kmon_csv = False
 
     if csv_to_excel:
         fft = True
@@ -87,8 +87,9 @@ if __name__ == '__main__':
         # for file in test_files:
         #     df = merge_kmon.combine_kmon_data(file)
         #     merge_kmon.check_kmon_and_testfile(df, file)
-        #
+
         # merge_kmon.merge_kmon_and_summary()
+
         filename = 'summary.xlsx'
         sheetname = 'with kmon'
-        merge_kmon.get_seperated_data(sheetname, filename)
+        merge_kmon.get_seperated_data_2(sheetname, filename)

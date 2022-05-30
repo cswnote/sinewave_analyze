@@ -378,7 +378,7 @@ class Get_Summary():
         items = pd.read_excel(self.path + self.eval_file, sheet_name='seperate summary')
         items = items.iloc[:, 0].tolist()
 
-        df_summary = pd.read_excel(self.path + summary, sheet_name='summary')
+        df_summary = pd.read_excel(self.tek_excel_path + file, sheet_name=sheet)
         data_items = {}
 
         for item in items:
@@ -393,7 +393,7 @@ class Get_Summary():
             if item[0] == 'pwm':
                 item[0] = 'PWM'
             sheet_clean = items[0].upper()
-            self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, filename)
+            self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, file)
 
 
     def draw_chart(self, filename, sheet_head):
@@ -699,13 +699,17 @@ class Get_Summary():
         filename = 'summary.xlsx'
         if not os.path.exists(self.tek_excel_path + filename):
             with pd.ExcelWriter(self.tek_excel_path + filename, mode='w', engine='openpyxl') as writer:
-                df_summary.to_excel(writer, sheet_name='with kmon')
+                df_summary.to_excel(writer, sheet_name='with kmon', index=False)
         else:
             with pd.ExcelWriter(self.tek_excel_path + filename, mode='a', engine='openpyxl') as writer:
-                df_summary.to_excel(writer, sheet_name='with kmon')
+                df_summary.to_excel(writer, sheet_name='with kmon', index=False)
 
 
-
+    def merge_kmon_and_summary_2(self):
+        try:
+            df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='summary')
+        except:
+            print('something wrong: summary')
 
 
 
