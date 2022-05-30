@@ -353,8 +353,8 @@ class Get_Summary():
                     else:
                         sheet_name = sheet_name + ' ' + str(i) + 'ohm'
                 elif list(data_items.keys())[0].lower() == 'ch':
-                    if 'ch' in sheet_name:
-                        sheet_name = sheet_name[:sheet_name.find('ch')] + str(i)
+                    if 'Ch' in sheet_name:
+                        sheet_name = sheet_name[:sheet_name.find('Ch')] + str(i)
                     else:
                         sheet_name = sheet_name + ' ' + str(i)
                 else:
