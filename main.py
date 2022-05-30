@@ -32,7 +32,7 @@ if __name__ == '__main__':
         graph_FFT = True
     change_file_name = False
 
-    get_summary = False
+    get_summary = True
     kmon_csv = False
     if get_summary:
         get_by_option = False
@@ -97,6 +97,6 @@ if __name__ == '__main__':
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 
-    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    merge_kmon.get_seperated_data()
+    # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    # merge_kmon.get_seperated_data()
 

@@ -375,10 +375,10 @@ class Get_Summary():
                 else:
                     if not os.path.exists(self.tek_excel_path + filename): # excel.path로 변경
                         with pd.ExcelWriter(self.tek_excel_path + filename, mode='w', engine='openpyxl') as writer:
-                                            df_remain.to_excel(writer, sheet_name='total')
+                                            df_remain.to_excel(writer, sheet_name='total', index=False)
                     else:
                         with pd.ExcelWriter(self.tek_excel_path + filename, mode='a', engine='openpyxl') as writer:
-                            df_remain.to_excel(writer, sheet_name=sheet_name)
+                            df_remain.to_excel(writer, sheet_name=sheet_name, index=False)
                     # df.to_excel(self.tek_excel_path + filename, sheet_name=sheet_name)
                     print(sheet_name)
 
