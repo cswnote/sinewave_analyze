@@ -30,7 +30,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
         graph_FFT = True
-    change_file_name = False
+    change_file_name = True
     get_summary = False
     if get_summary:
         get_by_option = True
@@ -40,10 +40,10 @@ if __name__ == '__main__':
 
     if mac_m1:
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
-        path_csv = path + 'csv/'
-        path_excel = path + 'excel/'
+        path_csv = path + 'tek_csv/'
+        path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
-        path_information = path + 'test infomation/'
+        path_information = path + 'test information/'
         path_kmon = path + 'kmon_csv'
     else:
         path = 'D:/winston/OneDrive - (주)필드큐어/data_analyze/'
@@ -60,6 +60,11 @@ if __name__ == '__main__':
                              fft_window=5000, fft_window_type='crop')
         tek.csv_to_excel(graph_time, graph_FFT)
         print('end csv_to_excel')
+
+    if change_file_name:
+        tek = TEK_CSV.tekCsv(path=path, eval_fila=evaluation_control_file)
+        sheet = 'file name'
+        tek.file_name_change(sheet)
 
     if add_info_file:
         tek.add_info_file(path_information)

@@ -15,8 +15,11 @@ import FILE_MANAGEMENT
 
 class tekCsv():
     def __init__(self, **kwargs):
-        self.csv_path = kwargs.get('csv_path', 'd:/csv to excel graph/')
-        self.excel_path = kwargs.get('excel_path', 'd:/csv to excel graph/')
+        self.path = kwargs.get('path', 'd:/')
+        self.csv_path = kwargs.get('csv_path', self.path + 'tek_csv/')
+        self.excel_path = kwargs.get('excel_path', self.path + 'tek_excel/')
+        self.test_info_path = kwargs.get('info_path', self.path + 'test information/')
+        self.kmon_csv_path = kwargs.get('kmon_path', self.path + 'kmon_csv/')
         self.time_graph = kwargs.get('graph_time', True)
         self.fft_graph = kwargs.get('graph_FFT', True)
         self.filter_factor = kwargs.get('filter_factor', 0.2)
@@ -28,6 +31,7 @@ class tekCsv():
         self.fft_window_type = kwargs.get('time_window_type', 'crop')
         self.FFT = kwargs.get('FFT', True)
 
+        self.eval_file = kwargs.get('eval_fila', 'eval_file.xlsx')
 
         self.record_length = 0
 
@@ -767,6 +771,54 @@ class tekCsv():
 
             wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
             wb.close()
+
+
+    def file_name_change(self, sheet):
+        path = self.path
+        df_name = pd.read_excel(self.path + self.eval_file, sheet_name=sheet)
+
+        info_files = df_name.iloc[:, 0].tolist()
+        # info_files = [file for file in info_files if file[:10] == 'info_test_' and not('all' in file)]
+        test_files = os.listdir(self.excel_path)
+        test_files = [file for file in test_files if file.endswith('xlsx') and file[:3] == 'tek']
+        test_files.sort()
+
+        for i in range(len(df_name)):
+            df_test_info = pd.read_excel(self.test_info_path + df_name.at[i, 'filename'] + '.xlsx')
+            start = int(df_test_info.at[0, 'filename'][3:])
+            end = int(df_test_info.at[len(df_test_info) - 1, 'filename'][3:])
+            for file in test_files:
+                if start <= int(file.split('.')[0][3:]) <= end:
+                    extension = file.split('.')[1]
+                    file = file.split('.')[0]
+                    scr = self.excel_path + file + '.' + extension
+
+                    idx = df_test_info.index[df_test_info['filename'] == file].tolist()[0]
+
+                    for j in range(1, len(df_name.columns)):
+                        if 'field' in df_name.columns[j]:
+                            if type(df_name.at[i, df_name.columns[j]]) is str:
+                                column = df_name.at[i, df_name.columns[j]]
+                                # file = file + ' ' + str(column) + ' ' + str(df_test_info.at[idx, column])
+                                file = file + ' ' + str(column).split(' ')[1] + \
+                                       str(df_test_info.at[idx, column + ' ' + df_name.at[j, 'channel']])
+                            elif type(df_name.at[i, df_name.columns[j]]) is float:
+                                if not math.isnan(df_name.at[i, df_name.columns[j]]):
+                                    column = str(df_name.at[i, df_name.columns[j]])
+                                    # file = file + ' ' + str(column) + ' ' + str(df_test_info.at[idx, column])
+                                    file = file + ' ' + str(column).split(' ')[1] + \
+                                           str(df_test_info.at[idx, column + ' ' + df_name.at[j, 'channel']])
+
+                        else:
+                            if 'ohm' == df_name.columns[j].lower():
+                                file = file + ' ' + (str(df_name.at[i, df_name.columns[j]]) + 'ohm').replace(' ', '')
+                            else:
+                                file = file + ' ' + str(df_name.at[i, df_name.columns[j]]).replace(' ', '')
+                            # file = file + str(df_name.iat[i, j]) # 위와 동일
+
+                    dst = self.excel_path + file + '.' + extension
+                    os.rename(scr, dst)
+
 
 
 
