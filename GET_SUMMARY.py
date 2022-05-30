@@ -110,13 +110,18 @@ class Get_Summary():
             summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0].split(' ')[0]
             summary_ws.cell(idx + 2, 2).value = excel_file.split('.xlsx')[0].split(' ')[1]
             summary_ws.cell(idx + 2, ch).value = excel_file.split('.xlsx')[0].split(' ')[ch - 1]
-            summary_ws.cell(idx + 2, ohm).value = excel_file.split('.xlsx')[0].split(' ')[ohm - 1]
+            # # 확인 필요
+            summary_ws.cell(idx + 2, ohm).value = excel_file.split('.xlsx')[0].split(' ')[ohm - 1][:-3]
             for i in range(len(fields)):
                 if ch > ohm:
                     item = ch
                 else:
                     item = ohm
-                summary_ws.cell(idx + 2, item + i + 1).value = excel_file.split('.xlsx')[0].split(' ')[item + i]
+                if fields[i].lopwer() == 'pwm':
+                    # # 확인 필요
+                    summary_ws.cell(idx + 2, item + i + 1).value = int(excel_file.split('.xlsx')[0].split(' ')[item + i].split(fields[i])[-1])
+                else:
+                    summary_ws.cell(idx + 2, item + i + 1).value = excel_file.split('.xlsx')[0].split(' ')[item + i]
 
 
                 # if i == file_space - 2:
@@ -341,7 +346,7 @@ class Get_Summary():
                     if 'PWM' in sheet_name:
                         sheet_name = sheet_name[:sheet_name.find('PWM')] + 'PWM_' + '{0:04d}'.format(i)
                     else:
-                        sheet_name = sheet_name + ' ' + 'PWM_' +  '{0:04d}'.format(i)
+                        sheet_name = sheet_name + ' ' + 'PWM_' + '{0:04d}'.format(int(i))
                 elif list(data_items.keys())[0].lower() == 'ohm':
                     if 'ohm' in sheet_name:
                         sheet_name = sheet_name[:sheet_name.find('ohm') - 6] + ' ' + str(i) + 'ohm'
@@ -352,6 +357,12 @@ class Get_Summary():
                         sheet_name = sheet_name[:sheet_name.find('ch')] + str(i)
                     else:
                         sheet_name = str(i)
+                elif list(data_items.keys())[0].lower() == 'board':
+                    if 'Board' in sheet_name:
+                        sheet_name = sheet_name[:sheet_name.find('Board')] + str(i)
+                    else:
+                        sheet_name = str(i)
+
 
                 sheet_name = sheet_name.lstrip()
 
@@ -374,26 +385,34 @@ class Get_Summary():
         return df
 
 
-    def get_seperated_data(self, sheet, file):
+    def get_seperated_data(self):
         items = pd.read_excel(self.path + self.eval_file, sheet_name='seperate summary')
         items = items.iloc[:, 0].tolist()
 
-        df_summary = pd.read_excel(self.tek_excel_path + file, sheet_name=sheet)
+        df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='with kmon')
         data_items = {}
 
         for item in items:
             if item.lower() != 'and' and item.lower() != 'or':
-                if item == 'pwm':
-                    item = item.upper()
-                label = df_summary[item].unique()
-                data_items[item] = list(label)
+                if item.lower() == 'pwm':
+                    item = 'Pwm'
+                elif item.lower() == 'board':
+                    item = 'Board'
+                elif item.lower() == 'ohm':
+                    item = 'ohm'
+
+                label = list(df_summary[item].unique())
+                label.sort()
+                data_items.setdefault(item, label)
+
+
 
         if items[-1].lower() == 'and':
             sheet_name = ''
-            if item[0] == 'pwm':
-                item[0] = 'PWM'
+            if 'Pwm' in item:
+                item[item.index('Pwm')] = 'PWM'
             sheet_clean = items[0].upper()
-            self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, file)
+            self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, 'summary.xlsx')
 
 
     def draw_chart(self, filename, sheet_head):
@@ -678,6 +697,7 @@ class Get_Summary():
             if not (df_test_file.at[i, 'filename'] in filenames):
                 self.lost_files.append(df_test_file.at[i, 'filename'])
 
+
     def merge_kmon_and_summary(self):
         try:
             df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='summary')
@@ -705,11 +725,7 @@ class Get_Summary():
                 df_summary.to_excel(writer, sheet_name='with kmon', index=False)
 
 
-    def merge_kmon_and_summary_2(self):
-        try:
-            df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='summary')
-        except:
-            print('something wrong: summary')
+
 
 
 

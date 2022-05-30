@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     # csv_to_excel = False
     # add_info_file = True
     add_info_file = False
@@ -87,15 +87,13 @@ if __name__ == '__main__':
 
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
 
-        # test_files = pd.read_excel(path + evaluation_control_file, sheet_name='info_test files')
-        # test_files = test_files.iloc[:, 0].tolist()
-        #
-        # for file in test_files:
-        #     df = merge_kmon.combine_kmon_data(file)
-        #     merge_kmon.check_kmon_and_testfile(df, file)
+        test_files = pd.read_excel(path + evaluation_control_file, sheet_name='file name')
+        test_files = test_files.iloc[:, 0].tolist()
 
-        # merge_kmon.merge_kmon_and_summary()
+        for file in test_files:
+            df = merge_kmon.combine_kmon_data(file)
+            merge_kmon.check_kmon_and_testfile(df, file)
 
-        filename = 'summary.xlsx'
-        sheetname = 'with kmon'
-        merge_kmon.get_seperated_data_2(sheetname, filename)
+    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    merge_kmon.get_seperated_data()
+

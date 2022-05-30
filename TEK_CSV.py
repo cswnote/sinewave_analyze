@@ -758,7 +758,7 @@ class tekCsv():
                         #     if not math.isnan(ws_fft.cell(k, 1).value):
                         #         fft_data_length = k - 1
 
-                        fft_data_length = 5000
+                        fft_data_length = 500
 
                         if self.fft_graph:
                             if self.fft_window_type == 'crop':

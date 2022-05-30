@@ -8,10 +8,14 @@ path_summary = path + 'summary/'
 path_information = path + 'test information/'
 path_kmon = path + 'kmon_csv/'
 
-files = os.listdir(path_excel)
-files = [file for file in files if file[:3] == 'tek']
+files = os.listdir(path_information)
+files = [file for file in files if file[:10] == 'info_test_']
 
 for file in files:
-    scr = path_excel + file
-    dst = path_excel + file.split(' ')[0] + '.xlsx'
-    os.rename(scr, dst)
+    wb = openpyxl.load_workbook(path_information + file)
+    ws = wb.active
+    if ws.cell(1, 20).value == 'Control':
+        ws.cell(1, 20).value = 'Usr Control'
+    print(ws.cell(1, 20).value)
+
+    wb.save(path_information + file)
