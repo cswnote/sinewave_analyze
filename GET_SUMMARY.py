@@ -111,7 +111,7 @@ class Get_Summary():
             summary_ws.cell(idx + 2, 2).value = excel_file.split('.xlsx')[0].split(' ')[1]
             summary_ws.cell(idx + 2, ch).value = excel_file.split('.xlsx')[0].split(' ')[ch - 1]
             # # 확인 필요
-            summary_ws.cell(idx + 2, ohm).value = excel_file.split('.xlsx')[0].split(' ')[ohm - 1][:-3]
+            summary_ws.cell(idx + 2, ohm).value = (excel_file.split('.xlsx')[0].split(' ')[ohm - 1][:-3])
             for i in range(len(fields)):
                 if ch > ohm:
                     item = ch
@@ -356,12 +356,12 @@ class Get_Summary():
                     if 'ch' in sheet_name:
                         sheet_name = sheet_name[:sheet_name.find('ch')] + str(i)
                     else:
-                        sheet_name = str(i)
-                elif list(data_items.keys())[0].lower() == 'board':
-                    if 'Board' in sheet_name:
-                        sheet_name = sheet_name[:sheet_name.find('Board')] + str(i)
+                        sheet_name = sheet_name + ' ' + str(i)
+                else:
+                    if i in sheet_name:
+                        sheet_name = sheet_name[:i]
                     else:
-                        sheet_name = str(i)
+                        sheet_name = i
 
 
                 sheet_name = sheet_name.lstrip()
@@ -409,9 +409,12 @@ class Get_Summary():
 
         if items[-1].lower() == 'and':
             sheet_name = ''
-            if 'Pwm' in item:
-                item[item.index('Pwm')] = 'PWM'
-            sheet_clean = items[0].upper()
+            if 'Pwm' in items:
+                items[items.index('Pwm')] = 'PWM'
+            if items[0].lower() != 'board':
+                sheet_clean = items[0].upper()
+            else:
+                sheet_clean = ''
             self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, 'summary.xlsx')
 
 
@@ -620,6 +623,8 @@ class Get_Summary():
                 try:
                     control_value[item] = df_test_file.at[i, item]
                 except:
+                    print(item)
+
                     print("테스트 파일에 있는 항목 {}과 제어내용이 동일하지 않습니다.".format(item))
 
             while True:
@@ -708,7 +713,6 @@ class Get_Summary():
             if key != 'filename':
                 df_summary[key] = np.nan
 
-        row_sum = 0
         for i in range(len(self.measure_value['filename'])):
             for j in range(len(df_summary)):
                 if self.measure_value['filename'][i] == df_summary.at[j, 'filename']:

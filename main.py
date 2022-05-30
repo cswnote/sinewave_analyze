@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # csv_to_excel = False
     # add_info_file = True
     add_info_file = False
-    kmon_csv = True
+
 
     if csv_to_excel:
         fft = True
@@ -31,7 +31,9 @@ if __name__ == '__main__':
         get_period = False
         graph_FFT = True
     change_file_name = False
-    get_summary = True
+
+    get_summary = False
+    kmon_csv = False
     if get_summary:
         get_by_option = False
 
@@ -93,7 +95,8 @@ if __name__ == '__main__':
         for file in test_files:
             df = merge_kmon.combine_kmon_data(file)
             merge_kmon.check_kmon_and_testfile(df, file)
+        merge_kmon.merge_kmon_and_summary()
 
-    # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    # merge_kmon.get_seperated_data()
+    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    merge_kmon.get_seperated_data()
 
