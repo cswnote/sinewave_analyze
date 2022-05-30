@@ -24,7 +24,7 @@ class tekCsv():
         self.fft_graph = kwargs.get('graph_FFT', True)
         self.filter_factor = kwargs.get('filter_factor', 0.2)
         self.lpf = kwargs.get('LPF', False)
-        self.fft = kwargs.get('FFT', False)
+        self.fft = kwargs.get('FFT', True)
         self.time_window_size = kwargs.get('time_window', 10000)
         self.time_window_type = kwargs.get('time_window_type', 'crop')
         self.fft_window_size = kwargs.get('fft_window', 5000)
@@ -173,7 +173,10 @@ class tekCsv():
 
 
     def draw_chart(self, worksheet, **kwargs):
-        # print('in process: draw_chart')
+        # # crop_chart_window 또는 crop_chart_ratio 중 하나만 받아야 함
+        # # 'crop_chart_window'의 경우 앞 데이터 crop_chart_window 개수만 그래프 그림
+        # # 'crop_chart_ratio'의 경우 '전체 데이터 수/crop_chart_ratio'의 개수만 그래프
+        # # 둘다 입력 받을 경우 'crop_chart_window' 우선
 
         ws = worksheet
         domain = kwargs.get('domain', 'time')
@@ -654,31 +657,31 @@ class tekCsv():
             print(df[df[i]])
 
 
-    def add_info_file(self, path):
-        file_list = self.get_filetype_list('xlsx', path)
+    def combine_infofiles(self):
+        file_list = self.get_filetype_list('xlsx', self.test_info_path)
         file_list.sort()
         file_list = [file for file in file_list if file[:10] == 'info_test_']
 
         if 'info_test_all.xlsx' in file_list:
-            df = pd.read_excel(path + 'info_test_all.xlsx')
+            df = pd.read_excel(self.test_info_path + 'info_test_all.xlsx')
             file_list.remove('info_test_all.xlsx')
         else:
-            if len(file_list):
+            if not len(file_list):
                 print('''this directory has not none 'info_test' file''')
                 return
             else:
-                df = pd.read_excel(path + file_list[0])
+                df = pd.read_excel(self.test_info_path + file_list[0])
                 file_list.remove(file_list[0])
 
         try:
             for idx, file in enumerate(file_list):
-                df_add = pd.read_excel(path + file)
+                df_add = pd.read_excel(self.test_info_path + file)
                 df = pd.concat([df, df_add], ignore_index=True)
         except:
             print('fail to merge info data')
 
         df.set_index(keys=df.columns[0], drop=True, inplace=True)
-        df.to_excel(path + 'info_test_all.xlsx', index_label=df.columns[0])
+        df.to_excel(self.test_info_path + 'info_test_all.xlsx', index_label=df.columns[0])
 
         print('end add_info_file')
 
@@ -774,7 +777,6 @@ class tekCsv():
 
 
     def file_name_change(self, sheet):
-        path = self.path
         df_name = pd.read_excel(self.path + self.eval_file, sheet_name=sheet)
 
         info_files = df_name.iloc[:, 0].tolist()
@@ -788,9 +790,9 @@ class tekCsv():
             start = int(df_test_info.at[0, 'filename'][3:])
             end = int(df_test_info.at[len(df_test_info) - 1, 'filename'][3:])
             for file in test_files:
-                if start <= int(file.split('.')[0][3:]) <= end:
+                if start <= int(file.split(' ')[0][3:].split('.')[0]) <= end:
                     extension = file.split('.')[1]
-                    file = file.split('.')[0]
+                    file = file.split('.')[0].split(' ')[0]
                     scr = self.excel_path + file + '.' + extension
 
                     idx = df_test_info.index[df_test_info['filename'] == file].tolist()[0]
@@ -799,15 +801,22 @@ class tekCsv():
                         if 'field' in df_name.columns[j]:
                             if type(df_name.at[i, df_name.columns[j]]) is str:
                                 column = df_name.at[i, df_name.columns[j]]
-                                # file = file + ' ' + str(column) + ' ' + str(df_test_info.at[idx, column])
-                                file = file + ' ' + str(column).split(' ')[1] + \
-                                       str(df_test_info.at[idx, column + ' ' + df_name.at[j, 'channel']])
+                                if len(column.split(' ')) >= 2:
+                                    if column.lower() == 'pwm':
+                                        column = 'CP Pwm Set'
+                                        file = file + ' ' + str(column).split(' ')[1] + str(
+                                            df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
+                                else:
+                                    if column.lower() == 'pwm':
+                                        column = 'CP Pwm Set'
+                                        file = file + ' ' + str(column).split(' ')[1] + str(
+                                            df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
                             elif type(df_name.at[i, df_name.columns[j]]) is float:
                                 if not math.isnan(df_name.at[i, df_name.columns[j]]):
                                     column = str(df_name.at[i, df_name.columns[j]])
                                     # file = file + ' ' + str(column) + ' ' + str(df_test_info.at[idx, column])
                                     file = file + ' ' + str(column).split(' ')[1] + \
-                                           str(df_test_info.at[idx, column + ' ' + df_name.at[j, 'channel']])
+                                           str(df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
 
                         else:
                             if 'ohm' == df_name.columns[j].lower():

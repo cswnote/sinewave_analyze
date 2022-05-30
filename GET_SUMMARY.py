@@ -16,7 +16,7 @@ class Get_Summary():
         self.path = path
         # self.tek_excel_path = path + 'tek_excel/auto mode test/'
         self.tek_csv_path = path + 'tek_csv/'
-        self.tek_excel_path = path + 'tek_excel/auto mode test/'
+        self.tek_excel_path = path + 'tek_excel/'
         self.kmon_csv_path = path + 'kmon_csv/'
         self.test_info_path = path + 'test information/'
         self.eval_file = eval_file
