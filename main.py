@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     # csv_to_excel = False
     # add_info_file = True
     add_info_file = False
@@ -32,8 +32,8 @@ if __name__ == '__main__':
         graph_FFT = True
     change_file_name = False
 
-    get_summary = False
-    kmon_csv = False
+    get_summary = True
+    kmon_csv = True
     if get_summary:
         get_by_option = False
 
@@ -57,8 +57,8 @@ if __name__ == '__main__':
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
-        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=1,
-                             fft_window_type='ratio', fft_window=1)
+        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=10,
+                             fft_window_type='ratio', fft_window=10)
         tek.csv_to_excel(graph_time, graph_FFT)
         print('end csv_to_excel')
 
@@ -68,8 +68,8 @@ if __name__ == '__main__':
         tek.file_name_change(sheet)
 
     if add_info_file:
-        tek = TEK_CSV.tekCsv(path=path, time_window=10000, time_window_type='crop',
-                             fft_window=1, fft_window_type='ratio', fft_window_size=1)
+        tek = TEK_CSV.tekCsv(path=path, time_window_type='crop', time_window=10000,
+                             fft_window=1, fft_window_type='crop', fft_window_size=1000)
         tek.combine_infofiles()
 
     # # name변경 함수 수정할 것

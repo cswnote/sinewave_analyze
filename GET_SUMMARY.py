@@ -62,12 +62,26 @@ class Get_Summary():
                 ws = wb[excel_file.split('.')[0]]
             # summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0]
 
-            file_space = len(excel_file.split('.xlsx')[0].split(' '))
+            # file_space = len(excel_file[:excel_file.index('Ch') + 3].split(' '))
+            file_space = 7
 
             summary_name = False
             if not summary_name:
                 summary_ws['a1'].value = 'filename'
                 summary_ws['b1'].value = 'Board'
+                summary_ws.cell(1, 3).value = 'ohm'
+                summary_ws.cell(1, 4).value = 'Ch'
+                summary_ws.cell(1, 5).value = 'PWM'
+                summary_ws.cell(1, 6).value = 'Volt'
+                summary_ws.cell(1, 7).value = 'Curr'
+
+                ohm = 3
+                ch = 4
+                PWM = 5
+                Volt = 6
+                Curr = 7
+                fields = ['ohm', 'ch', 'PWM', 'Volt', 'Curr']
+
                 summary_ws.cell(1, file_space + 1).value = 'V Frequency[MHz]'
                 summary_ws.cell(1, file_space + 2).value = 'Delay(degree)'
                 summary_ws.cell(1, file_space + 3).value = 'Ave. RP Coff'
@@ -83,19 +97,22 @@ class Get_Summary():
                 summary_ws.cell(1, file_space + 13).value = 'FFT I rms[mA]'
                 summary_ws.cell(1, file_space + 14).value = 'FFT I dc abs[mA]'
 
-                fields = []
-                for i, name in enumerate(excel_file.split('.xlsx')[0].split(' ')):
-                    if i > 1:
-                        if name[:2].lower() == 'ch':
-                            summary_ws.cell(1, i + 1).value = 'ch'
-                            ch = i + 1
-                        elif name[-3:].lower() == 'ohm':
-                            summary_ws.cell(1, i + 1).value = 'ohm'
-                            ohm = i + 1
-                        else:
-                            temp = re.findall('[0-9]+', name)
-                            summary_ws.cell(1, i + 1).value = name[:-len(temp[0])]
-                            fields.append(name[:-len(temp[0])])
+
+                # for i, name in enumerate(excel_file[:excel_file.index('Ch') + 3].split(' ')):
+                #     if i > 1:
+                #         if name[:2].lower() == 'ch':
+                #             summary_ws.cell(1, i + 1).value = 'ch'
+                #             ch = i + 1
+                #         elif name[-3:].lower() == 'ohm':
+                #             summary_ws.cell(1, i + 1).value = 'ohm'
+                #             ohm = i + 1
+                #         else:
+                #             temp = re.findall('[0-9]+', name)
+                #             summary_ws.cell(1, i + 1).value = name[:-len(temp[0])]
+                #             fields.append(name[:-len(temp[0])])
+
+
+
 
                 summary_name = True
 
@@ -109,19 +126,37 @@ class Get_Summary():
 
             summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0].split(' ')[0]
             summary_ws.cell(idx + 2, 2).value = excel_file.split('.xlsx')[0].split(' ')[1]
-            summary_ws.cell(idx + 2, ch).value = excel_file.split('.xlsx')[0].split(' ')[ch - 1]
-            # # 확인 필요
-            summary_ws.cell(idx + 2, ohm).value = (excel_file.split('.xlsx')[0].split(' ')[ohm - 1][:-3])
-            for i in range(len(fields)):
-                if ch > ohm:
-                    item = ch
-                else:
-                    item = ohm
-                if fields[i].lower() == 'pwm':
-                    # # 확인 필요
-                    summary_ws.cell(idx + 2, item + i + 1).value = int(excel_file.split('.xlsx')[0].split(' ')[item + i].split(fields[i])[-1])
-                else:
-                    summary_ws.cell(idx + 2, item + i + 1).value = excel_file.split('.xlsx')[0].split(' ')[item + i]
+
+            summary_ws.cell(idx + 2, ohm).value = excel_file.split('ohm')[0].split(' ')[-1]
+            summary_ws.cell(idx + 2, ch).value = 'Ch' + str(excel_file.split('Ch')[1].split(' ')[0])
+            try:
+                summary_ws.cell(idx + 2, PWM).value = excel_file.split('.xlsx')[0].split('Pwm')[1].split(' ')[0]
+            except:
+                summary_ws.cell(idx + 2, PWM).value = '-'
+            try:
+                summary_ws.cell(idx + 2, Volt).value = excel_file.split('.xlsx')[0].split('Volt')[1].split(' ')[0]
+            except:
+                summary_ws.cell(idx + 2, Volt).value = '-'
+            try:
+                summary_ws.cell(idx + 2, Curr).value = excel_file.split('.xlsx')[0].split('Curr')[1].split(' ')[0]
+            except:
+                summary_ws.cell(idx + 2, Curr).value = '-'
+
+
+
+            # summary_ws.cell(idx + 2, ch).value = excel_file.split('.xlsx')[0].split(' ')[ch - 1]
+            # if 'ohm' in excel_file:
+            #     summary_ws.cell(idx + 2, ohm).value =
+            # for i in range(len(fields)):
+            #     if ch > ohm:
+            #         item = ch
+            #     else:
+            #         item = ohm
+            #     if fields[i].lower() == 'pwm':
+            #         # # 확인 필요
+            #         summary_ws.cell(idx + 2, item + i + 1).value = int(excel_file.split('.xlsx')[0].split(' ')[item + i].split(fields[i])[-1])
+            #     else:
+            #         summary_ws.cell(idx + 2, item + i + 1).value = excel_file.split('.xlsx')[0].split(' ')[item + i]
 
 
                 # if i == file_space - 2:
@@ -349,7 +384,7 @@ class Get_Summary():
             for i in data_items[list(data_items.keys())[0]]:
                 if list(data_items.keys())[0].lower() == 'pwm':
                     if 'PWM' in sheet_name:
-                        sheet_name = sheet_name[:sheet_name.find('PWM')] + 'PWM_' + '{0:04d}'.format(i)
+                        sheet_name = sheet_name[:sheet_name.find('PWM')] + 'PWM_' + '{0:04d}'.format(int(i))
                     else:
                         sheet_name = sheet_name + ' ' + 'PWM_' + '{0:04d}'.format(int(i))
                 elif list(data_items.keys())[0].lower() == 'ohm':
@@ -405,13 +440,17 @@ class Get_Summary():
         for item in items:
             if item.lower() != 'and' and item.lower() != 'or':
                 if item.lower() == 'pwm':
-                    item = 'Pwm'
+                    item = 'PWM'
                 elif item.lower() == 'board':
                     item = 'Board'
                 elif item.lower() == 'ohm':
                     item = 'ohm'
+                elif item.lower() == 'ch':
+                    item = 'Ch'
 
                 label = list(df_summary[item].unique())
+                if '-' in label:
+                    label.remove('-')
                 label.sort()
                 data_items.setdefault(item, label)
 

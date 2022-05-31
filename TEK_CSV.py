@@ -278,6 +278,11 @@ class tekCsv():
             chart1.height = 18
 
         elif domain == 'frequency':
+            for i in range(500002, 0, -1):
+                if type(ws.cell(i, 1).value) is not None:
+                    num_of_data_len = i - 1
+                    break
+
             if crop_chart_ratio != sys.maxsize and crop_chart_window == sys.maxsize:
                 num_of_data_len = int(num_of_data_len / crop_chart_ratio)
             elif crop_chart_ratio == sys.maxsize and crop_chart_window != sys.maxsize:
@@ -291,8 +296,8 @@ class tekCsv():
             chart1.x_axis.title = "frequency"
 
             data1 = openpyxl.chart.Reference(ws, min_col=3, max_col=3, min_row=1,
-                                             max_row=num_of_data_len + 21)
-            cats = openpyxl.chart.Reference(ws, min_col=1, min_row=2, max_row=num_of_data_len + 21)  # 축 설정
+                                             max_row=num_of_data_len)
+            cats = openpyxl.chart.Reference(ws, min_col=1, min_row=2, max_row=num_of_data_len)  # 축 설정
 
             chart1.add_data(data1, titles_from_data=True)
             chart1.set_categories(cats)
@@ -749,24 +754,11 @@ class tekCsv():
                             ws_fft.cell(j + 2, 2, value='= complex(' + str(amplitude[j].real) + ', ' + str(amplitude[j].imag) + ', "j")')
                             ws_fft.cell(j + 2, 3, value=abs(amplitude[j]))
 
-
-                        # # 차 후 반드시 수정
-                        # fft_data_length = 0
-                        # for k in range(1000000, 0, -1):
-                        #     print(ws_fft.cell(k , 1).value)
-                        #     print(type(ws_fft.cell(k, 1).value))
-                        #     if not math.isnan(ws_fft.cell(k, 1).value):
-                        #         fft_data_length = k - 1
-
-                        fft_data_length = 500
-
                         if self.fft_graph:
                             if self.fft_window_type == 'crop':
-                                self.draw_chart(ws_fft, record_length=fft_data_length, domain='frequency',
-                                                crop_window=self.fft_window_size)
+                                self.draw_chart(ws_fft, domain='frequency', crop_window=self.fft_window_size)
                             elif self.fft_window_type:
-                                self.draw_chart(ws_fft, record_length=fft_data_length, domain='frequency',
-                                                crop_ratio=self.fft_window_size)
+                                self.draw_chart(ws_fft, domain='frequency', crop_ratio=self.fft_window_size)
 
                         max_amplitude = 0
                         max_freq = 0
@@ -813,16 +805,29 @@ class tekCsv():
                         if 'field' in df_name.columns[j]:
                             if type(df_name.at[i, df_name.columns[j]]) is str:
                                 column = df_name.at[i, df_name.columns[j]]
-                                if len(column.split(' ')) >= 2:
-                                    if column.lower() == 'pwm':
-                                        column = 'CP Pwm Set'
-                                        file = file + ' ' + str(column).split(' ')[1] + str(
-                                            df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
-                                else:
-                                    if column.lower() == 'pwm':
-                                        column = 'CP Pwm Set'
-                                        file = file + ' ' + str(column).split(' ')[1] + str(
-                                            df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
+                                # if len(column.split(' ')) >= 2:
+                                #     if column.lower() == 'pwm':
+                                #         column = 'CP Pwm Set'
+                                #         file = file + ' ' + str(column).split(' ')[1] + str(
+                                #             df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
+                                # else:
+                                #     if column.lower() == 'pwm':
+                                #         column = 'CP Pwm Set'
+                                #         file = file + ' ' + str(column).split(' ')[1] + str(
+                                #             df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
+                                if 'pwm' in column.lower():
+                                    column = 'CP Pwm Set'
+                                    file = file + ' ' + str(column).split(' ')[1] + str(
+                                        df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
+                                elif 'volt' in column.lower():
+                                    column = 'RF Volt Set'
+                                    file = file + ' ' + str(column).split(' ')[1] + str(
+                                        df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
+                                elif 'curr' in column.lower():
+                                    column = 'RF Curr Set'
+                                    file = file + ' ' + str(column).split(' ')[1] + str(
+                                        df_test_info.at[idx, column + ' ' + df_name.at[i, 'channel']])
+
                             elif type(df_name.at[i, df_name.columns[j]]) is float:
                                 if not math.isnan(df_name.at[i, df_name.columns[j]]):
                                     column = str(df_name.at[i, df_name.columns[j]])
