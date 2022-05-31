@@ -71,17 +71,17 @@ class Get_Summary():
                 summary_ws.cell(1, file_space + 1).value = 'V Frequency[MHz]'
                 summary_ws.cell(1, file_space + 2).value = 'Delay(degree)'
                 summary_ws.cell(1, file_space + 3).value = 'Ave. RP Coff'
-                summary_ws.cell(1, file_space + 4).value = 'Vrms'
-                summary_ws.cell(1, file_space + 5).value = 'Irms'
+                summary_ws.cell(1, file_space + 4).value = 'Vpeak'
+                summary_ws.cell(1, file_space + 5).value = 'Irms[mA]'
                 summary_ws.cell(1, file_space + 6).value = 'Real P[W]'
                 summary_ws.cell(1, file_space + 7).value = 'Vmean'
-                summary_ws.cell(1, file_space + 8).value = 'Imean'
+                summary_ws.cell(1, file_space + 8).value = 'Imean[mA]'
                 summary_ws.cell(1, file_space + 9).value = 'FFT V freq[MHz]'
                 summary_ws.cell(1, file_space + 10).value = 'FFT V rms'
                 summary_ws.cell(1, file_space + 11).value = 'FFT V dc abs'
                 summary_ws.cell(1, file_space + 12).value = 'FFT I freq[MHz]'
-                summary_ws.cell(1, file_space + 13).value = 'FFT I rms'
-                summary_ws.cell(1, file_space + 14).value = 'FFT I dc abs'
+                summary_ws.cell(1, file_space + 13).value = 'FFT I rms[mA]'
+                summary_ws.cell(1, file_space + 14).value = 'FFT I dc abs[mA]'
 
                 fields = []
                 for i, name in enumerate(excel_file.split('.xlsx')[0].split(' ')):
@@ -145,16 +145,16 @@ class Get_Summary():
             # # Ave. RP Coff
             summary_ws.cell(idx + 2, file_space + 3).value = ws.cell(7, 8).value
 
-            # # Vrms
+            # # Vpeak
             for i in range(100, 8, -1):
                 if ws.cell(8, i).value is not None:
-                    summary_ws.cell(idx + 2, file_space + 4).value = ws.cell(8, i).value
+                    summary_ws.cell(idx + 2, file_space + 4).value = ws.cell(8, i).value * np.sqrt(2)
                     break
 
             # # Irms
             for i in range(100, 8, -1):
                 if ws.cell(9, i).value is not None:
-                    summary_ws.cell(idx + 2, file_space + 5).value = ws.cell(9, i).value
+                    summary_ws.cell(idx + 2, file_space + 5).value = ws.cell(9, i).value * 1000
                     break
 
             # # real power
@@ -167,7 +167,12 @@ class Get_Summary():
             summary_ws.cell(idx + 2, file_space + 7).value = ws['f1'].value
 
             # # Idc
-            summary_ws.cell(idx + 2, file_space + 8).value = ws['f3'].value
+            a = ws['f3'].value
+            try:
+                summary_ws.cell(idx + 2, file_space + 8).value = ws['f3'].value * 1000
+            except:
+                summary_ws.cell(idx + 2, file_space + 8).value = ws['f3'].value
+
 
             # # get FFT info
 
@@ -192,9 +197,9 @@ class Get_Summary():
                         summary_ws.cell(idx + 2, file_space + 12).value = float(ws_fft['f1'].value / 10**6)
                     except:
                         summary_ws.cell(idx + 2, file_space + 12).value = ws_fft['f1'].value
-                    summary_ws.cell(idx + 2, file_space + 13).value = ws_fft['f2'].value
+                    summary_ws.cell(idx + 2, file_space + 13).value = ws_fft['f2'].value * 1000
                     try:
-                        summary_ws.cell(idx + 2, file_space + 14).value = ws_fft['c2'].value / np.sqrt(2)
+                        summary_ws.cell(idx + 2, file_space + 14).value = ws_fft['c2'].value / np.sqrt(2) * 1000
                     except:
                         summary_ws.cell(idx + 2, file_space + 14).value = ws_fft['c2'].value
                 elif v_flag and i_flag:
@@ -388,6 +393,11 @@ class Get_Summary():
     def get_seperated_data(self):
         items = pd.read_excel(self.path + self.eval_file, sheet_name='seperate summary')
         items = items.iloc[:, 0].tolist()
+        for i in range(len(items) - 1, -1, -1):
+            if type(items[i]) is float:
+                del items[i]
+            else:
+                break
 
         df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='with kmon')
         data_items = {}
