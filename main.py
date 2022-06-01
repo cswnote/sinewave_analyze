@@ -58,7 +58,7 @@ if __name__ == '__main__':
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
         tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=10,
-                             fft_window_type='ratio', fft_window=10)
+                             fft_window_type='crop', fft_window=1000)
         tek.csv_to_excel(graph_time, graph_FFT)
         print('end csv_to_excel')
 
