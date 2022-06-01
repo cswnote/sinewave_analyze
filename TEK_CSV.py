@@ -297,8 +297,8 @@ class tekCsv():
             chart1.x_axis.title = "frequency"
 
             data1 = openpyxl.chart.Reference(ws, min_col=3, max_col=3, min_row=1,
-                                             max_row=num_of_data_len)
-            cats = openpyxl.chart.Reference(ws, min_col=1, min_row=2, max_row=num_of_data_len)  # 축 설정
+                                             max_row=num_of_data_len + 1)
+            cats = openpyxl.chart.Reference(ws, min_col=1, min_row=2, max_row=num_of_data_len + 1)  # 축 설정
 
             chart1.add_data(data1, titles_from_data=True)
             chart1.set_categories(cats)
