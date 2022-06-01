@@ -14,11 +14,11 @@ if __name__ == '__main__':
 
     evaluation_control_file = 'eval_control.xlsx'
 
-    get_test_info = False
+    # get_test_info = False
     csv_to_excel = True
     # csv_to_excel = False
-    # add_info_file = True
-    add_info_file = False
+    add_info_file = True
+    # add_info_file = False
 
 
     if csv_to_excel:
@@ -30,7 +30,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
         graph_FFT = True
-    change_file_name = False
+    change_file_name = True
 
     get_summary = True
     kmon_csv = True

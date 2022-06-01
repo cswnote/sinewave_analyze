@@ -1,7 +1,7 @@
 import os
 import openpyxl
 
-mac_m1 = True
+mac_m1 = False
 if mac_m1:
     path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
     path_csv = path + 'tek_csv/'
@@ -19,11 +19,11 @@ else:
 
 
 
-files = os.listdir(path_information)
-files = [file for file in files if file[-5:] == '.xlsx']
+files = os.listdir(path_excel)
+files = [file for file in files if file[-4:] == 'xlsx']
 files.sort()
 
 for file in files:
-    wb = openpyxl.load_workbook(path_information + file)
-    ws = wb.active
-
+    scr = path_excel + file
+    dst = path_excel + file.split('xlsx')[0] + '.xlsx'
+    os.rename(scr, dst)

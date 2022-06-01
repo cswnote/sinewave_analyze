@@ -28,7 +28,7 @@ class tekCsv():
         self.time_window_size = kwargs.get('time_window', 10000)
         self.time_window_type = kwargs.get('time_window_type', 'crop')
         self.fft_window_size = kwargs.get('fft_window', 5000)
-        self.fft_window_type = kwargs.get('time_window_type', 'crop')
+        self.fft_window_type = kwargs.get('fft_window_type', 'crop')
         self.FFT = kwargs.get('FFT', True)
 
         self.eval_file = kwargs.get('eval_fila', 'eval_file.xlsx')
