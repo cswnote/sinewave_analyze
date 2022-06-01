@@ -279,7 +279,8 @@ class tekCsv():
 
         elif domain == 'frequency':
             for i in range(500002, 0, -1):
-                if type(ws.cell(i, 1).value) is not None:
+                if type(ws.cell(i, 1).value) is int or type(ws.cell(i, 1).value) is float:
+                # if ws.cell(i, 1).value == 'None':
                     num_of_data_len = i - 1
                     break
 
