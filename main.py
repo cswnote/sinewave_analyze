@@ -32,7 +32,7 @@ if __name__ == '__main__':
         graph_FFT = True
     change_file_name = False
 
-    get_summary = True
+    get_summary = False
     kmon_csv = True
     if get_summary:
         get_by_option = False
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     if kmon_csv:
         path_kmon = path_excel[:path_excel.find('tek_excel')] + 'kmon_csv/'
         csv_list = os.listdir(path_kmon)
-        csv_list = [file for file in csv_list if file[:10] == 'info_test_' and file.endswith('.csv')]
+        csv_list = [file for file in csv_list if file[:10] == 'info_kmon_' and file.endswith('.csv')]
         csv_list.sort()
 
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
@@ -97,6 +97,6 @@ if __name__ == '__main__':
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 
-    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    merge_kmon.get_seperated_data()
+    # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    # merge_kmon.get_seperated_data()
 

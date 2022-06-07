@@ -538,7 +538,10 @@ class Get_Summary():
         info_test = {}
         previous = -1
 
-        kmon_file = file
+        kmon_file = file[:5] + 'kmon' + file[9:]
+
+        if kmon_file.split('_')[2] == '44':
+            pass
 
         files = os.listdir(self.kmon_csv_path)
         files.sort()
@@ -560,10 +563,10 @@ class Get_Summary():
             if previous != key:
                 for i, value in enumerate(info_test[key]):
                     if i:
-                        df_1 = pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
+                        df_1 = pd.read_csv(self.kmon_csv_path + 'info_kmon_' + key + '_' + value + '.csv')
                         df = pd.concat([df, df_1], ignore_index=True, axis=1)
                     else:
-                        df = pd.read_csv(self.kmon_csv_path + 'info_test_' + key + '_' + value + '.csv')
+                        df = pd.read_csv(self.kmon_csv_path + 'info_kmon_' + key + '_' + value + '.csv')
                 df_num.append(df.copy())
 
         df = pd.DataFrame()
@@ -599,7 +602,7 @@ class Get_Summary():
             df = df.rename(columns={list(df.columns)[i]: columns_name[i - 1]})
 
         for i in range(len(df.columns) - 1, 1, -1):
-            if math.isnan(df.columns[i]):
+            if type(df.columns[i]) is not str:
                 df = df.drop(df.columns[i], axis=1)
                 break
 

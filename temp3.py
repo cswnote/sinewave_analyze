@@ -8,10 +8,11 @@ path_summary = path + 'summary/'
 path_information = path + 'test information/'
 path_kmon = path + 'kmon_csv/'
 
-files = os.listdir(path_excel)
-files = [file for file in files if file[:3] == 'tek']
+files = os.listdir(path_kmon)
+# files = [file for file in files if file[:3] == 'tek']
 
 for file in files:
-    scr = path_excel + file
-    dst = path_excel + file + '.xlsx'
+    scr = path_kmon + file
+    file = file.split('_')[0] + '_kmon_' + file[10:]
+    dst = path_kmon + file
     os.rename(scr, dst)
