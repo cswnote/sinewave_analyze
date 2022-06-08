@@ -94,8 +94,8 @@ if __name__ == '__main__':
 
         for file in test_files:
             df = merge_kmon.combine_kmon_data(file)
-            merge_kmon.check_kmon_and_testfile(df, file)
-        merge_kmon.merge_kmon_and_summary()
+        #     merge_kmon.check_kmon_and_testfile(df, file)
+        # merge_kmon.merge_kmon_and_summary()
 
     # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
     # merge_kmon.get_seperated_data()
