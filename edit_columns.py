@@ -1,3 +1,4 @@
+import math
 import os
 import openpyxl
 import platform
@@ -19,24 +20,49 @@ class Get_summary():
         self.measure_value = {'filename': []}
         self.lost_files = []
 
-    def edit_columns(self):
+    def remain_columns(self):
         df_ctrl = pd.read_excel(self.path + self.eval_file, sheet_name='edit columns')
-        df_sum = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='with kmon')
 
-        remain_items = list(df_ctrl.iloc[:, 0])
+        sheets = list(df_ctrl.iloc[:, 0])
+        sheet_name = ''
 
-        for item in remain_items:
-            if 'curr' in item.lower():
-                remain_items.append('irms')
+        for idx, sheet in enumerate(sheets):
+            remain_items = list(df_ctrl.iloc[idx, 1:])
 
-        drop_list = list(df_sum.columns)[7:]
+            for i in range(len(remain_items)):
+                try:
+                    if math.isnan(remain_items[i]):
+                        del remain_items[i]
+                except:
+                    pass
 
-        for item in remain_items:
-            for i in range(len(drop_list) - 1, -1 , -1):
-                if item in drop_list[i].lower().replace(' ', ''):
-                    drop_list.remove(drop_list[i])
+            file_name = 'summary.xlsx'
+            sheet_name = sheet
+            df_sum = pd.read_excel(self.tek_excel_path + file_name, sheet_name=sheet)
+            for item in remain_items:
+                    if 'curr' in item.lower():
+                        remain_items.append('irms')
+                        sheet_name = sheet_name + ' ' + 'Curr'
+                    if 'volt' in item.lower():
+                        remain_items.append('vp')
+                        sheet_name = sheet_name + ' ' + 'Volt'
 
-        print('==============')
+            drop_list = list(df_sum.columns)[7:]
+
+            for item in remain_items:
+                for i in range(len(drop_list) - 1, -1 , -1):
+                    if item in drop_list[i].lower().replace(' ', ''):
+                        drop_list.remove(drop_list[i])
+
+            df_sum.drop(drop_list, axis=1, inplace=True)
+
+            if not os.path.exists(self.tek_excel_path + file_name):  # excel.path로 변경
+                with pd.ExcelWriter(self.tek_excel_path + file_name, mode='w', engine='openpyxl') as writer:
+                    df_sum.to_excel(writer, sheet_name=sheet_name, index=False)
+            else:
+                with pd.ExcelWriter(self.tek_excel_path + file_name, mode='a', engine='openpyxl') as writer:
+                    df_sum.to_excel(writer, sheet_name=sheet_name, index=False)
+
 
 if __name__ == '__main__':
 
@@ -64,4 +90,4 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    sum.edit_columns()
+    sum.remain_columns()
