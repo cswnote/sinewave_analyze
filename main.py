@@ -15,22 +15,21 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     # csv_to_excel = False
     add_info_file = False
     # add_info_file = False
+    change_file_name = True
 
 
     if csv_to_excel:
         fft = True
         graph_time = True
         graph_FFT = True
-        get_period = False
         lpf = False
         LPF_factor = 0.5
         get_period = False
         graph_FFT = True
-    change_file_name = False
 
     get_summary = False
     kmon_csv = True
@@ -94,8 +93,8 @@ if __name__ == '__main__':
 
         for file in test_files:
             df = merge_kmon.combine_kmon_data(file)
-        #     merge_kmon.check_kmon_and_testfile(df, file)
-        # merge_kmon.merge_kmon_and_summary()
+            merge_kmon.check_kmon_and_testfile(df, file)
+        merge_kmon.merge_kmon_and_summary()
 
     # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
     # merge_kmon.get_seperated_data()

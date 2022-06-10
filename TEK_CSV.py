@@ -619,8 +619,14 @@ class tekCsv():
         max_scaled = 0
         max_scaled = 0
 
+        if max == float('inf'):
+            max = 20
+        if min == float('-inf'):
+            min = -20
+
         digits = len(str(float(abs(max))).split('.')[0])
         if max > 0:
+
             max_scaled = math.ceil(max / (10 ** (digits - 1))) * 10 ** (digits - 1)
         else:
             max_scaled = math.ceil(max / (10 ** (digits - 1))) * 10 ** (digits - 1) * 1
