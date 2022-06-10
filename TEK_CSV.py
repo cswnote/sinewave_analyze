@@ -693,7 +693,7 @@ class tekCsv():
             print('fail to merge info data')
 
         df.set_index(keys=df.columns[0], drop=True, inplace=True)
-        df.to_excel(self.test_info_path + 'info_test_all.xlsx', index_label=df.columns[0])
+        df.to_excel(se`lf.test_info_path + 'info_test_all.xlsx', index_label=df.columns[0])
 
         print('end add_info_file')
 
