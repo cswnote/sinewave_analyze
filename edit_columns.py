@@ -1,6 +1,6 @@
 import math
 import os
-
+import gc
 import numpy as np
 import openpyxl
 import platform
@@ -24,12 +24,16 @@ class Get_summary():
 
     def remove_columns(self):
         df_ctrl = pd.ExcelFile(self.path + self.eval_file)
+        df = pd.ExcelFile(self.tek_excel_path + 'summary.xlsx')
+        sheets = df.sheet_names[2:]
+        del [[df]]
+        gc.collect()
         df_ctrl = df_ctrl.parse('edit columns')
 
-        sheets = list(df_ctrl.iloc[:, 0])
+        # sheets = list(df_ctrl.iloc[:, 0])
 
         for idx, sheet in enumerate(sheets):
-            remain_items = list(df_ctrl.iloc[idx, 1:])
+            remain_items = list(df_ctrl.iloc[0, 1:])
 
             for i in range(len(remain_items) - 1, -1, -1):
                 try:
@@ -42,77 +46,80 @@ class Get_summary():
 
             file_name = 'summary.xlsx'
             sheet_name = sheet
+            print('in process: ', sheet)
             df_summary = pd.read_excel(self.tek_excel_path + file_name, sheet_name=sheet)
-            for item in remain_items:
-                if 'curr' in item.lower():
-                    remain_items.append('vp')
-                    remain_items.append('irms')
-                    sheet_name = sheet_name + ' ' + 'Curr'
-                if 'volt' in item.lower():
-                    remain_items.append('vp')
-                    remain_items.append('irms')
-                    sheet_name = sheet_name + ' ' + 'Volt'
+            if len(df_summary) != 0:
+            # if True:
+                for item in remain_items:
+                    if 'curr' in item.lower():
+                        remain_items.append('vp')
+                        remain_items.append('irms')
+                        sheet_name = sheet_name + ' ' + 'Curr'
+                    if 'volt' in item.lower():
+                        remain_items.append('vp')
+                        remain_items.append('irms')
+                        sheet_name = sheet_name + ' ' + 'Volt'
 
-            drop_list = list(df_summary.columns)[7:]
+                drop_list = list(df_summary.columns)[7:]
 
-            for item in remain_items:
-                for i in range(len(drop_list) - 1, -1 , -1):
-                    if item in drop_list[i].lower().replace(' ', ''):
-                        drop_list.remove(drop_list[i])
+                for item in remain_items:
+                    for i in range(len(drop_list) - 1, -1 , -1):
+                        if item in drop_list[i].lower().replace(' ', ''):
+                            drop_list.remove(drop_list[i])
 
-            if 'curr' in remain_items and 'volt' in remain_items:
-                for i in range(len(df_summary) - 1, -1, -1):
-                    if df_summary.at[i, 'Curr'] == '-' and df_summary.at[i, 'Volt'] == '-':
-                        df_summary.drop([i], inplace=True)
-            elif 'curr' in remain_items:
-                for i in range(len(df_summary) - 1, -1, -1):
-                    if df_summary.at[i, 'Curr'] == '-':
-                        df_summary.drop([i], inplace=True)
-            elif 'volt' in remain_items:
-                for i in range(len(df_summary) - 1, -1, -1):
-                    if df_summary.at[i, 'Volt'] == '-':
-                        df_summary.drop([i], inplace=True)
-            elif 'pwm' in remain_items:
-                for i in range(len(df_summary) - 1, -1, -1):
-                    if df_summary.at[i, 'PWM'] == '-':
-                        df_summary.drop([i], inplace=True)
+                if 'curr' in remain_items and 'volt' in remain_items:
+                    for i in range(len(df_summary) - 1, -1, -1):
+                        if df_summary.at[i, 'Curr'] == '-' and df_summary.at[i, 'Volt'] == '-':
+                            df_summary.drop([i], inplace=True)
+                elif 'curr' in remain_items:
+                    for i in range(len(df_summary) - 1, -1, -1):
+                        if df_summary.at[i, 'Curr'] == '-':
+                            df_summary.drop([i], inplace=True)
+                elif 'volt' in remain_items:
+                    for i in range(len(df_summary) - 1, -1, -1):
+                        if df_summary.at[i, 'Volt'] == '-':
+                            df_summary.drop([i], inplace=True)
+                elif 'pwm' in remain_items:
+                    for i in range(len(df_summary) - 1, -1, -1):
+                        if df_summary.at[i, 'PWM'] == '-':
+                            df_summary.drop([i], inplace=True)
 
-            df_summary.drop(drop_list, axis=1, inplace=True)
-            df_summary.reset_index(inplace=True)
-            df_summary.drop(['index'], axis=1, inplace=True)
+                df_summary.drop(drop_list, axis=1, inplace=True)
+                df_summary.reset_index(inplace=True)
+                df_summary.drop(['index'], axis=1, inplace=True)
 
-            calculate_first_col = 'Volt'
-            cal_list = list(df_summary.columns)
-            cal_list = cal_list[cal_list.index(calculate_first_col):]
+                calculate_first_col = 'Volt'
+                cal_list = list(df_summary.columns)
+                cal_list = cal_list[cal_list.index(calculate_first_col):]
 
-            for col in reversed(cal_list):
-                if 'deviation' in col or '[mA' in col or '[mV' in col or '[A' in col or '[V' in col:
-                    cal_list.remove(col)
+                for col in reversed(cal_list):
+                    if 'deviation' in col or '[mA' in col or '[mV' in col or '[A' in col or '[V' in col:
+                        cal_list.remove(col)
 
-            for column in cal_list:
-                if 'curr' in column.lower():
-                    df_summary.rename(columns={column: column + '[mA]'}, inplace=True)
-                    column = column + '[mA]'
-                elif 'volt' in column.lower():
-                    df_summary.rename(columns={column: column + '[V]'}, inplace=True)
-                    column = column + '[V]'
+                for column in cal_list:
+                    if 'curr' in column.lower():
+                        df_summary.rename(columns={column: column + '[mA]'}, inplace=True)
+                        column = column + '[mA]'
+                    elif 'volt' in column.lower():
+                        df_summary.rename(columns={column: column + '[V]'}, inplace=True)
+                        column = column + '[V]'
 
-                for i in range(len(df_summary)):
-                    try:
-                        df_summary.at[i, column] = df_summary.at[i, column] * 0.1
-                    except:
-                        print('do not calculate, {}, data type is {}'.format(df_summary.at[i, column],
-                                                                             type(df_summary.at[i, column])))
+                    for i in range(len(df_summary)):
+                        try:
+                            df_summary.at[i, column] = df_summary.at[i, column] * 0.1
+                        except:
+                            print('do not calculate, {}, data type is {}'.format(df_summary.at[i, column],
+                                                                                 type(df_summary.at[i, column])))
 
-            if not os.path.exists(self.tek_excel_path + file_name):  # excel.path로 변경
-                with pd.ExcelWriter(self.tek_excel_path + file_name, mode='w', engine='openpyxl') as writer:
-                    df_summary.to_excel(writer, sheet_name=sheet_name, index=False)
-            else:
-                with pd.ExcelWriter(self.tek_excel_path + file_name, mode='a', engine='openpyxl') as writer:
-                    try:
+                if not os.path.exists(self.tek_excel_path + file_name):  # excel.path로 변경
+                    with pd.ExcelWriter(self.tek_excel_path + file_name, mode='w', engine='openpyxl') as writer:
                         df_summary.to_excel(writer, sheet_name=sheet_name, index=False)
-                    except:
-                        print('그 시트 있다이: {}'.format(sheet_name))
+                else:
+                    with pd.ExcelWriter(self.tek_excel_path + file_name, mode='a', engine='openpyxl') as writer:
+                        try:
+                            df_summary.to_excel(writer, sheet_name=sheet_name, index=False)
+                        except:
+                            print('그 시트 있다이: {}'.format(sheet_name))
 
 
     def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets):
@@ -224,12 +231,13 @@ class Get_summary():
             if not os.path.exists(self.tek_excel_path + filename):  # excel.path로 변경
                 with pd.ExcelWriter(self.tek_excel_path + filename, mode='w', engine='openpyxl') as writer:
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
+                    print('create sheet: ', sheet_name)
             else:
                 with pd.ExcelWriter(self.tek_excel_path + filename, mode='a', engine='openpyxl') as writer:
                     try:
                         df.to_excel(writer, sheet_name=sheet_name, index=False)
                     except:
-                        print('그 시트 있다 안카나')
+                        print('그 시트 있다 안카나: ', sheet_name)
 
 
 
@@ -258,7 +266,14 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    sum.remove_columns()
-    gather_sheets = ['with kmon Curr', 'with kmon Volt']
+    # sum.remove_columns()
+    # gather_sheets = ['with kmon Curr', 'with kmon Volt']
+    # gather_cols = [['Irms[mA]'], ['Vpeak[V]']]
+
+    df = pd.ExcelFile(path_excel + 'summary.xlsx')
+    gather_sheets = df.sheet_names
+    gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 20]
+    del [[df]]
+    gc.collect()
     gather_cols = [['Irms[mA]'], ['Vpeak[V]']]
     sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets)

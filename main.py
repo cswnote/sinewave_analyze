@@ -96,6 +96,6 @@ if __name__ == '__main__':
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 
-    # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    # merge_kmon.get_seperated_data()
+    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    merge_kmon.get_seperated_data()
 
