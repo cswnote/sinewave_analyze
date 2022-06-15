@@ -25,15 +25,15 @@ class Get_summary():
     def remove_columns(self):
         df_ctrl = pd.ExcelFile(self.path + self.eval_file)
         df = pd.ExcelFile(self.tek_excel_path + 'summary.xlsx')
-        sheets = df.sheet_names[2:]
+        # sheets = df.sheet_names[2:]
         del [[df]]
         gc.collect()
         df_ctrl = df_ctrl.parse('edit columns')
 
-        # sheets = list(df_ctrl.iloc[:, 0])
+        sheets = list(df_ctrl.iloc[:, 0])
 
         for idx, sheet in enumerate(sheets):
-            remain_items = list(df_ctrl.iloc[0, 1:])
+            remain_items = list(df_ctrl.iloc[idx, 1:])
 
             for i in range(len(remain_items) - 1, -1, -1):
                 try:
@@ -106,7 +106,7 @@ class Get_summary():
 
                     for i in range(len(df_summary)):
                         try:
-                            df_summary.at[i, column] = df_summary.at[i, column] * 0.1
+                            df_summary.at[i, column] = int(df_summary.at[i, column]) * 0.1
                         except:
                             print('do not calculate, {}, data type is {}'.format(df_summary.at[i, column],
                                                                                  type(df_summary.at[i, column])))
@@ -130,6 +130,7 @@ class Get_summary():
         # sheets = sheets[2:]
 
         for idx, sheet in enumerate(sheets):
+            print(idx, sheet)
             # df_summary = summary.parse(sheet_name=sheet)
             df_summary = pd.read_excel(self.tek_excel_path + filename, sheet_name=sheet)
 
@@ -175,7 +176,7 @@ class Get_summary():
                 if df_summary.at[i, 'Ch'] == max_ch and before == '':
                     start = i
                     before = df_summary.at[i, 'Ch']
-                elif before != df_summary.at[i, 'Ch']:
+                elif before != df_summary.at[i, 'Ch'] and before != '':
                     end = i - 1
                     break
                 elif before == df_summary.at[i, 'Ch'] and i == len(df_summary) - 1:
@@ -219,9 +220,9 @@ class Get_summary():
                             if same_flag:
                                 df.at[inner_row - 1, col] = df_summary.at[row, column]
                                 break
-                            elif inner_row == end + 1:
+                            elif inner_row == end - start + 1:
                                 break
-                if inner_row == end + 1:
+                if inner_row == end - start + 1:
                     inner_row = 0
                 row += 1
                 if row == len(df_summary):
@@ -266,14 +267,14 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    # sum.remove_columns()
-    # gather_sheets = ['with kmon Curr', 'with kmon Volt']
+    sum.remove_columns()
+    # gather_sheets = ['RFAMP_02 500.0ohm Volt Curr', 'RFAMP_03 500.0ohm Volt Curr']
     # gather_cols = [['Irms[mA]'], ['Vpeak[V]']]
 
     df = pd.ExcelFile(path_excel + 'summary.xlsx')
     gather_sheets = df.sheet_names
-    gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 20]
+    gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
     del [[df]]
     gc.collect()
-    gather_cols = [['Irms[mA]'], ['Vpeak[V]']]
+    gather_cols = [['Vpeak[V]'], ['Irms[mA]'], ['Vpeak[V]'], ['Irms[mA]']]
     sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets)
