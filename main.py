@@ -71,7 +71,7 @@ if __name__ == '__main__':
                              fft_window=1, fft_window_type='crop', fft_window_size=1000)
         tek.combine_infofiles()
 
-    # # name변경 함수 수정할
+    # # name변경 함수 수정할 것
 
     if get_summary:
         excel_list = os.listdir(path_excel)
