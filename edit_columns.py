@@ -22,9 +22,9 @@ class Get_summary():
         self.measure_value = {'filename': []}
         self.lost_files = []
 
-    def remove_columns(self):
+    def remove_columns(self, file):
         df_ctrl = pd.ExcelFile(self.path + self.eval_file)
-        df = pd.ExcelFile(self.tek_excel_path + 'summary.xlsx')
+        df = pd.ExcelFile(self.tek_excel_path + file)
         # sheets = df.sheet_names[2:]
         del [[df]]
         gc.collect()
@@ -44,7 +44,7 @@ class Get_summary():
 
             remain_items = [item.lower() for item in remain_items if True]
 
-            file_name = 'summary.xlsx'
+            file_name = file
             sheet_name = sheet
             print('in process: ', sheet)
             df_summary = pd.read_excel(self.tek_excel_path + file_name, sheet_name=sheet)
@@ -122,8 +122,8 @@ class Get_summary():
                             print('그 시트 있다이: {}'.format(sheet_name))
 
 
-    def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets):
-        filename = 'summary.xlsx'
+    def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets, file):
+        filename = file
         # summary = pd.ExcelFile(self.tek_excel_path + filename)
         sheets = gather_sheets
 
@@ -267,14 +267,15 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    sum.remove_columns()
+    file = 'summary 66 ~ 73 AMP03 300ohm.xlsx'
+    sum.remove_columns(file)
     # gather_sheets = ['RFAMP_02 500.0ohm Volt Curr', 'RFAMP_03 500.0ohm Volt Curr']
     # gather_cols = [['Irms[mA]'], ['Vpeak[V]']]
 
-    df = pd.ExcelFile(path_excel + 'summary.xlsx')
+    df = pd.ExcelFile(path_excel + file)
     gather_sheets = df.sheet_names
     gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
     del [[df]]
     gc.collect()
     gather_cols = [['Vpeak[V]'], ['Irms[mA]'], ['Vpeak[V]'], ['Irms[mA]']]
-    sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets)
+    sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets, file)

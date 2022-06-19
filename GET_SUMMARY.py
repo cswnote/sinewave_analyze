@@ -424,7 +424,7 @@ class Get_Summary():
         return df
 
 
-    def get_seperated_data(self):
+    def get_seperated_data(self, file):
         items = pd.read_excel(self.path + self.eval_file, sheet_name='seperate summary')
         items = items.iloc[:, 0].tolist()
         for i in range(len(items) - 1, -1, -1):
@@ -433,7 +433,7 @@ class Get_Summary():
             else:
                 break
 
-        df_summary = pd.read_excel(self.tek_excel_path + 'summary.xlsx', sheet_name='with kmon')
+        df_summary = pd.read_excel(self.tek_excel_path + file, sheet_name='with kmon')
         data_items = {}
 
         for item in items:
@@ -463,7 +463,7 @@ class Get_Summary():
                 sheet_clean = items[0].upper()
             else:
                 sheet_clean = ''
-            self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, 'summary.xlsx')
+            self.delete_by_df_column_value(sheet_clean, data_items, df_summary, sheet_name, file)
 
 
     def draw_chart(self, filename, sheet_head):
