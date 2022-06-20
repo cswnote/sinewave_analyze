@@ -15,11 +15,11 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     # csv_to_excel = False
     add_info_file = False
     # add_info_file = False
-    change_file_name = False
+    change_file_name = True
 
 
     if csv_to_excel:
