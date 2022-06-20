@@ -15,11 +15,11 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     # csv_to_excel = False
     add_info_file = False
     # add_info_file = False
-    change_file_name = True
+    change_file_name = False
 
 
     if csv_to_excel:
@@ -96,7 +96,7 @@ if __name__ == '__main__':
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 
-    # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    # summary = 'summary 66 ~ 73 AMP03 300ohm.xlsx'
-    # merge_kmon.get_seperated_data(summary)
+    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    summary = 'summary 66 ~ 73 AMP03 300ohm.xlsx'
+    merge_kmon.get_seperated_data(summary)
 
