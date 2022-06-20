@@ -242,7 +242,6 @@ class Get_summary():
 
 
 
-
 if __name__ == '__main__':
     if platform.platform()[:3].lower() == 'mac':
         mac_m1 = True
