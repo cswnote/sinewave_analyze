@@ -266,7 +266,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    file = 'summary 66 ~ 73 AMP03 300ohm.xlsx'
+    file = 'summary.xlsx'
     sum.remove_columns(file)
     # gather_sheets = ['RFAMP_02 500.0ohm Volt Curr', 'RFAMP_03 500.0ohm Volt Curr']
     # gather_cols = [['Irms[mA]'], ['Vpeak[V]']]
