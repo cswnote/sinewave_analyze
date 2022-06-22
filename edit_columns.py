@@ -125,7 +125,7 @@ class Get_summary():
     def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets, file):
         filename = file
         # summary = pd.ExcelFile(self.tek_excel_path + filename)
-        sheets = gather_sheets
+        sheets = gather_sheets[6:]
 
         # sheets = sheets[2:]
 
@@ -266,14 +266,12 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    file = 'summary.xlsx'
+    file = 'summary 300ohm.xlsx'
     sum.remove_columns(file)
-    # gather_sheets = ['RFAMP_02 500.0ohm Volt Curr', 'RFAMP_03 500.0ohm Volt Curr']
-    # gather_cols = [['Irms[mA]'], ['Vpeak[V]']]
 
     df = pd.ExcelFile(path_excel + file)
     gather_sheets = df.sheet_names
-    gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
+    # gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
     del [[df]]
     gc.collect()
     gather_cols = [['Vpeak[V]'], ['Irms[mA]'], ['Vpeak[V]'], ['Irms[mA]']]

@@ -31,8 +31,8 @@ if __name__ == '__main__':
         get_period = False
         graph_FFT = True
 
-    get_summary = True
-    kmon_csv = True
+    get_summary = False
+    kmon_csv = False
     if get_summary:
         get_by_option = False
 
@@ -97,6 +97,6 @@ if __name__ == '__main__':
         merge_kmon.merge_kmon_and_summary()
 
     merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    summary = 'summary.xlsx'
+    summary = 'summary 300ohm.xlsx'
     merge_kmon.get_seperated_data(summary)
 
