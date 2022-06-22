@@ -97,6 +97,6 @@ if __name__ == '__main__':
         merge_kmon.merge_kmon_and_summary()
 
     merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    summary = 'summary 300ohm.xlsx'
+    summary = 'summary 500ohm.xlsx'
     merge_kmon.get_seperated_data(summary)
 

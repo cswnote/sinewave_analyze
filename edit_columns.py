@@ -125,7 +125,7 @@ class Get_summary():
     def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets, file):
         filename = file
         # summary = pd.ExcelFile(self.tek_excel_path + filename)
-        sheets = gather_sheets[6:]
+        sheets = gather_sheets[10:16]
 
         # sheets = sheets[2:]
 
@@ -266,8 +266,8 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    file = 'summary 300ohm.xlsx'
-    sum.remove_columns(file)
+    file = 'summary 500ohm.xlsx'
+    # sum.remove_columns(file)
 
     df = pd.ExcelFile(path_excel + file)
     gather_sheets = df.sheet_names
