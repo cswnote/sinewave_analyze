@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # csv_to_excel = False
     add_info_file = False
     # add_info_file = False
-    change_file_name = False
+    change_file_name = True
 
 
     if csv_to_excel:
@@ -31,8 +31,8 @@ if __name__ == '__main__':
         get_period = False
         graph_FFT = True
 
-    get_summary = False
-    kmon_csv = False
+    get_summary = True
+    kmon_csv = True
     if get_summary:
         get_by_option = False
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 
-    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    summary = 'summary 500ohm.xlsx'
-    merge_kmon.get_seperated_data(summary)
+    # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    # summary = 'summary 500ohm.xlsx'
+    # merge_kmon.get_seperated_data(summary)
 
