@@ -32,7 +32,7 @@ if __name__ == '__main__':
         graph_FFT = True
 
     get_summary = True
-    kmon_csv = False
+    kmon_csv = True
     if get_summary:
         get_by_option = False
 
