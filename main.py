@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # csv_to_excel = False
     add_info_file = False
     # add_info_file = False
-    change_file_name = True
+    change_file_name = False
 
 
     if csv_to_excel:
@@ -31,8 +31,8 @@ if __name__ == '__main__':
         get_period = False
         graph_FFT = True
 
-    get_summary = True
-    kmon_csv = True
+    get_summary = False
+    kmon_csv = False
     if get_summary:
         get_by_option = False
 
