@@ -15,11 +15,9 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
-    # csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
-    # add_info_file = False
-    change_file_name = False
+    change_file_name = True
 
 
     if csv_to_excel:
@@ -29,15 +27,14 @@ if __name__ == '__main__':
         lpf = False
         LPF_factor = 0.5
         get_period = False
-        graph_FFT = True
 
     get_summary = True
     kmon_csv = True
     if get_summary:
         get_by_option = False
 
-    crop_time_window = 10000
-    crop_fft_window = 5000
+    crop_time_window = 100000
+    crop_fft_window = 126
 
     if mac_m1:
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
@@ -56,8 +53,8 @@ if __name__ == '__main__':
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
-        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=10,
-                             fft_window_type='crop', fft_window=1000)
+        tek = TEK_CSV.tekCsv(path=path, time_window_type='crop', time_window=100000,
+                             fft_window_type='crop', fft_window=125)
         tek.csv_to_excel(graph_time, graph_FFT)
         print('end csv_to_excel')
 
