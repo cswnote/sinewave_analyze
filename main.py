@@ -15,9 +15,9 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
-    change_file_name = False
+    change_file_name = True
 
 
     if csv_to_excel:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = True
-    kmon_csv = True
+    kmon_csv = False
     if get_summary:
         get_by_option = False
 
