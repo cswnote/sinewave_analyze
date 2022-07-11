@@ -353,7 +353,7 @@ class tekCsv():
                 max_value = -(sys.maxsize+1)
                 min_value = sys.maxsize
 
-                for j in range(22, data_len):
+                for j in range(22, data_len + 22):
                     if max_value < float(ws.cell(j, i).value):
                         max_value = float(ws.cell(j, i).value)
                     if min_value > float(ws.cell(j, i).value):
