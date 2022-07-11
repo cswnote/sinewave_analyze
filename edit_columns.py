@@ -125,8 +125,10 @@ class Get_summary():
     def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets, file):
         filename = file
         # summary = pd.ExcelFile(self.tek_excel_path + filename)
-        sheets = gather_sheets[10:16]
+        sheets = gather_sheets[1]
 
+        if type(sheets) is not list:
+            sheets = [sheets]
         # sheets = sheets[2:]
 
         for idx, sheet in enumerate(sheets):
@@ -134,8 +136,8 @@ class Get_summary():
             # df_summary = summary.parse(sheet_name=sheet)
             df_summary = pd.read_excel(self.tek_excel_path + filename, sheet_name=sheet)
 
-            remain_columns = ['Board', 'ohm', 'PWM', 'Volt[V]', 'Curr[mA]']
-            # remain_columns = ['Board', 'ohm']
+            # remain_columns = ['Board', 'ohm', 'PWM', 'Volt[V]', 'Curr[mA]']
+            remain_columns = ['Board', 'ohm', 'PWM']
             added_item = []
 
             # for col in gather_cols:
@@ -266,7 +268,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    file = 'summary 500ohm.xlsx'
+    file = 'summary 00.xlsx'
     # sum.remove_columns(file)
 
     df = pd.ExcelFile(path_excel + file)
@@ -274,5 +276,6 @@ if __name__ == '__main__':
     # gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
     del [[df]]
     gc.collect()
-    gather_cols = [['Vpeak[V]'], ['Irms[mA]'], ['Vpeak[V]'], ['Irms[mA]']]
+    # gather_cols = [['Vpeak[V]'], ['Irms[mA]'], ['Vpeak[V]'], ['Irms[mA]']]
+    gather_cols = [['Irms[mA]']]
     sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets, file)
