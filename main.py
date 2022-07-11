@@ -29,7 +29,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = False
-    kmon_csv = False
+    kmon_csv = True
     if get_summary:
         get_by_option = False
 
@@ -93,7 +93,7 @@ if __name__ == '__main__':
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 
-    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    summary = 'summary 00.xlsx'
-    merge_kmon.get_seperated_data(summary)
+    # merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+    # summary = 'summary 00.xlsx'
+    # merge_kmon.get_seperated_data(summary)
 

@@ -84,7 +84,7 @@ class Get_Summary():
                 summary_ws.cell(1, file_space + 1).value = 'V Frequency[MHz]'
                 summary_ws.cell(1, file_space + 2).value = 'Delay(degree)'
                 summary_ws.cell(1, file_space + 3).value = 'Ave. RP Coff'
-                summary_ws.cell(1, file_space + 4).value = 'Vpeak'
+                summary_ws.cell(1, file_space + 4).value = 'Vpeak[V]'
                 summary_ws.cell(1, file_space + 5).value = 'Irms[mA]'
                 summary_ws.cell(1, file_space + 6).value = 'Real P[W]'
                 summary_ws.cell(1, file_space + 7).value = 'Vmean'
