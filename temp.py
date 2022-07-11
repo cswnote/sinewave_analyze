@@ -8,7 +8,7 @@ files = os.listdir(path)
 files = [file for file in files if file[:3] == 'tek']
 files.sort()
 
-base_num = 1776
+base_num = -1776
 for file in files:
     scr = path + file
     extenstion = file.split('.')[1]

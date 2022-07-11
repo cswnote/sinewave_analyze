@@ -313,7 +313,7 @@ class tekCsv():
             chart1.height = 18
 
 
-    def get_VI_delay(self, frequency, data_len, worksheet, wieghting_num=30):
+    def get_VI_delay(self, frequency, data_len, worksheet, wieghting_num=69):
         # print('in process: get_VI_delay')
         ws = worksheet
 
