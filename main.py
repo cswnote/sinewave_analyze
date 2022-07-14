@@ -30,10 +30,11 @@ if __name__ == '__main__':
 
     get_summary = False
     kmon_csv = False
+    seperate_data_by_tag = True
     if get_summary:
         get_by_option = False
 
-    crop_time_window = 100000
+    crop_time_window = 1
     crop_fft_window = 126
 
     if mac_m1:
@@ -53,7 +54,7 @@ if __name__ == '__main__':
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
-        tek = TEK_CSV.tekCsv(path=path, time_window_type='crop', time_window=crop_time_window,
+        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=crop_time_window,
                              fft_window_type='crop', fft_window=crop_fft_window)
         tek.csv_to_excel(graph_time, graph_FFT)
         print('end csv_to_excel')
@@ -93,7 +94,8 @@ if __name__ == '__main__':
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 
-    merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
-    summary = 'summary PWM all.xlsx'
-    merge_kmon.get_seperated_data(summary)
+    if seperate_data_by_tag:
+        merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
+        summary = 'summary.xlsx'
+        merge_kmon.get_seperated_data(summary)
 

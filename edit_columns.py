@@ -125,7 +125,7 @@ class Get_summary():
     def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets, file):
         filename = file
         # summary = pd.ExcelFile(self.tek_excel_path + filename)
-        sheets = gather_sheets[3:]
+        sheets = gather_sheets[2]
         sheet_name = ''
 
         if type(sheets) is not list:
@@ -196,10 +196,10 @@ class Get_summary():
             add_columns = []
             channels = df_summary['Ch'].unique()
             channels.sort()
-            for col in gather_cols[idx]:
+            for i in range(len(gather_cols)):
                 for ch in channels:
                     # dict.setdefault(col + ch, [])
-                    add_columns.append(col + ch)
+                    add_columns.append(gather_cols[i] + ch)
             # channels = list(dict.keys())
             channels = add_columns
 
@@ -209,8 +209,8 @@ class Get_summary():
             remain_columns = remain_columns[2:]
             row = 0
             inner_row = 0
-            while True:
-                for col in channels:
+            for col in channels:
+                while True:
                     if df_summary.at[row, 'Ch'] in col:
                         column = col.split(df_summary.at[row, 'Ch'])[0]
                         while True:
@@ -224,11 +224,12 @@ class Get_summary():
                                 break
                             elif inner_row == end - start + 1:
                                 break
-                if inner_row == end - start + 1:
-                    inner_row = 0
-                row += 1
-                if row == len(df_summary):
-                    break
+                    if inner_row == end - start + 1:
+                        inner_row = 0
+                    row += 1
+                    if row == len(df_summary):
+                        row = 0
+                        break
 
             # filename = 'summary derivation.xlsx'
             if not os.path.exists(self.tek_excel_path + filename):  # excel.path로 변경
@@ -276,6 +277,6 @@ if __name__ == '__main__':
     # gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
     del [[df]]
     gc.collect()
-    gather_cols = [['Vpeak[V]'], ['Irms[mA]'], ['Vpeak[V]'], ['Irms[mA]']]
+    gather_cols = ['Vpeak[V]', 'Irms[mA]']
     # gather_cols = [['Irms[mA]']]
     sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets, file)
