@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     get_summary = False
     kmon_csv = True
-    seperate_data_by_tag = True
+    seperate_data_by_tag = False
     if get_summary:
         get_by_option = False
 
