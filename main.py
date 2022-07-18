@@ -15,9 +15,9 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
-    change_file_name = False
+    change_file_name = True
 
 
     if csv_to_excel:
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = False
+    get_summary = True
     kmon_csv = True
     seperate_data_by_tag = False
     if get_summary:
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         tek.file_name_change(sheet)
 
     if add_info_file:
-        tek = TEK_CSV.tekCsv(path=path, time_window_type='crop', time_window=10000,
+        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=1,
                              fft_window=1, fft_window_type='crop', fft_window_size=1000)
         tek.combine_infofiles()
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
         for file in test_files:
             df = merge_kmon.combine_kmon_data(file)
             merge_kmon.check_kmon_and_testfile(df, file)
-        # merge_kmon.merge_kmon_and_summary()
+        merge_kmon.merge_kmon_and_summary()
 
     if seperate_data_by_tag:
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
