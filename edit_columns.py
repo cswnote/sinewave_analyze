@@ -125,7 +125,7 @@ class Get_summary():
     def gather_scope_value_by_ctrl_set(self, gather_cols, gather_sheets, file):
         filename = file
         # summary = pd.ExcelFile(self.tek_excel_path + filename)
-        sheets = gather_sheets[2]
+        sheets = gather_sheets[2:]
         sheet_name = ''
 
         if type(sheets) is not list:
@@ -136,8 +136,8 @@ class Get_summary():
             # df_summary = summary.parse(sheet_name=sheet)
             df_summary = pd.read_excel(self.tek_excel_path + filename, sheet_name=sheet)
 
-            # remain_columns = ['Board', 'ohm', 'PWM', 'Volt[V]', 'Curr[mA]']
-            remain_columns = ['Board', 'ohm', 'PWM']
+            remain_columns = ['Board', 'ohm', 'PWM', 'Volt[V]', 'Curr[mA]']
+            # remain_columns = ['Board', 'ohm', 'PWM']
             added_item = []
 
             # for col in gather_cols:
@@ -244,12 +244,54 @@ class Get_summary():
                         print('그 시트 있다 안카나: ', sheet_name)
 
 
+    def gather_scope_value_by_ctrl_set2(self, gather_cols, fixed_cols, gather_sheets, file):
+        dict = {}
+
+        for idx, sheet in enumerate(gather_sheets):
+            df = pd.read_excel(self.tek_excel_path + file, sheet_name=sheet)
+            if idx == 0:
+                for col in fixed_cols:
+                    df = pd.read_excel(self.tek_excel_path + file, sheet_name=sheet)
+                    dict[col] = list(df[col])
+
+            get_columns = [column for column in list(df.columns) for get_col in gather_cols if get_col in column]
+
+            for col in get_columns:
+                key = '#' + df.at[0, 'Board'][-2:] + ' ' + col[-3:] + ' ' + col[:-3]
+                dict[key] = list(df[col])
+
+        df = pd.DataFrame.from_dict(dict)
+
+        sheet_name = ''
+        for col in gather_cols:
+            sheet_name = sheet_name + " {}".format(col)
+        sheet_name = 'All' + sheet_name
+
+        reject_strings = ['[', ']']
+
+        for rstr in reject_strings:
+            sheet_name = sheet_name.replace(rstr, ' ')
+
+        if not os.path.exists(self.tek_excel_path + file):  # excel.path로 변경
+            with pd.ExcelWriter(self.tek_excel_path + file, mode='w', engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+                print('create sheet: ', sheet_name)
+        else:
+            with pd.ExcelWriter(self.tek_excel_path + file, mode='a', engine='openpyxl') as writer:
+                try:
+                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+                except:
+                    print('그 시트 있다 안카나: ', sheet_name)
+
 
 if __name__ == '__main__':
     if platform.platform()[:3].lower() == 'mac':
         mac_m1 = True
     elif platform.platform()[:3].lower() == 'win':
         mac_m1 = False
+
+    first_data_gather = False
+    second_data_gather = True
 
     if mac_m1:
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
@@ -269,14 +311,26 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     sum = Get_summary(path, evaluation_control_file)
-    file = 'summary PWM all.xlsx'
+    file = 'summary 36 55.xlsx'
     # sum.remove_columns(file)
 
-    df = pd.ExcelFile(path_excel + file)
-    gather_sheets = df.sheet_names
-    # gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
-    del [[df]]
-    gc.collect()
-    gather_cols = ['Vpeak[V]', 'Irms[mA]']
-    # gather_cols = [['Irms[mA]']]
-    sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets, file)
+    if first_data_gather:
+        df = pd.ExcelFile(path_excel + file)
+        gather_sheets = df.sheet_names
+        # gather_sheets = [sheet for sheet in gather_sheets if len(sheet) > 18]
+        del [[df]]
+        gc.collect()
+        gather_cols = ['Vpeak[V]', 'Irms[mA]']
+        # gather_cols = [['Irms[mA]']]
+        sum.gather_scope_value_by_ctrl_set(gather_cols, gather_sheets, file)
+
+    if second_data_gather:
+        df = pd.ExcelFile(path_excel + file)
+        gather_sheets = df.sheet_names
+        gather_sheets = [sheet for sheet in gather_sheets if 'All' in sheet]
+
+        del [[df]]
+        gc.collect()
+        fixed_cols = ['ohm', 'Volt[V]']
+        gather_cols = ['Vpeak[V]']
+        sum.gather_scope_value_by_ctrl_set2(gather_cols, fixed_cols, gather_sheets, file)
