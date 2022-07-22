@@ -2,21 +2,18 @@ import pandas as pd
 import openpyxl
 import os
 
-path = '/Volumes/16G/'
+path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/tek_csv'
 
 files = os.listdir(path)
 files = [file for file in files if file[:3] == 'tek']
 files.sort()
 
-base_num = -1776
+absent = []
+prev = 5846
 for file in files:
-    scr = path + file
-    extenstion = file.split('.')[1]
-    filenum = file.split('tek')[1] .split('.')[0]
+    file = int(file.split('.csv')[0].split('tek0')[1])
+    if file - prev != 1:
+        absent.append(file)
+    prev = file
 
-    filenum = int(filenum) + base_num
-    filenum = '{:05d}'.format(filenum)
-
-    dst = path + 'tek' + filenum + '.' + extenstion
-
-    os.rename(scr, dst)
+print(absent)
