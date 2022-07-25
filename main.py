@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # get_test_info = False
     csv_to_excel = True
     add_info_file = False
-    change_file_name = False
+    change_file_name = True
 
 
     if csv_to_excel:
@@ -28,9 +28,9 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = False
-    kmon_csv = False
-    seperate_data_by_tag = True
+    get_summary = True
+    kmon_csv = True
+    seperate_data_by_tag = False
     if get_summary:
         get_by_option = False
 
@@ -98,6 +98,5 @@ if __name__ == '__main__':
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
         summary = 'summary.xlsx'
 
-        summary = 'summary 36 55.xlsx'
         merge_kmon.get_seperated_data(summary)
 

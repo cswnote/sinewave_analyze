@@ -2,18 +2,20 @@ import pandas as pd
 import openpyxl
 import os
 
-path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/tek_csv'
+path = 'D:/data_analyze/tek_csv/'
 
 files = os.listdir(path)
-files = [file for file in files if file[:3] == 'tek']
+files = [file for file in files if file[-3:] == 'png']
 files.sort()
 
-absent = []
-prev = 5846
 for file in files:
-    file = int(file.split('.csv')[0].split('tek0')[1])
-    if file - prev != 1:
-        absent.append(file)
-    prev = file
+    scr = os.path.join(path + file)
+    if 'kmon' in file:
+        file = file[:-4]
+        dst = os.path.join(path + file)
 
-print(absent)
+        # print(f"{scr} to {dst}")
+
+        os.rename(scr, dst)
+
+
