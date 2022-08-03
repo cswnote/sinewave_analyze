@@ -34,7 +34,8 @@ if __name__ == '__main__':
     if get_summary:
         get_by_option = False
 
-    crop_time_window = 1
+    # # time_window_type is 'ratio' than the graph x numbers is (data_length / time_window)
+    crop_time_window = 10
     crop_fft_window = 126
 
     if mac_m1:
