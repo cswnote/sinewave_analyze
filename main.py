@@ -43,7 +43,8 @@ if __name__ == '__main__':
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
         path_information = path + 'test information/'
-        path_kmon = path + 'kmon_csv'
+        p
+        ath_kmon = path + 'kmon_csv'
     else:
         path = 'D:/data_analyze/'
         path_csv = path + 'tek_csv/'

@@ -539,9 +539,6 @@ class Get_Summary():
 
         kmon_file = file[:5] + 'kmon' + file[9:]
 
-        if kmon_file.split('_')[2] == '44':
-            pass
-
         files = os.listdir(self.kmon_csv_path)
         files.sort()
 
