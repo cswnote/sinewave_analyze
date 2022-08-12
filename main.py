@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
     change_file_name = True
 
@@ -44,8 +44,7 @@ if __name__ == '__main__':
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
         path_information = path + 'test information/'
-        p
-        ath_kmon = path + 'kmon_csv'
+        path_kmon = path + 'kmon_csv'
     else:
         path = 'D:/data_analyze/'
         path_csv = path + 'tek_csv/'
