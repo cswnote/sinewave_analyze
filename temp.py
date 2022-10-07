@@ -4,7 +4,7 @@ import os
 import shutil
 
 main_path = 'D:/winston/Desktop/새 폴더/'
-sub_path = ['test80', 'test81', 'test82']
+sub_path = ['test83']
 
 for sub in sub_path:
     path = main_path + sub + '/'
@@ -23,4 +23,4 @@ for sub in sub_path:
             os.rename(src, dst)
         elif file[-3:] == 'png':
             dst = 'D:\\winston\\OneDrive - (주)필드큐어\\4_개발과제\\PL150\\4_개발단계평가\\2_TP\\raw data\\scope\\capture\\' + file
-            os.rename(src, dst)
+            os.rename(src, dst)M
