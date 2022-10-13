@@ -1,29 +1,20 @@
 import os
 import openpyxl
 
-path = 'D:/data_analyze/'
-path_csv = path + 'tek_csv/'
-path_excel = path + 'tek_excel/'
-path_summary = path + 'summary/'
-path_information = path + 'test information/'
-path_kmon = path + 'kmon_csv/'
+path = 'D:/winston/Desktop/새 폴더/test79/'
 
-files = os.listdir(path_excel)
+files = os.listdir(path)
+files = [file for file in files if file[:3] == 'tek']
 files.sort()
-files = [file for file in files if file.endswith('.xlsx')]
 
-for idx, file in enumerate(files):
-    scr = os.path.join(path_excel + file)
-    if idx % 4 == 0:
-        file = file[:7] + ' ' + 'RFAMP_01 500ohm Ch1 leakage.xlsx'
-    elif idx % 4 == 1:
-        file = file[:7] + ' ' + 'RFAMP_01 500ohm Ch2 leakage.xlsx'
-    elif idx % 4 == 2:
-        file = file[:7] + ' ' + 'RFAMP_01 500ohm Ch3 leakage.xlsx'
-    elif idx % 4 == 3:
-        file = file[:7] + ' ' + 'RFAMP_01 500ohm Ch4 leakage.xlsx'
+for file in files:
+    src = os.path.join(path + file)
+    num = int(file.split('.')[0][3:])
 
-    dst = os.path.join(path_excel + file)
-    os.rename(scr, dst)
+    num -= 60
+    name = 'tek' + str(num) + '.' + file.split('.')[1]
+
+    dst = os.path.join(path + name)
+    os.rename(src, dst)
 
 
