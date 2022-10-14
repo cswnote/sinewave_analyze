@@ -5,6 +5,7 @@ import pandas as pd
 import re
 import math
 import gc
+import platform
 # from win32com.client import Dispatch
 
 
@@ -584,7 +585,7 @@ class Get_Summary():
         #     if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
         #         print('asdfasf')
 
-        df_kmon_set = pd.read_excel(self.path + self.eval_file, sheet_name='kmon monitoring set')
+        df_kmon_set = pd.read_excel(self.path + self.eval_file, sheet_name='kmon monitoring set elechub')
 
         for i in range(len(df_kmon_set), 20):
             df_kmon_set = df_kmon_set.append(pd.Series(name=i))
@@ -621,6 +622,10 @@ class Get_Summary():
             print('can not save kmon excel file')
 
         return df
+
+    def combine_kmon_data_for_PL150(self, file):
+        print('start combine_kmon_data_for_PL150')
+
 
 
     def check_kmon_and_testfile(self, df_kmon, test_file):
@@ -777,25 +782,59 @@ class Get_Summary():
                 df_summary.to_excel(writer, sheet_name='with kmon', index=False)
 
 
-    # def get_graph_by_ctrlfile(self):
+    def kmon_change_digit(self, sheet_name):
+        df_ctrl = pd.read_excel(self.path + self.eval_file, sheet_name=sheet_name)
+        kmon_files = df_ctrl.iloc[:, 0]
+        kmon_files = kmon_files.dropna()
+        df_ctrl.drop([df_ctrl.columns[0]], axis=1, inplace=True)
+
+        for file in kmon_files:
+            file = os.path.join(self.kmon_csv_path, file + '.xlsx')
+            df_kmon = pd.read_excel(file)
+            df_kmon.drop([df_kmon.columns[0]], axis=1, inplace=True)
+
+            for i in range(len(df_ctrl)):
+                name, digit = df_ctrl.iloc[i, :].Name, df_ctrl.iloc[i, :].digit
+                command, digit = digit.split(' ')[0], int(digit.split(' ')[1])
+                for row, data in enumerate(df_kmon[name]):
+                    if command.lower() == 'reduce':
+                        df_kmon.at[row, name] = data / (digit * 10)
+
+            try:
+                if not os.path.exists(file):
+                    with pd.ExcelWriter(file, mode='w', engine='openpyxl') as writer:
+                        df_kmon.to_excel(writer, sheet_name='changed digit', index=True)
+                else:
+                    with pd.ExcelWriter(file, mode='a', engine='openpyxl') as writer:
+                        df_kmon.to_excel(writer, sheet_name='changed digit', index=True)
+            except:
+                print('can not save kmon excel file:', file)
 
 
 
 
 if __name__=='__main__':
-    # path = os.getcwd() + '\\test\\'
-    path = 'D:/work/data_analyze/excel/'
-    filename = 'summary.xlsx'
-    label_file = 'label.xlsx'
-    label_info = []
+    if platform.platform()[:3].lower() == 'mac':
+        mac_m1 = True
+    elif platform.platform()[:3].lower() == 'win':
+        mac_m1 = False
 
-    summary = Get_Summary([], path)
+    if mac_m1:
+        path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
+        path_csv = path + 'tek_csv/'
+        path_excel = path + 'tek_excel/'
+        path_summary = path + 'summary/'
+        path_information = path + 'test information/'
+        path_kmon = path + 'kmon_csv'
+    else:
+        path = 'D:/data_analyze/'
+        path_csv = path + 'tek_csv/'
+        path_excel = path + 'tek_excel/'
+        path_summary = path + 'summary/'
+        path_information = path + 'test information/'
+        path_kmon = path + 'kmon_csv/'
 
-    # items = ['ch', 'ohm', 'and']
-    # summary.get_seperated_data(items, filename, path)
-    #
-    items = ['pwm', 'ohm', 'and']
-    summary.get_seperated_data(items, filename, path)
+    evaluation_control_file = 'eval_control.xlsx'
 
-    # sheet = ['ch']
-    # summary.draw_chart(filename, sheet)
+    merge_kmon = Get_Summary(path, evaluation_control_file)
+    merge_kmon.kmon_change_digit('kmon digit change set main')
