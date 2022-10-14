@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
     change_file_name = False
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = False
-    kmon_csv = True
+    kmon_csv = False
 
 
     seperate_data_by_tag = False
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     # # time_window_type is 'ratio' than the graph x numbers is (data_length / time_window)
     crop_time_window = 10
-    crop_fft_window = 126
+    crop_fft_window = 500 # 126
 
     if mac_m1:
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
@@ -94,8 +94,8 @@ if __name__ == '__main__':
 
         for file in test_files:
             df = merge_kmon.combine_kmon_data(file)
-        #     merge_kmon.check_kmon_and_testfile(df, file)
-        # merge_kmon.merge_kmon_and_summary()
+            merge_kmon.check_kmon_and_testfile(df, file)
+        merge_kmon.merge_kmon_and_summary()
 
     if seperate_data_by_tag:
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
