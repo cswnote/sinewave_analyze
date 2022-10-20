@@ -585,7 +585,7 @@ class Get_Summary():
         #     if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
         #         print('asdfasf')
 
-        df_kmon_set = pd.read_excel(self.path + self.eval_file, sheet_name='kmon monitoring set main')
+        df_kmon_set = pd.read_excel(self.path + self.eval_file, sheet_name='kmon monitoring set RFamp')
 
         for i in range(len(df_kmon_set), 20):
             df_kmon_set = df_kmon_set.append(pd.Series(name=i))
@@ -799,6 +799,8 @@ class Get_Summary():
                 for row, data in enumerate(df_kmon[name]):
                     if command.lower() == 'reduce':
                         df_kmon.at[row, name] = data / (digit * 10)
+                    elif (command.lower() == 'increase') or (command.lower() =='raise') or (command.lower() == 'expand'):
+                        df_kmon.at[row, name] = data * (digit * 10)
 
             try:
                 if not os.path.exists(file):
@@ -837,4 +839,4 @@ if __name__=='__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     merge_kmon = Get_Summary(path, evaluation_control_file)
-    merge_kmon.kmon_change_digit('kmon digit change set elechub')
+    merge_kmon.kmon_change_digit('kmon digit change set RFamp')

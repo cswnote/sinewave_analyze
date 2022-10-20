@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     add_info_file = False
     change_file_name = False
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = False
-    kmon_csv = False
+    kmon_csv = True
 
 
     seperate_data_by_tag = False
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         for file in test_files:
             df = merge_kmon.combine_kmon_data(file)
             merge_kmon.check_kmon_and_testfile(df, file)
-        merge_kmon.merge_kmon_and_summary()
+        # merge_kmon.merge_kmon_and_summary()
 
     if seperate_data_by_tag:
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
