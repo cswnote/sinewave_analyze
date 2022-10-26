@@ -724,7 +724,7 @@ class tekCsv():
                             cell.value = val
                             cell.data_type = 'General'
 
-                ws.delete_cols(4)
+                # ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 
