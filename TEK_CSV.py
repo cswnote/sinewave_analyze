@@ -598,8 +598,6 @@ class tekCsv():
 
                 ws['g9'] = 'Irms_' + ws.cell(21, i).value
 
-        # ws['g8'] = 'Vrms_' + ws.cell(21, i).value
-        # ws['g9'] = 'Irms'
         for i in range(len(v_rms)):
             ws.cell(8, 8 + i, value=v_rms[i])
         for i in range(len(i_rms)):
