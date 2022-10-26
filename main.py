@@ -15,9 +15,9 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
-    change_file_name = False
+    change_file_name = True
 
 
     if csv_to_excel:
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = False
+    get_summary = True
     kmon_csv = True
 
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         get_by_option = False
 
     # # time_window_type is 'ratio' than the graph x numbers is (data_length / time_window)
-    crop_time_window = 10
+    crop_time_window = 1
     crop_fft_window = 500 # 126
 
     if mac_m1:
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         for file in test_files:
             df = merge_kmon.combine_kmon_data(file)
             merge_kmon.check_kmon_and_testfile(df, file)
-        # merge_kmon.merge_kmon_and_summary()
+        merge_kmon.merge_kmon_and_summary()
 
     if seperate_data_by_tag:
         merge_kmon = GET_SUMMARY.Get_Summary(path, evaluation_control_file)
