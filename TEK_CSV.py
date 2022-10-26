@@ -345,6 +345,7 @@ class tekCsv():
         i_trigger = False
 
         for i in range(9, 1, -1):
+        # for i in range(2, 9):
 
             if ws.cell(13, i).value == 'V' and not v_trigger:
                 v_trigger = True
@@ -578,6 +579,9 @@ class tekCsv():
                 # v_np = np.array(v_data)
                 # v_rms = np.sqrt(np.mean(v_np**2))
 
+                ws['g8'] = 'Vrms_' + ws.cell(21, i).value
+
+
             elif ws.cell(13, i).value == 'A' and i_trigger == 1:
                 i_trigger = 0
                 for j in range(len(i_row_nums) - 1):
@@ -592,8 +596,10 @@ class tekCsv():
                 # i_np = np.array(i_data)
                 # i_rms = np.sqrt(np.mean(i_np**2))
 
-        ws['g8'] = 'Vrms'
-        ws['g9'] = 'Irms'
+                ws['g9'] = 'Irms_' + ws.cell(21, i).value
+
+        # ws['g8'] = 'Vrms_' + ws.cell(21, i).value
+        # ws['g9'] = 'Irms'
         for i in range(len(v_rms)):
             ws.cell(8, 8 + i, value=v_rms[i])
         for i in range(len(i_rms)):
@@ -719,6 +725,8 @@ class tekCsv():
                             cell = ws.cell(row=r+1, column=c+1)
                             cell.value = val
                             cell.data_type = 'General'
+
+                ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 
