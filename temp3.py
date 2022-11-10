@@ -1,7 +1,7 @@
 import os
 import openpyxl
 
-path = 'D:/winston/Desktop/새 폴더/test79/'
+path = 'D:/winston/Desktop/새 폴더/test 84/excel Ch2 Ch3/'
 
 files = os.listdir(path)
 files = [file for file in files if file[:3] == 'tek']
@@ -9,12 +9,6 @@ files.sort()
 
 for file in files:
     src = os.path.join(path + file)
-    num = int(file.split('.')[0][3:])
-
-    num -= 60
-    name = 'tek' + str(num) + '.' + file.split('.')[1]
-
-    dst = os.path.join(path + name)
+    dst = path + file[:-5] + ' scope CH2 and CH3' + file[-5:]
     os.rename(src, dst)
-
 

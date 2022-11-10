@@ -4,7 +4,7 @@ import os
 import shutil
 
 main_path = 'D:/winston/Desktop/새 폴더/'
-sub_path = ['test 84']
+sub_path = ['test 86']
 
 for sub in sub_path:
     path = main_path + sub + '/'
