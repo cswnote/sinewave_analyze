@@ -576,6 +576,7 @@ class Get_Summary():
         for i in range(len(df_num)):
             df = pd.concat([df, df_num[i]], ignore_index=True)
 
+
         for i in range(len(df.columns) - 1, 0, -1):
             if i % 2 == 0:
                 df.drop([df.columns[i]], axis=1, inplace=True)
