@@ -32,13 +32,10 @@ class FILE_MANAGEMENT():
 
 
     def db_to_csv(self, db_file_name, db_path, csv_file_name, csv_path, table_name, default_index_name):
-        # print('61')
         print(db_path + db_file_name + '.db')
         con = sqlite3.connect(db_path + db_file_name + '.db')
-        # print('62')
         print(table_name)
         df = pd.read_sql("SELECT * FROM [%s]" % table_name, con, index_col=default_index_name)
-        # print('63')
         df.to_csv(csv_path + csv_file_name + ' - ' + db_file_name + '.csv', mode='w', encoding='utf-8-sig')
 
         print('success to create csv from dataframe')

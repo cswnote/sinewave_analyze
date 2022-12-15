@@ -578,6 +578,8 @@ class tekCsv():
                 # v_np = np.array(v_data)
                 # v_rms = np.sqrt(np.mean(v_np**2))
 
+                ws['g8'] = 'Vrms_' + ws.cell(21, i).value
+
             elif ws.cell(13, i).value == 'A' and i_trigger == 1:
                 i_trigger = 0
                 for j in range(len(i_row_nums) - 1):
@@ -592,8 +594,8 @@ class tekCsv():
                 # i_np = np.array(i_data)
                 # i_rms = np.sqrt(np.mean(i_np**2))
 
-        ws['g8'] = 'Vrms'
-        ws['g9'] = 'Irms'
+                ws['g9'] = 'Irms_' + ws.cell(21, i).value
+
         for i in range(len(v_rms)):
             ws.cell(8, 8 + i, value=v_rms[i])
         for i in range(len(i_rms)):
@@ -719,6 +721,11 @@ class tekCsv():
                             cell = ws.cell(row=r+1, column=c+1)
                             cell.value = val
                             cell.data_type = 'General'
+
+                # # 아래는 ch2, ch3 할 때 살릴 것, ch3 ch4 에서는 주석 처리
+                # # 5, 4 삭제는 ch1, ch2 남음
+                ws.delete_cols(5)
+                ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 

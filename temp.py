@@ -3,14 +3,24 @@ import openpyxl
 import os
 import shutil
 
-path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/tek_excel/'
+main_path = 'D:/winston/Desktop/새 폴더/'
+sub_path = ['test 84']
 
+for sub in sub_path:
+    path = main_path + sub + '/'
 
-files = os.listdir(path)
-files.sort()
-for file in files:
-    src = path + file
+    files = os.listdir(path)
+    for file in files:
+        src = path + file
 
-    if file[:3] == 'tek' and file[-4:] == 'xlsx':
-        dst = path + file[:-5] + ' Scope CH2 and CH3' + file[-5:]
-        os.rename(src, dst)
+        if file[-3:] == 'csv':
+            dst = 'D:/data_analyze/tek_csv/'
+            shutil.copy(src, dst)
+            dst = 'D:/winston/OneDrive - (주)필드큐어/4_개발과제/PL150/4_개발단계평가/2_TP/RF Board/raw data/scope/csv/' + file
+            os.rename(src, dst)
+        elif file[-3:] == 'set':
+            dst = 'D:\\winston\\OneDrive - (주)필드큐어\\4_개발과제\\PL150\\4_개발단계평가\\2_TP\\RF Board\\raw data\\scope\\set\\' + file
+            os.rename(src, dst)
+        elif file[-3:] == 'png':
+            dst = 'D:\\winston\\OneDrive - (주)필드큐어\\4_개발과제\\PL150\\4_개발단계평가\\2_TP\\RF Board\\raw data\\scope\\capture\\' + file
+            os.rename(src, dst)

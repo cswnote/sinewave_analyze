@@ -1,20 +1,15 @@
 import os
+import pandas as pd
 import openpyxl
 
-path = 'D:/winston/Desktop/새 폴더/test79/'
-
+path = 'D:\\data_analyze\\tek_excel\\'
 files = os.listdir(path)
-files = [file for file in files if file[:3] == 'tek']
-files.sort()
+files = [file for file in files if '$' not in file]
 
-for file in files:
-    src = os.path.join(path + file)
-    num = int(file.split('.')[0][3:])
+prefix = 0
 
-    num -= 60
-    name = 'tek' + str(num) + '.' + file.split('.')[1]
-
-    dst = os.path.join(path + name)
-    os.rename(src, dst)
-
-
+for i, file in enumerate(files):
+    if prefix != file.split(' ')[0]:
+        df = pd.read_excel(path + file)
+        print(df)
+    break

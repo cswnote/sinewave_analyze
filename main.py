@@ -22,8 +22,8 @@ if __name__ == '__main__':
 
     if csv_to_excel:
         fft = True
-        graph_time = True
-        graph_FFT = True
+        graph_time = False
+        graph_FFT = False
         lpf = False
         LPF_factor = 0.5
         get_period = False
@@ -58,8 +58,8 @@ if __name__ == '__main__':
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
         tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=crop_time_window,
-                             fft_window_type='crop', fft_window=crop_fft_window)
-        tek.csv_to_excel(graph_time, graph_FFT)
+                             fft_window_type='crop', fft_window=crop_fft_window, graph_time=graph_time, graph_FFT=graph_FFT)
+        tek.csv_to_excel()
         print('end csv_to_excel')
 
     if change_file_name:
