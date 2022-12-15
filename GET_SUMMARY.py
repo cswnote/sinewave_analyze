@@ -611,15 +611,15 @@ class Get_Summary():
         gc.collect()
 
         filename = kmon_file + '.xlsx'
-        try:
-            if not os.path.exists(self.kmon_csv_path + filename):
-                with pd.ExcelWriter(self.kmon_csv_path + filename, mode='w', engine='openpyxl') as writer:
-                    df.to_excel(writer)
-            else:
-                with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
-                    df.to_excel(writer)
-        except:
-            print('can not save kmon excel file')
+        # try:
+        #     if not os.path.exists(self.kmon_csv_path + filename):
+        #         with pd.ExcelWriter(self.kmon_csv_path + filename, mode='w', engine='openpyxl') as writer:
+        #             df.to_excel(writer)
+        #     else:
+        #         with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
+        #             df.to_excel(writer)
+        # except:
+        #     print('can not save kmon excel file')
 
         return df
 
@@ -754,6 +754,11 @@ class Get_Summary():
         for i in range(len(df_test_file['filename'])):
             if not (df_test_file.at[i, 'filename'] in filenames):
                 self.lost_files.append(df_test_file.at[i, 'filename'])
+
+        if len(self.lost_files):
+            print("{}에서 아래 파일일들 kmon 정보와 맞지 않습니다.".fomat(test_file))
+            for i in range(len(self.lost_files)):
+                print(self.lost_files[i])
 
 
     def merge_kmon_and_summary(self):
