@@ -786,7 +786,8 @@ class tekCsv():
 
                         wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
 
-                    v_row_num, i_row_num = self.get_VI_delay(max_freq, self.record_length, ws)
+                    # v_row_num, i_row_num = self.get_VI_delay(max_freq, self.record_length, ws)
+                    v_row_num, i_row_num = self.get_VI_delay(150000, self.record_length, ws)
                     if v_row_num != 0:
                         self.get_rms(v_row_num, i_row_num, self.record_length, ws)
 
