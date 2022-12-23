@@ -797,6 +797,7 @@ class tekCsv():
 
     def file_name_change(self, sheet):
         df_name = pd.read_excel(self.path + self.eval_file, sheet_name=sheet)
+
         info_files = df_name.iloc[:, 0].tolist()
         # info_files = [file for file in info_files if file[:10] == 'info_test_' and not('all' in file)]
         test_files = os.listdir(self.excel_path)
