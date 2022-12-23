@@ -26,7 +26,8 @@ class Get_Summary():
 
     def get_summary(self):
         path = self.tek_excel_path # excel path로 변경
-
+        path = self.tek_excel_path + 'Ch4/'
+        self.tek_excel_path = self.tek_excel_path + 'Ch4/'
         excel_list = os.listdir(self.tek_excel_path)
         excel_list = [file for file in excel_list if file[:3] == 'tek' and file.endswith('.xlsx')]
         excel_list.sort()
