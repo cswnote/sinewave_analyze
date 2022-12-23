@@ -724,8 +724,8 @@ class tekCsv():
 
                 # # 아래는 ch2, ch3 할 때 살릴 것, ch3 ch4 에서는 주석 처리
                 # # 5, 4 삭제는 ch1, ch2 남음
-                # ws.delete_cols(5)
-                # ws.delete_cols(4)
+                ws.delete_cols(5)
+                ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 
@@ -787,6 +787,7 @@ class tekCsv():
                         wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
 
                     v_row_num, i_row_num = self.get_VI_delay(max_freq, self.record_length, ws)
+
                     if v_row_num != 0:
                         self.get_rms(v_row_num, i_row_num, self.record_length, ws)
 
