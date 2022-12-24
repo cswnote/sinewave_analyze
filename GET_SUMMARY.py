@@ -26,8 +26,6 @@ class Get_Summary():
 
     def get_summary(self):
         path = self.tek_excel_path # excel path로 변경
-        path = self.tek_excel_path + 'Ch4/'
-        self.tek_excel_path = self.tek_excel_path + 'Ch4/'
         excel_list = os.listdir(self.tek_excel_path)
         excel_list = [file for file in excel_list if file[:3] == 'tek' and file.endswith('.xlsx')]
         excel_list.sort()
@@ -613,15 +611,15 @@ class Get_Summary():
         gc.collect()
 
         filename = kmon_file + '.xlsx'
-        # try:
-        #     if not os.path.exists(self.kmon_csv_path + filename):
-        #         with pd.ExcelWriter(self.kmon_csv_path + filename, mode='w', engine='openpyxl') as writer:
-        #             df.to_excel(writer)
-        #     else:
-        #         with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
-        #             df.to_excel(writer)
-        # except:
-        #     print('can not save kmon excel file')
+        try:
+            if not os.path.exists(self.kmon_csv_path + filename):
+                with pd.ExcelWriter(self.kmon_csv_path + filename, mode='w', engine='openpyxl') as writer:
+                    df.to_excel(writer)
+            else:
+                with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
+                    df.to_excel(writer)
+        except:
+            print('can not save kmon excel file')
 
         return df
 

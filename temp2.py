@@ -1,26 +1,85 @@
 import math
+import os
+import openpyxl
+import platform
+import numpy as np
+import pandas as pd
 
-max = 15
-min = 12
+if platform.platform()[:3].lower() == 'mac':
+    mac_m1 = True
+elif platform.platform()[:3].lower() == 'win':
+    mac_m1 = False
 
-def get_y_axis_min_max(max, min):
-    max_scaled = 0
-    min_scaled = 0
-    digits = len(str(float(abs(max))).split('.')[0])
-    if max > 0:
-        max_scaled = math.ceil(max / (10 ** (digits - 1))) * 10 ** (digits - 1)
-    else:
-        max_scaled = math.ceil(max / (10 ** (digits - 1))) * 10 ** (digits - 1) * 1
+if mac_m1:
+    path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
+    path_csv = path + 'tek_csv/'
+    path_excel = path + 'tek_excel/'
+    path_summary = path + 'summary/'
+    path_information = path + 'test information/'
+    path_kmon = path + 'kmon_csv'
+else:
+    path = 'D:/data_analyze/'
+    path_csv = path + 'tek_csv/'
+    path_excel = path + 'tek_excel/'
+    path_summary = path + 'summary/'
+    path_information = path + 'test information/'
+    path_kmon = path + 'kmon_csv/'
 
-    digits = len(str(float(abs(min))).split('.')[0])
-    if min > 0 :
-        min_scaled = math.ceil(min / (10 ** (digits - 1))) * 10 ** (digits - 1)
-    else:
-        min_scaled = math.floor(min / (10 ** (digits - 1))) * 10 ** (digits - 1) * 1
+evaluation_control_file = 'eval_control.xlsx'
 
-    if max_scaled == min_scaled or max_scaled < min_scaled:
-        return max, min
-    else:
-        return max_scaled, min_scaled
+path_ch3 = path_excel + 'Ch3'
+path_ch4 = path_excel + 'Ch4'
 
-print(get_y_axis_min_max(max, min))
+files = os.listdir(path_excel)
+files = [file for file in files if '~' not in file and 'summary' in file]
+files
+
+sheets = pd.ExcelFile(path_excel + files[1]).sheet_names
+
+df = pd.DataFrame()
+
+df_ch4 = pd.read_excel(path_excel + files[1], sheet_name=sheets[-1])
+df_ch3 = pd.read_excel(path_excel + files[0], sheet_name=sheets[-1])
+
+df['Vp_ch3'] = df_ch3['Vpeak[V]']
+df['Vp_ch4'] = df_ch3['Vpeak[V]']
+df['Irms_ch3'] = df_ch3['Irms[mA]']
+df['Irms_ch4'] = df_ch4['Irms[mA]']
+df['Vmean_ch3'] = df_ch3['Vmean']
+df['Vmean_ch4'] = df_ch4['Vmean']
+df['FFT_Vrms_ch3'] = df_ch3['FFT V rms']
+df['FFT_Vrms_ch4'] = df_ch4['FFT V rms']
+df['FFT_Vdc_ch3'] = df_ch3['FFT V dc abs']
+df['FFT_Vdc_ch4'] = df_ch4['FFT V dc abs']
+df['FFT_Irms_ch3'] = df_ch3['FFT I rms[mA]']
+df['FFT_Irms_ch4'] = df_ch4['FFT I rms[mA]']
+df['FFT_Idc_ch3'] = df_ch3['FFT I dc abs[mA]']
+df['FFT_Idc_ch4'] = df_ch4['FFT I dc abs[mA]']
+
+target_list = ['RF Volt Ch 3', 'RF Volt Ch 4', 'RF Curr Ch 3', 'RF Curr Ch 4', 'CP Pwm Ch 3', 'CP Pwm Ch 4']
+
+for target in target_list:
+    col = target.replace(' ', '')
+    if 'Volt' in target:
+        col = 'Vmcu_' + col[-3:].lower()
+    elif 'Curr' in target:
+        col = 'Imcu_' + col[-3:].lower()
+    elif 'Pwm' in target:
+        col = 'PWM_' + col[-3:].lower()
+
+    if target[-1] == '3':
+        df[col] = df_ch3[target]
+        print("{}가 df에 {}이름으로 기록되었습니다.".format(target, col))
+    elif target[-1] == '4':
+        df[col] = df_ch4[target]
+        print("{}가 df에 {}이름으로 기록되었습니다.".format(target, col))
+
+print('====================')
+filename = 'summary.xlsx'
+sheet = '08Ch3 Ch4 merge'
+if not os.path.exists(path_excel + filename):
+    with pd.ExcelWriter(path_excel + filename, mode='w', engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name=sheet, index=False)
+else:
+    with pd.ExcelWriter(path_excel + filename, mode='a', engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name=sheet, index=False)
