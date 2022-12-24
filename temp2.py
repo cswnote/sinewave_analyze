@@ -41,10 +41,13 @@ df = pd.DataFrame()
 df_ch4 = pd.read_excel(path_excel + files[1], sheet_name=sheets[-1])
 df_ch3 = pd.read_excel(path_excel + files[0], sheet_name=sheets[-1])
 
+df['filename'] = df_ch3['filename']
 df['Vp_ch3'] = df_ch3['Vpeak[V]']
-df['Vp_ch4'] = df_ch3['Vpeak[V]']
+df['Vp_ch4'] = df_ch4['Vpeak[V]']
 df['Irms_ch3'] = df_ch3['Irms[mA]']
 df['Irms_ch4'] = df_ch4['Irms[mA]']
+df['angle_ch3'] = df_ch3['Delay(degree)']
+df['angle_ch4'] = df_ch4['Delay(degree)']
 df['Vmean_ch3'] = df_ch3['Vmean']
 df['Vmean_ch4'] = df_ch4['Vmean']
 df['FFT_Vrms_ch3'] = df_ch3['FFT V rms']
@@ -76,7 +79,7 @@ for target in target_list:
 
 print('====================')
 filename = 'summary.xlsx'
-sheet = '08Ch3 Ch4 merge'
+sheet = '08Ch3 Ch4 merge2'
 if not os.path.exists(path_excel + filename):
     with pd.ExcelWriter(path_excel + filename, mode='w', engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet, index=False)
