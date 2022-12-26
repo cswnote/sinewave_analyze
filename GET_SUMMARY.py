@@ -619,7 +619,7 @@ class Get_Summary():
                 with pd.ExcelWriter(self.kmon_csv_path + filename, mode='a', engine='openpyxl') as writer:
                     df.to_excel(writer)
         except:
-            print('can not save kmon excel file')
+            print('can not save {} excel file'.format(filename))
 
         return df
 

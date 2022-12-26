@@ -30,16 +30,16 @@ evaluation_control_file = 'eval_control.xlsx'
 path_ch3 = path_excel + 'Ch3'
 path_ch4 = path_excel + 'Ch4'
 
-files = os.listdir(path_excel)
+files = os.listdir(path_summary)
 files = [file for file in files if '~' not in file and 'summary' in file]
 files
 
-sheets = pd.ExcelFile(path_excel + files[1]).sheet_names
+sheets = pd.ExcelFile(path_summary + files[1]).sheet_names
 
 df = pd.DataFrame()
 
-df_ch4 = pd.read_excel(path_excel + files[1], sheet_name=sheets[-1])
-df_ch3 = pd.read_excel(path_excel + files[0], sheet_name=sheets[-1])
+df_ch4 = pd.read_excel(path_summary + files[1], sheet_name=sheets[-1])
+df_ch3 = pd.read_excel(path_summary + files[0], sheet_name=sheets[-1])
 
 df['filename'] = df_ch3['filename']
 df['Vp_ch3'] = df_ch3['Vpeak[V]']
@@ -79,10 +79,10 @@ for target in target_list:
 
 print('====================')
 filename = 'summary.xlsx'
-sheet = '08Ch3 Ch4 merge2'
-if not os.path.exists(path_excel + filename):
-    with pd.ExcelWriter(path_excel + filename, mode='w', engine='openpyxl') as writer:
+sheet = '08Ch3 Ch4 merge'
+if not os.path.exists(path_summary + filename):
+    with pd.ExcelWriter(path_summary + filename, mode='w', engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet, index=False)
 else:
-    with pd.ExcelWriter(path_excel + filename, mode='a', engine='openpyxl') as writer:
+    with pd.ExcelWriter(path_summary + filename, mode='a', engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet, index=False)

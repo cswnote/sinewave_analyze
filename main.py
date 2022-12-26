@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
     change_file_name = False
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = False
-    kmon_csv = True
+    kmon_csv = False
 
 
     seperate_data_by_tag = False
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         path_information = path + 'test information/'
         path_kmon = path + 'kmon_csv'
     else:
-        path = 'D:/data_analyze/'
+        path = 'D:/winston/OneDrive - (주)필드큐어/정리 파일/data_analyze/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
