@@ -29,7 +29,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = True
-    kmon_csv = True
+    kmon_csv = False
 
 
     seperate_data_by_tag = False

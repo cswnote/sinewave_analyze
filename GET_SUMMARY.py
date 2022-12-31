@@ -6,6 +6,7 @@ import re
 import math
 import gc
 import platform
+import datetime
 # from win32com.client import Dispatch
 
 
@@ -53,7 +54,8 @@ class Get_Summary():
         # summary_ws['o1'].value = 'FFT I dc abs'
 
         for idx, excel_file in enumerate(excel_list):
-            print('in summary process: ', idx + 1, '/', len(excel_list), '    ', excel_file)
+            previous_time = datetime.datetime.now()
+            print('in summary process: ', idx + 1, '/', len(excel_list), '    ', excel_file, end=' ')
             wb = openpyxl.load_workbook(path + excel_file)
             try:
                 ws = wb[excel_file.split(' ')[0]]
@@ -97,31 +99,8 @@ class Get_Summary():
                 summary_ws.cell(1, file_space + 14).value = 'FFT I dc abs[mA]'
 
 
-                # for i, name in enumerate(excel_file[:excel_file.index('Ch') + 3].split(' ')):
-                #     if i > 1:
-                #         if name[:2].lower() == 'ch':
-                #             summary_ws.cell(1, i + 1).value = 'ch'
-                #             ch = i + 1
-                #         elif name[-3:].lower() == 'ohm':
-                #             summary_ws.cell(1, i + 1).value = 'ohm'
-                #             ohm = i + 1
-                #         else:
-                #             temp = re.findall('[0-9]+', name)
-                #             summary_ws.cell(1, i + 1).value = name[:-len(temp[0])]
-                #             fields.append(name[:-len(temp[0])])
-
-
-
-
                 summary_name = True
 
-            # for i, name in enumerate(excel_file.split('.xlsx')[0].split(' ')):
-            #     if name[:2].lower() == 'ch':
-            #         summary_ws.cell(idx + 2, i + 1).value = 'ch'
-            #         ch = i + 1
-            #     elif name[-3:].lower() == 'ohm':
-            #         summary_ws.cell(idx + 2, i + 1).value = 'ohm'
-            #         ohm = i + 1
 
             summary_ws.cell(idx + 2, 1).value = excel_file.split('.xlsx')[0].split(' ')[0]
             summary_ws.cell(idx + 2, 2).value = excel_file.split('.xlsx')[0].split(' ')[1]
@@ -141,28 +120,6 @@ class Get_Summary():
             except:
                 summary_ws.cell(idx + 2, Curr).value = '-'
 
-
-
-            # summary_ws.cell(idx + 2, ch).value = excel_file.split('.xlsx')[0].split(' ')[ch - 1]
-            # if 'ohm' in excel_file:
-            #     summary_ws.cell(idx + 2, ohm).value =
-            # for i in range(len(fields)):
-            #     if ch > ohm:
-            #         item = ch
-            #     else:
-            #         item = ohm
-            #     if fields[i].lower() == 'pwm':
-            #         # # 확인 필요
-            #         summary_ws.cell(idx + 2, item + i + 1).value = int(excel_file.split('.xlsx')[0].split(' ')[item + i].split(fields[i])[-1])
-            #     else:
-            #         summary_ws.cell(idx + 2, item + i + 1).value = excel_file.split('.xlsx')[0].split(' ')[item + i]
-
-
-                # if i == file_space - 2:
-                #     summary_ws.cell(idx + 2, i + 1).value = float(
-                #         (excel_file.split('.xlsx')[0].split(' ')[i]).split('ohm')[0])
-                # if i == file_space - 1:
-                #     summary_ws.cell(idx + 2, i + 1).value = int((excel_file.split('.xlsx')[0].split(' ')[i]).split('PWM')[1])
 
             # # Delay(degree)
             for i in range(100, 8, -1):
@@ -240,6 +197,10 @@ class Get_Summary():
                     break
 
             wb.close()
+            now_time = datetime.datetime.now()
+            remain_time = (now_time - previous_time).seconds * (len(excel_list) - idx + 1)
+            remain_time = remain_time // 60
+            print("remain time is {}minutes".format(remain_time))
 
         summary_wb.save(path + 'summary.xlsx')
         summary_wb.close()
