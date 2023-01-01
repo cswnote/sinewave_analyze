@@ -46,10 +46,20 @@ df_all_dict = {'df_ch3': df_ch3, 'df_ch4': df_ch4}
 df_all_dict['df_ch3_300'] = df_ch3.iloc[15:41, :]
 df_all_dict['df_ch4_300'] = df_ch3.iloc[15:41, :]
 
-df_all_dict['df_ch3_curr_sweep_ch4_open'] = df_ch3.iloc[54:305, :]
-df_all_dict['df_ch4_curr_sweep_ch3_open'] = df_ch4.iloc[305:556, :]
-df_all_dict['df_ch3_curr_sweep_ch4_220ma'] = df_ch3.iloc[556:807, :]
-df_all_dict['df_ch4_curr_sweep_ch3_220ma'] = df_ch4.iloc[807:, :]
+df_all_dict['df_ch3_ch3_curr_sweep_ch4_open'] = df_ch3.iloc[54:305, :]
+df_all_dict['df_ch4_ch3_curr_sweep_ch4_open'] = df_ch4.iloc[54:305, :]
+
+df_all_dict['df_ch3_ch4_curr_sweep_ch3_open'] = df_ch3.iloc[305:556, :]
+df_all_dict['df_ch4_ch4_curr_sweep_ch3_open'] = df_ch4.iloc[305:556, :]
+
+df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma'] = df_ch3.iloc[556:807, :]
+df_all_dict['df_ch4_ch3_curr_sweep_ch4_220ma'] = df_ch4.iloc[556:807, :]
+
+df_all_dict['df_ch3_ch4_curr_sweep_ch3_220ma'] = df_ch3.iloc[807:, :]
+df_all_dict['df_ch4_ch4_curr_sweep_ch3_220ma'] = df_ch4.iloc[807:, :]
+
+del df_ch3
+del df_ch4
 
 for key, df in df_all_dict.items():
     df.reset_index(inplace=True)
@@ -64,20 +74,46 @@ for key, df in (df_all_dict.items()):
 
 for idx, key in enumerate(df_all_dict.keys()):
     if idx > 3:
-        for i in range(len(df_all_dict[key])):
-            df_all_dict[key].at[i, 'Curr'] = i
-            # df_all_dict[key].at[i, 'Volt'] = 9999
+        if key == 'df_ch4_ch3_curr_sweep_ch4_220ma':
+            for i in range(len(df_all_dict[key])):
+                df_all_dict[key].at[i, 'Curr'] = 223
+        elif key == 'df_ch3_ch4_curr_sweep_ch3_220ma':
+            for i in range(len(df_all_dict[key])):
+                df_all_dict[key].at[i, 'Curr'] = 222
+        elif key != 'df_ch4_ch3_curr_sweep_ch4_open' and key != 'df_ch3_ch4_curr_sweep_ch3_open':
+            for i in range(len(df_all_dict[key])):
+                df_all_dict[key].at[i, 'Curr'] = i
+
+x = df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Irms[mA]']
+y = df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Irms[mA]']
+y2 = df_all_dict['df_ch4_ch3_curr_sweep_ch4_open']['Irms[mA]']
+
+# # channle 3 변경과 channel 4 단락 또는 220mA 고정 값 비교
+x = df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Irms[mA]']   # ch3 sweep, ch4 open 에서 , ch3 기준점
+y = df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Irms[mA]']   # ch3 sweep, ch4 open 에서 , ch3 기준점
+y2 = df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['Irms[mA]'] # ch3 sweep, ch4 220ma 고정에서, ch3
+y3 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Vpeak[V]'] / math.sqrt(2)) / df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Irms[mA]'] * 1000    # ch3 sweep, ch4 open 에서, ch3 impedance
+y4 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['Vpeak[V]'] / math.sqrt(2)) / df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['Irms[mA]'] * 1000    # ch3 sweep, ch4 220ma 고정에서, ch4 impedance
+y5 = df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['CP Pwm Ch 3']   # ch3 sweep, ch4 open 에서, ch3 PWM
+y6 = df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['CP Pwm Ch 3']  # ch3 sweep, ch4 220ma 고정에서, ch4 PWM
+y7 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Vpeak[V]'] / math.sqrt(2))    # ch3 sweep, ch4 open 에서, ch3  Vrms
+y8 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['Vpeak[V]'] / math.sqrt(2))    # ch3 sweep, ch4 220ma 고정에서, ch4 Vrms
+
+size = 40
+plt.figure(figsize=(10, 20))
+plt.scatter(x[:], y[:], s=size, c='r', label='I singel')
+plt.scatter(x[:], y2[:], s=size, c='b', label='I multi')
+plt.scatter(x[:], y3[:], s=size, c='g', label='impedance single')
+plt.scatter(x[:], y4[:], s=size, c='y', label='impedance multi')
+plt.scatter(x[:], y5[:], s=size, c='orange', label='PWM  single')
+plt.scatter(x[:], y6[:], s=size, c='m', label='PWM multi')
+plt.scatter(x[:], y7[:], s=size, c='r', marker='x', label='Vrms single')
+plt.scatter(x[:], y8[:], s=size, c='b', marker='x', label='Vrms multi')
 
 
-x = df_all_dict['df_ch3_curr_sweep_ch4_open']['Irms[mA]']
-y = df_all_dict['df_ch3_curr_sweep_ch4_open']['RF Curr Ch 3']
-y2 = df_all_dict['df_ch3_curr_sweep_ch4_open']['RF Curr Ch 4']
-
-plt.scatter(x[:], y[:], s=1, c='r', label='Curr Sweep')
-plt.scatter(x[:], y2[:], s=1, c='b', label='Channel Open')
 plt.grid()
-plt.xlabel('Iscope')
-plt.ylabel('Imcu')
+plt.xlabel('Isingel')
+plt.ylabel('Imulti')
 plt.legend()
 plt.show()
 
