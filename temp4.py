@@ -96,7 +96,7 @@ y3 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Vpeak[V]'] / math.sqrt(2)) 
 y4 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['Vpeak[V]'] / math.sqrt(2)) / df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['Irms[mA]'] * 1000    # ch3 sweep, ch4 220ma 고정에서, ch4 impedance
 y5 = df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['CP Pwm Ch 3']   # ch3 sweep, ch4 open 에서, ch3 PWM
 y6 = df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['CP Pwm Ch 3']  # ch3 sweep, ch4 220ma 고정에서, ch4 PWM
-y7 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Vpeak[V]'] / math.sqrt(2))    # ch3 sweep, ch4 open 에서, ch3  Vrms
+y7 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_open']['Vpeak[V]'] / math.sqrt(2))    # ch3 sweep, ch4 open 에서, ch3 Vrms
 y8 = (df_all_dict['df_ch3_ch3_curr_sweep_ch4_220ma']['Vpeak[V]'] / math.sqrt(2))    # ch3 sweep, ch4 220ma 고정에서, ch4 Vrms
 
 size = 40
