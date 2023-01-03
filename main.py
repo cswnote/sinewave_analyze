@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
 
     if csv_to_excel:
-        fft = False
+        fft = True
         graph_time = False
         graph_FFT = False
         lpf = False
