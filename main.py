@@ -49,7 +49,7 @@ if __name__ == '__main__':
         path_kmon = path + 'kmon_csv'
     else:
         # path = 'D:/winston/OneDrive - (주)필드큐어/정리 파일/data_analyze/'
-        path = 'D:/data_analyze/'
+        path = 'C:/data_analyze/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
