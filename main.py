@@ -9,7 +9,7 @@ import platform
 if __name__ == '__main__':
     if platform.platform()[:3].lower() == 'mac':
         mac_m1 = True
-    elif platform.platform()[:3].lower() == 'win': ## dpdpdpdp
+    elif platform.platform()[:3].lower() == 'win':
         mac_m1 = False
 
     evaluation_control_file = 'eval_control.xlsx'
