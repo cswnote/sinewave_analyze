@@ -10,7 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import math
 import FILE_MANAGEMENT
-
+import datetime
 
 
 class tekCsv():
@@ -707,7 +707,8 @@ class tekCsv():
         csv_list.sort()
 
         for idx, csv_file in enumerate(csv_list):
-            print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file)
+            previous_time = datetime.datetime.now()
+            print('in process: ', idx + 1, '/', len(csv_list), '    ', csv_file, end='    ')
             wb = openpyxl.Workbook()
             ws = wb.active
             ws.title = csv_file.split('.')[0]
@@ -724,8 +725,8 @@ class tekCsv():
 
                 # # 아래는 ch2, ch3 할 때 살릴 것, ch3 ch4 에서는 주석 처리
                 # # 5, 4 삭제는 ch1, ch2 남음
-                ws.delete_cols(5)
-                ws.delete_cols(4)
+                # ws.delete_cols(5)
+                # ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 
@@ -793,6 +794,11 @@ class tekCsv():
 
             wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
             wb.close()
+
+            now_time = datetime.datetime.now()
+            remain_time = (now_time - previous_time).seconds * (len(csv_list) - idx + 1)
+            remain_time = remain_time // 60
+            print("remain time is {}minutes".format(remain_time))
 
 
     def file_name_change(self, sheet):
