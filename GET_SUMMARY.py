@@ -717,7 +717,7 @@ class Get_Summary():
                 self.lost_files.append(df_test_file.at[i, 'filename'])
 
         if len(self.lost_files):
-            print("{}에서 아래 파일일들 kmon 정보와 맞지 않습니다.".fomat(test_file))
+            print("{}에서 아래 파일일들 kmon 정보와 맞지 않습니다.".format(test_file))
             for i in range(len(self.lost_files)):
                 print(self.lost_files[i])
 
