@@ -28,8 +28,8 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = True
-    kmon_csv = False
+    get_summary = False
+    kmon_csv = True
 
 
     seperate_data_by_tag = False
@@ -42,6 +42,7 @@ if __name__ == '__main__':
 
     if mac_m1:
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
+        path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'

@@ -503,7 +503,7 @@ class Get_Summary():
         files = os.listdir(self.kmon_csv_path)
         files.sort()
 
-        files = [file for file in files if file[-4:] == '.csv']
+        files = [file for file in files if file[-4:] == '.csv' and ('._' not in file and '$' not in file)]
 
         for file in files:
             file = file.split('.csv')[0]
@@ -637,8 +637,6 @@ class Get_Summary():
                 try:
                     control_value[item] = df_test_file.at[i, item]
                 except:
-                    print(item)
-
                     print("테스트 파일에 있는 항목 {}과 제어내용이 동일하지 않습니다.".format(item))
 
             while True:
@@ -717,7 +715,7 @@ class Get_Summary():
                 self.lost_files.append(df_test_file.at[i, 'filename'])
 
         if len(self.lost_files):
-            print("{}에서 아래 파일일들 kmon 정보와 맞지 않습니다.".fomat(test_file))
+            print("{}에서 아래 파일일들 kmon 정보와 맞지 않습니다.".format(test_file))
             for i in range(len(self.lost_files)):
                 print(self.lost_files[i])
 
