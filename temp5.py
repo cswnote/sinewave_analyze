@@ -9,7 +9,7 @@ from collections import defaultdict
 if platform.platform() == 'macOS-13.1-arm64-arm-64bit':
     path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
 elif platform.platform() == 'Windows-10-10.0.19044-SP0':
-    path = ''
+    path = 'E:/multi channel test data/'
 
 path_summary = path + 'summary/'
 
@@ -140,7 +140,7 @@ data_R_model['2ch_R150']['R150']['08ch3'][test_item] = df_ch3
 data_R_model['2ch_R150']['R150']['08ch4'][test_item] = df_ch4
 
 start = stop
-stop = stop + 50
+stop = stop + 51
 test_item = 'ch3_volt_sweep_ch4_25vp'
 print("df_ch3 {} ~ {}".format(df_all_ch3.at[start, 'filename'], df_all_ch3.at[stop - 1, 'filename']))
 print("df_ch4 {} ~ {}".format(df_all_ch4.at[start, 'filename'], df_all_ch4.at[stop - 1, 'filename']))
@@ -151,7 +151,7 @@ data_R_model['2ch_R150']['R150']['08ch3'][test_item] = df_ch3
 data_R_model['2ch_R150']['R150']['08ch4'][test_item] = df_ch4
 
 start = stop
-stop = stop + 50
+stop = stop + 51
 test_item = 'ch4_volt_sweep_ch3_25vp'
 print("df_ch3 {} ~ {}".format(df_all_ch3.at[start, 'filename'], df_all_ch3.at[stop - 1, 'filename']))
 print("df_ch4 {} ~ {}".format(df_all_ch4.at[start, 'filename'], df_all_ch4.at[stop - 1, 'filename']))
@@ -160,6 +160,33 @@ df_ch3 = df_all_ch3.iloc[start:stop, :]
 df_ch4 = df_all_ch4.iloc[start:stop, :]
 data_R_model['2ch_R150']['R150']['08ch3'][test_item] = df_ch3
 data_R_model['2ch_R150']['R150']['08ch4'][test_item] = df_ch4
+
+start = stop
+stop = stop + 251
+test_item = 'ch3_curr_sweep_ch4_220ma'
+print("df_ch3 {} ~ {}".format(df_all_ch3.at[start, 'filename'], df_all_ch3.at[stop - 1, 'filename']))
+print("df_ch4 {} ~ {}".format(df_all_ch4.at[start, 'filename'], df_all_ch4.at[stop - 1, 'filename']))
+print(test_item)
+df_ch3 = df_all_ch3.iloc[start:stop, :]
+df_ch4 = df_all_ch4.iloc[start:stop, :]
+data_R_model['2ch_R150_R75'] = {}
+data_R_model['2ch_R150_R75'] = {'R150': {'08ch3': {}, '08ch4': {}}}
+data_R_model['2ch_R150_R75']['R150']['08ch3'][test_item] = df_ch3
+data_R_model['2ch_R150_R75']['R150']['08ch4'][test_item] = df_ch4
+
+start = stop
+stop = stop + 251
+test_item = 'ch4_curr_sweep_ch3_220ma'
+print("df_ch3 {} ~ {}".format(df_all_ch3.at[start, 'filename'], df_all_ch3.at[stop - 1, 'filename']))
+print("df_ch4 {} ~ {}".format(df_all_ch4.at[start, 'filename'], df_all_ch4.at[stop - 1, 'filename']))
+print(test_item)
+df_ch3 = df_all_ch3.iloc[start:stop, :]
+df_ch4 = df_all_ch4.iloc[start:stop, :]
+data_R_model['2ch_R150_R75']['R150']['08ch3'][test_item] = df_ch3
+data_R_model['2ch_R150_R75']['R150']['08ch4'][test_item] = df_ch4
+
+
+
 
 
 
