@@ -725,8 +725,8 @@ class tekCsv():
 
                 # # 아래는 ch2, ch3 할 때 살릴 것, ch3 ch4 에서는 주석 처리
                 # # 5, 4 삭제는 ch1, ch2 남음
-                # ws.delete_cols(5)
-                # ws.delete_cols(4)
+                ws.delete_cols(5)
+                ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 
@@ -777,7 +777,7 @@ class tekCsv():
 
                         max_amplitude = 0
                         max_freq = 0
-                        for j in range(len(freq)):
+                        for j in range(1, len(freq)):
                             if float(ws_fft.cell(j + 2, 3).value) > max_amplitude:
                                 max_amplitude = float(ws_fft.cell(j + 2, 3).value)
                                 max_freq = float(ws_fft.cell(j + 2, 1).value)

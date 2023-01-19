@@ -9,9 +9,9 @@ if __name__ == '__main__':
     if platform.platform() == 'macOS-13.1-arm64-arm-64bit':
         path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
     elif platform.platform() == 'Windows-10-10.0.19044-SP0':
-        path = ''
+        path = 'C:/data_analyze/'
 
-    path_summary = path + 'summary/'
+    path_summary = path + 'tek_excel/'
 
     df_ctrl = pd.read_excel(path + 'eval_control.xlsx', sheet_name='kmon digit change set RFamp')
     files = list(df_ctrl['File'].dropna())
