@@ -28,7 +28,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = True
+    get_summary = False
     kmon_csv = True
 
 
