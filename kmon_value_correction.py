@@ -8,6 +8,7 @@ import gc
 if __name__ == '__main__':
     if platform.platform() == 'macOS-13.1-arm64-arm-64bit':
         path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
+        path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
     elif platform.platform() == 'Windows-10-10.0.19044-SP0':
         path = 'C:/data_analyze/'
 
