@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     if mac_m1:
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
-        path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
+        # path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
