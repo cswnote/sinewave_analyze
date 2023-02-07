@@ -725,8 +725,8 @@ class tekCsv():
 
                 # # 아래는 ch2, ch3 할 때 살릴 것, ch3 ch4 에서는 주석 처리
                 # # 5, 4 삭제는 ch1, ch2 남음
-                # ws.delete_cols(5)
-                # ws.delete_cols(4)
+                # ws.delete_cols(8)
+                # ws.delete_cols(7)
 
                 self.record_length = int(float(ws['b10'].value))
 

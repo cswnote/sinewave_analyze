@@ -13,9 +13,10 @@ if __name__ == '__main__':
         mac_m1 = False
 
     evaluation_control_file = 'eval_control.xlsx'
+    kmon_sheet = 'kmon monitoring set main'
 
     # get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     add_info_file = False
     change_file_name = False
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = False
+    get_summary = True
     kmon_csv = False
 
     seperate_data_by_tag = False
@@ -94,7 +95,7 @@ if __name__ == '__main__':
         test_files = test_files.iloc[:, 0].tolist()
 
         for file in test_files:
-            df = merge_kmon.combine_kmon_data(file)
+            df = merge_kmon.combine_kmon_data(file, kmon_sheet)
             merge_kmon.check_kmon_and_testfile(df, file)
         merge_kmon.merge_kmon_and_summary()
 

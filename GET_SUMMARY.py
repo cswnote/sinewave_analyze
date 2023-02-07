@@ -492,7 +492,7 @@ class Get_Summary():
         wb.save(self.tek_excel_path + filename)
 
 
-    def combine_kmon_data(self, file):
+    def combine_kmon_data(self, file, kmon_type_sheet):
         df = 1
         num = -1
         info_test = {}
@@ -546,7 +546,7 @@ class Get_Summary():
         #     if df[df.columns[i]].max() == 0 and df[df.columns[i]].min():
         #         print('asdfasf')
 
-        df_kmon_set = pd.read_excel(self.path + self.eval_file, sheet_name='kmon monitoring set RFamp')
+        df_kmon_set = pd.read_excel(self.path + self.eval_file, sheet_name=kmon_type_sheet)
 
         for i in range(len(df_kmon_set), 20):
             df_kmon_set = df_kmon_set.append(pd.Series(name=i))
