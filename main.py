@@ -13,7 +13,7 @@ if __name__ == '__main__':
         mac_m1 = False
 
     evaluation_control_file = 'eval_control.xlsx'
-    kmon_sheet = 'kmon monitoring set main'
+    kmon_sheet = 'kmon monitoring set RFamp'
 
     # get_test_info = False
     csv_to_excel = False
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
 
     if csv_to_excel:
-        fft = True
+        fft = False
         graph_time = False
         graph_FFT = False
         lpf = False
@@ -30,7 +30,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = True
-    kmon_csv = False
+    kmon_csv = True
 
     seperate_data_by_tag = False
     if get_summary:
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
-        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=crop_time_window,
+        tek = TEK_CSV.tekCsv(path=path, time_window_type='ratio', time_window=crop_time_window, LPF=lpf, filter_factor=LPF_factor,
                              fft_window_type='crop', fft_window=crop_fft_window, graph_time=graph_time, graph_FFT=graph_FFT)
         tek.csv_to_excel()
         print('end csv_to_excel')

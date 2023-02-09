@@ -727,6 +727,9 @@ class tekCsv():
                 # # 5, 4 삭제는 ch1, ch2 남음
                 # ws.delete_cols(8)
                 # ws.delete_cols(7)
+                # ws.delete_cols(6)
+                # ws.delete_cols(5)
+                # ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 
