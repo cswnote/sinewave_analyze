@@ -16,10 +16,10 @@ import datetime
 class tekCsv():
     def __init__(self, **kwargs):
         self.path = kwargs.get('path', 'd:/')
-        self.csv_path = kwargs.get('csv_path', self.path + 'tek_csv/')
-        self.excel_path = kwargs.get('excel_path', self.path + 'tek_excel/')
-        self.test_info_path = kwargs.get('info_path', self.path + 'test information/')
-        self.kmon_csv_path = kwargs.get('kmon_path', self.path + 'kmon_csv/')
+        self.csv_path = kwargs.get('csv_path', os.path.join(self.path,'tek_csv'))
+        self.excel_path = kwargs.get('excel_path', os.path.join(self.path,'tek_excel'))
+        self.test_info_path = kwargs.get('info_path', os.path.join(self.path,'test infromation'))
+        self.kmon_csv_path = kwargs.get('kmon_path', os.path.join(self.path,'kmon_csv'))
         self.time_graph = kwargs.get('graph_time', True)
         self.fft_graph = kwargs.get('graph_FFT', True)
         self.filter_factor = kwargs.get('filter_factor', 0.2)
@@ -714,7 +714,7 @@ class tekCsv():
             ws.title = csv_file.split('.')[0]
 
             COL_SEPARATOR = ","
-            with open(self.csv_path + csv_file) as file:
+            with open(os.path.join(self.csv_path,csv_file)) as file:
                 reader = csv.reader(file)
                 for r, row in enumerate(reader):
                     for c, col in enumerate(row):
@@ -785,14 +785,14 @@ class tekCsv():
                         ws_fft['f1'].value = max_freq
                         ws_fft['f2'].value = max_amplitude
 
-                        wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
+                        wb.save(self.excel_path + '\\'+ csv_file.split('.csv')[0] + '.xlsx')
 
                     v_row_num, i_row_num = self.get_VI_delay(max_freq, self.record_length, ws, wieghting_num=100)
 
                     if v_row_num != 0:
                         self.get_rms(v_row_num, i_row_num, self.record_length, ws)
 
-            wb.save(self.excel_path + csv_file.split('.csv')[0] + '.xlsx')
+            wb.save(self.excel_path +'\\'+ csv_file.split('.csv')[0] + '.xlsx')
             wb.close()
 
             now_time = datetime.datetime.now()

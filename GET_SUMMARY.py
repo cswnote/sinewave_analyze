@@ -16,10 +16,10 @@ class Get_Summary():
         super().__init__()
 
         self.path = path
-        self.tek_csv_path = path + 'tek_csv/'
-        self.tek_excel_path = path + 'tek_excel/'
-        self.kmon_csv_path = path + 'kmon_csv/'
-        self.test_info_path = path + 'test information/'
+        self.tek_csv_path = os.path.join(path,'tek_csv')
+        self.tek_excel_path = os.path.join(path,'tek_excel')
+        self.kmon_csv_path = os.path.join(path,'kmon_csv')
+        self.test_info_path = os.path.join(path,'test information')
         self.eval_file = eval_file
 
         self.measure_value = {'filename': []}
@@ -56,7 +56,7 @@ class Get_Summary():
         for idx, excel_file in enumerate(excel_list):
             previous_time = datetime.datetime.now()
             print('in summary process: ', idx + 1, '/', len(excel_list), '    ', excel_file, end=' ')
-            wb = openpyxl.load_workbook(path + excel_file)
+            wb = openpyxl.load_workbook(os.path.join(path,excel_file))
             try:
                 ws = wb[excel_file.split(' ')[0]]
             except:

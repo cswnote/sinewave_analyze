@@ -15,7 +15,7 @@ if __name__ == '__main__':
     evaluation_control_file = 'eval_control.xlsx'
 
     # get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     add_info_file = False
     change_file_name = False
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = False
+    get_summary = True
     kmon_csv = False
 
     seperate_data_by_tag = False
@@ -49,12 +49,12 @@ if __name__ == '__main__':
         path_kmon = path + 'kmon_csv'
     else:
         # path = 'D:/winston/OneDrive - (주)필드큐어/정리 파일/data_analyze/'
-        path = 'C:/data_analyze/'
-        path_csv = path + 'tek_csv/'
-        path_excel = path + 'tek_excel/'
-        path_summary = path + 'summary/'
-        path_information = path + 'test information/'
-        path_kmon = path + 'kmon_csv/'
+        path = os.path.join(os.getcwd(),"evaluation")
+        path_csv = os.path.join(path,'tek_csv')
+        path_excel = os.path.join(path,'tek_excel')
+        path_summary = os.path.join(path,'summary')
+        path_information = os.path.join(path,'test infromation')
+        path_kmon = os.path.join(path,'kmon_csv')
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:
