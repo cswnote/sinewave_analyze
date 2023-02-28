@@ -14,6 +14,7 @@ if __name__ == '__main__':
 
     evaluation_control_file = 'eval_control.xlsx'
     kmon_sheet = 'kmon monitoring set RFamp'
+    kmon_sheet = 'kmon monitoring set main'
 
     # get_test_info = False
     csv_to_excel = False
@@ -30,7 +31,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = True
-    kmon_csv = True
+    kmon_csv = False
 
     seperate_data_by_tag = False
     if get_summary:
