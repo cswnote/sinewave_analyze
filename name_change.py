@@ -1,3 +1,5 @@
+import platform
+
 import openpyxl
 import os
 import pandas as pd
@@ -62,7 +64,8 @@ class NAME_CHANGE():
                     os.rename(scr, dst)
 
 if __name__ == '__main__':
-    mac_m1 = True
+    if platform.platform() == 'Windows-10-10.0.19044-SP0':
+        mac_m1 = False
     if mac_m1:
         path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
         path_csv = path + 'tek_csv/'
@@ -71,12 +74,18 @@ if __name__ == '__main__':
         path_information = path + 'test infomation/'
         path_kmon = path + 'kmon_csv'
     else:
-        path = 'D:/winston/OneDrive - (주)필드큐어/data_analyze/'
+        path = 'C:/data_analyze/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
         path_information = path + 'test information/'
         path_kmon = path + 'kmon_csv/'
+
+    for paths, names, files in os.walk(path_excel):
+        for file in files:
+            print(file)
+
+
 
     evaluation_control_file = 'eval_control.xlsx'
     # control_file = 'eval_control.xlsx'
