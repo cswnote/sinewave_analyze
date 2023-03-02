@@ -728,8 +728,8 @@ class tekCsv():
                 # ws.delete_cols(8)
                 # ws.delete_cols(7)
                 # ws.delete_cols(6)
-                ws.delete_cols(5)
-                ws.delete_cols(4)
+                # ws.delete_cols(5)
+                # ws.delete_cols(4)
 
                 self.record_length = int(float(ws['b10'].value))
 
