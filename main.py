@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # kmon_sheet = 'kmon monitoring set main'
 
     # get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     add_info_file = False
     change_file_name = False # # RFAMP 보드 전용
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = False
+    get_summary = True
     kmon_csv = False
 
     seperate_data_by_tag = False
@@ -53,6 +53,7 @@ if __name__ == '__main__':
         # path = 'D:/winston/OneDrive - (주)필드큐어/정리 파일/data_analyze/'
         # path = 'C:/data_analyze/'
         path = 'E:/workspace/Pycharm/body_impdeance/data/'
+        path = 'E:/work/fieldcure/RFAMP test 사전/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
