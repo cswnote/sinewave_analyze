@@ -50,10 +50,10 @@ if __name__ == '__main__':
         path_information = path + 'test information/'
         path_kmon = path + 'kmon_csv'
     else:
-        # path = 'D:/winston/OneDrive - (주)필드큐어/정리 파일/data_analyze/'
         # path = 'C:/data_analyze/'
-        path = 'E:/workspace/Pycharm/body_impdeance/data/'
-        path = 'E:/work/fieldcure/RFAMP test 사전/'
+        # path = 'E:/workspace/Pycharm/body_impdeance/data/'
+        # path = 'E:/work/fieldcure/RFAMP test 사전/'
+        path = 'C:/Users/winston/Documents/data/RFAMP_V20/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
