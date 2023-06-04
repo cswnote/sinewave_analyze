@@ -18,7 +18,7 @@ class tekCsv():
         self.path = kwargs.get('path', 'd:/')
         self.csv_path = kwargs.get('csv_path', self.path + 'tek_csv/')
         self.excel_path = kwargs.get('excel_path', self.path + 'tek_excel/')
-        self.test_info_path = kwargs.get('info_path', self.path + 'test information/')
+        self.test_info_path = kwargs.get('info_path', self.path + 'test_info/')
         self.kmon_csv_path = kwargs.get('kmon_path', self.path + 'kmon_csv/')
         self.time_graph = kwargs.get('graph_time', True)
         self.fft_graph = kwargs.get('graph_FFT', True)
