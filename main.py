@@ -42,8 +42,8 @@ if __name__ == '__main__':
     crop_fft_window = 500 # 126
 
     if mac_m1:
-        path = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/sinewave_analyze/Evaluation/'
         # path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
+        path = os.getcwd() + '/data/'
         path_csv = path + 'tek_csv/'
         path_excel = path + 'tek_excel/'
         path_summary = path + 'summary/'
