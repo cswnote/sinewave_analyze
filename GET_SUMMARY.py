@@ -674,8 +674,8 @@ class Get_Summary():
                         temp = []
                         for k in range(row - same_test_condition, row):
                             temp.append(df_kmon.at[k, key])
-                        # mcu setting 값이 안정화 되거나, 제어가 안정화 되기 전까지 덜어내고 싶을 때 사용 '0' 이면 하나만 삭제
-                        temp.pop(0)
+                        # mcu setting 값이 안정화 되거나, 제어가 안정화 되기 전까지 덜어내고 싶을 때 사용 '1' 이면 하나만 삭제
+                        temp = temp[1:]
                         standardization = np.std(temp)
 
                         for j in add_item:
