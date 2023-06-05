@@ -19,7 +19,7 @@ class Get_Summary():
         self.tek_csv_path = path + 'tek_csv/'
         self.tek_excel_path = path + 'tek_excel/'
         self.kmon_csv_path = path + 'kmon_csv/'
-        self.test_info_path = path + 'test information/'
+        self.test_info_path = path + 'test_info/'
         self.eval_file = eval_file
 
         self.measure_value = {'filename': []}
@@ -674,6 +674,7 @@ class Get_Summary():
                         temp = []
                         for k in range(row - same_test_condition, row):
                             temp.append(df_kmon.at[k, key])
+                        # mcu setting 값이 안정화 되거나, 제어가 안정화 되기 전까지 덜어내고 싶을 때 사용 '0' 이면 하나만 삭제
                         temp.pop(0)
                         standardization = np.std(temp)
 
