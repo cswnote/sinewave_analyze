@@ -467,6 +467,10 @@ class tekCsv():
         ws.cell(1, 5, value='Vmean')
         ws.cell(3, 5, value='Imean')
 
+        if len(v_times) == 0 or len(i_times) == 0:
+            return 0, 0
+
+
         if len(v_times) > len(i_times):
             times = len(i_times)
             f_gap = abs(v_times[0] - i_times[0])
