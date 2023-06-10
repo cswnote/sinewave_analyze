@@ -759,12 +759,16 @@ class Get_Summary():
                     break
 
         filename = 'summary.xlsx'
+        sheet = 'with kmon'
         if not os.path.exists(self.tek_excel_path + filename):
             with pd.ExcelWriter(self.tek_excel_path + filename, mode='w', engine='openpyxl') as writer:
-                df_summary.to_excel(writer, sheet_name='with kmon', index=False)
+                df_summary.to_excel(writer, sheet_name=sheet, index=False)
         else:
             with pd.ExcelWriter(self.tek_excel_path + filename, mode='a', engine='openpyxl') as writer:
-                df_summary.to_excel(writer, sheet_name='with kmon', index=False)
+                try:
+                    df_summary.to_excel(writer, sheet_name=sheet, index=False)
+                except:
+                    print("Shhet name '{}' is already in 'summary.xlsx'.".format(sheet))
 
 
     def kmon_change_digit(self, sheet_name):
