@@ -571,6 +571,8 @@ class Get_Summary():
         del df_num
         gc.collect()
 
+        df = self.correct_values_in_kmon(df)
+
         filename = kmon_file + '.xlsx'
         try:
             if not os.path.exists(self.kmon_csv_path + filename):
@@ -584,9 +586,27 @@ class Get_Summary():
 
         return df
 
+
+    def correct_values_in_kmon(self, df):
+        df_ctrl = pd.read_excel(self.path + 'eval_control.xlsx', sheet_name='kmon digit change set RFamp')
+        if 'File' in df_ctrl.columns:
+            df_ctrl = df_ctrl.drop('File', axis=1)
+
+        for i in range(len(df)):
+            for j in range(len(df_ctrl)):
+                if df_ctrl.at[j, 'digit'].split(' ')[0] == 'reduce':
+                    df.at[i, df_ctrl.at[j, 'Name']] = df.at[i, df_ctrl.at[j, 'Name']] * int(df_ctrl.at[j, 'digit'].split(' ')[1])  * 0.1
+                elif df_ctrl.at[j, 'digit'].split(' ')[0] == 'raise':
+                    df.at[i, df_ctrl.at[j, 'Name']] = df.at[i, df_ctrl.at[j, 'Name']] * int(df_ctrl.at[j, 'digit'].split(' ')[1]) * 10
+                else:
+                    pass
+
+        return df
+
+
+
     def combine_kmon_data_for_PL150(self, file):
         print('start combine_kmon_data_for_PL150')
-
 
 
     def check_kmon_and_testfile(self, df_kmon, test_file):
