@@ -1,16 +1,49 @@
 import os
 import pandas as pd
+import FILE_MANAGEMENT
+import TEK_CSV
+import GET_SUMMARY
+import platform
+import numpy as np
+import matplotlib.pyplot as plt
 
-path = 'C:/Users/winston/workspace/PyCharm/sinewave_analyze/data/tek_excel/'
-df_summary = pd.read_excel(path + 'summary.xlsx', sheet_name='with kmon')
-cols = ['filename', 'Board', 'ohm', 'Ch', 'PWM', 'Vpeak[V]', 'Irms[mA]', 'RF Volt Ch 1', 'RF Volt Ch 2', 'RF Volt Ch 3', 'RF Volt Ch 4', 'RF Curr Ch 1', 'RF Curr Ch 2', 'RF Curr Ch 3', 'RF Curr Ch 4']
-df_summary = df_summary(cols)
+def apply_fft(sampling_time, y_data):
+    n = len(y_data)
+    k = np.arange(n)
+    T = n * sampling_time
+    freq = k / T
+    freq = freq[range(int(n / 2))]
+    y_fft = np.fft.fft(y_data) / n
+    y_fft = y_fft[range(int(n / 2))] * 2 / np.sqrt(2)
 
-path = 'C:/Users/winston/workspace/PyCharm/sinewave_analyze/data/kmon_csv/'
-df_kmon = pd.read_excel(path + 'info_kmon_00.xlsx')
-cols = ['Unnamed: 0', 'Usr Control', 'CP Pwm Set Ch 1', 'RF Volt Ch 1', 'RF Curr Ch 1', 'CP Pwm Ch 1']
-df_kmon = df_kmon[cols]
+    return freq, y_fft
 
 
+path = 'C:/Users/winston/Documents/PL150/EMI scope'
+files = os.listdir(path)
+files = [file for file in files if file[-3:]=='csv']
+data = {}
 
-print('asdf')
+
+for file in files:
+    key = int(file.split('.')[0][3:])
+    data[key] = {}
+    data[key]['df'] = pd.read_csv(os.path.join(path, file), skiprows=lambda x: x<20)
+    temp = pd.read_csv(os.path.join(path, file), skiprows=lambda x: (x > 15 or x < 2), index_col=0)
+    cols = temp.columns.to_list()
+    temp = temp.rename(columns={cols[0]: 1, cols[1]: 2, cols[2]: 3, cols[3]: 4})
+    data[key]['scope_info'] = temp
+
+
+for file in data.keys():
+    cols = data[file]['df'].columns.to_list()
+    cols.remove('TIME')
+    data[file]['fft'] = {}
+    for col in cols:
+        data[file]['fft'][col] = pd.DataFrame(columns = ['freq', 'complex', 'abs'])
+        sampling_period = float(data[file]['scope_info'].at['Sample Interval', 1])
+        data[file]['fft'][col]['freq'], data[file]['fft'][col]['complex'] = apply_fft(sampling_period, data[file]['df'][col])
+        data[file]['fft'][col]['abs'] = abs(data[file]['fft'][col]['complex'])
+
+
+print('=====================')

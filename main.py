@@ -30,8 +30,8 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = False
-    kmon_csv = True
+    get_summary = True
+    kmon_csv = False
 
     seperate_data_by_tag = False
     if get_summary:
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     else:
         path = os.getcwd() + '/data/'
         # path = 'C:/data_analyze/'
-        # path = 'E:/workspace/Pycharm/body_impdeance/data/'
+        path = 'C:/Users/winston/workspace/PyCharm/body_impdeance/data/'
         # path = 'E:/work/fieldcure/RFAMP test 사전/'
         # path = 'C:/Users/winston/Documents/data/RFAMP_V20/'
         path_csv = path + 'tek_csv/'
