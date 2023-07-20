@@ -6,6 +6,7 @@ import GET_SUMMARY
 import platform
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 
 def apply_fft(sampling_time, y_data):
     n = len(y_data)
@@ -45,5 +46,23 @@ for file in data.keys():
         data[file]['fft'][col]['freq'], data[file]['fft'][col]['complex'] = apply_fft(sampling_period, data[file]['df'][col])
         data[file]['fft'][col]['abs'] = abs(data[file]['fft'][col]['complex'])
 
+file = 3
+fft = 'fft'
+ch = 'CH' + '1'
+
+x = data[file][fft][ch]['freq']
+y = 20 * np.log10(data[file][fft][ch]['abs'])
+
+fig = plt.figure(figsize=(20, 10))
+
+start = x.index[x.apply(lambda x: x==150 * 10**3)].values[0]
+stop = x.index[x.apply(lambda x: x==30 * 10**6)].values[0] - 1
+
+marker_size = 5
+font_size = 15
+
+plt.scatter(x[start:stop], y[start:stop])
+plt.xscale('log')
+plt.show()
 
 print('=====================')
