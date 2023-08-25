@@ -4,22 +4,34 @@ import FILE_MANAGEMENT
 import TEK_CSV
 import GET_SUMMARY
 import platform
+import socket
 # import name_change
 
 if __name__ == '__main__':
-    if platform.platform()[:3].lower() == 'mac':
-        mac_m1 = True
-    elif platform.platform()[:3].lower() == 'win':
-        mac_m1 = False
+    if 'Rainys-MacBook-Air-2' in socket.gethostname():
+        path = os.getcwd() + '/data/'
+        path_csv = path + 'tek_csv/'
+        path_excel = path + 'tek_excel/'
+        path_summary = path + 'summary/'
+        path_information = path + 'test_info/'
+        path_kmon = path + 'kmon_csv/'
+
+    elif 'SX70' in socket.gethostname():
+        path = 'C:/data/PL150/RFAMP Voltage Current Accuracy/1st_correction_function/'
+        path_csv = path + 'tek_csv/'
+        path_excel = path + 'tek_excel/'
+        path_summary = path + 'summary/'
+        path_information = path + 'test_info/'
+        path_kmon = path + 'kmon_csv/'
 
     evaluation_control_file = 'eval_control.xlsx'
     kmon_sheet = 'kmon monitoring set RFamp'
     # kmon_sheet = 'kmon monitoring set main'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
-    change_file_name = False # # RFAMP 보드 전용
+    change_file_name = True # # RFAMP 보드 전용
 
 
     if csv_to_excel:
@@ -40,26 +52,6 @@ if __name__ == '__main__':
     # # time_window_type is 'ratio' than the graph x numbers is (data_length / time_window)
     crop_time_window = 1
     crop_fft_window = 500 # 126
-
-    if mac_m1:
-        # path = '/Volumes/Winston 2T/work/fieldcure/multi channel test data/'
-        path = os.getcwd() + '/data/'
-        path_csv = path + 'tek_csv/'
-        path_excel = path + 'tek_excel/'
-        path_summary = path + 'summary/'
-        path_information = path + 'test information/'
-        path_kmon = path + 'kmon_csv'
-    else:
-        path = os.getcwd() + '/data/'
-        # path = 'C:/data_analyze/'
-        path = 'C:/Users/winston/workspace/PyCharm/body_impdeance/data/'
-        # path = 'E:/work/fieldcure/RFAMP test 사전/'
-        # path = 'C:/Users/winston/Documents/data/RFAMP_V20/'
-        path_csv = path + 'tek_csv/'
-        path_excel = path + 'tek_excel/'
-        path_summary = path + 'summary/'
-        path_information = path + 'test_info/'
-        path_kmon = path + 'kmon_csv/'
 
     fm = FILE_MANAGEMENT.FILE_MANAGEMENT()
     if csv_to_excel:

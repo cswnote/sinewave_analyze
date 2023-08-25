@@ -20,7 +20,7 @@ def apply_fft(sampling_time, y_data):
     return freq, y_fft
 
 
-path = 'C:/Users/winston/Documents/PL150/EMI scope'
+path = 'C:/Users/winston/Documents/PL150/EMI scope/AC mock up'
 files = os.listdir(path)
 files = [file for file in files if file[-3:]=='csv']
 data = {}
@@ -45,7 +45,6 @@ for file in data.keys():
         sampling_period = float(data[file]['scope_info'].at['Sample Interval', 1])
         data[file]['fft'][col]['freq'], data[file]['fft'][col]['complex'] = apply_fft(sampling_period, data[file]['df'][col])
         data[file]['fft'][col]['abs'] = abs(data[file]['fft'][col]['complex'])
-
 file = 3
 fft = 'fft'
 ch = 'CH' + '1'
