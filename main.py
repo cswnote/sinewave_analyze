@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # kmon_sheet = 'kmon monitoring set main'
 
     # get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     add_info_file = False
     change_file_name = True # # RFAMP 보드 전용
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = True
+    get_summary = False
     kmon_csv = False
 
     seperate_data_by_tag = False
