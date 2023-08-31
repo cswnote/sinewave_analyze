@@ -5,9 +5,9 @@ path = "C:/data/PL150/RFAMP Voltage Current Accuracy/1st_correction_function/sum
 
 file_src = 'summary.xlsx'
 file_dst = 'summary 00 39.xlsx'
-
-df_src = pd.read_excel(path + file_src, sheet_name='summary')
-df_dst = pd.read_excel(path + file_dst, sheet_name='summary')
+sheet = 'with kmon'
+df_src = pd.read_excel(path + file_src, sheet_name=sheet)
+df_dst = pd.read_excel(path + file_dst, sheet_name=sheet)
 
 for i in range(len(df_src)):
     if df_dst.apply(lambda x: x['filename'] == df_src['filename'][i], axis=1).any():
@@ -21,7 +21,7 @@ df_dst.reset_index(inplace=True, drop=True)
 
 df_save = df_dst
 filename = 'merge.xlsx'
-sheet = 'summary'
+sheet = sheet
 if not os.path.exists(path + filename):
     with pd.ExcelWriter(path + filename, mode='w', engine='openpyxl') as writer:
         df_save.to_excel(writer, sheet_name=sheet, index=False)
