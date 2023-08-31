@@ -24,14 +24,22 @@ if __name__ == '__main__':
         path_information = path + 'test_info/'
         path_kmon = path + 'kmon_csv/'
 
+    elif 'note-winston' in socket.gethostname():
+        path = 'D:/data/PL150/RFAMP Voltage Current Accuracy/1st_correction_function/'
+        path_csv = path + 'tek_csv/'
+        path_excel = path + 'tek_excel/'
+        path_summary = path + 'summary/'
+        path_information = path + 'test_info/'
+        path_kmon = path + 'kmon_csv/'
+
     evaluation_control_file = 'eval_control.xlsx'
     kmon_sheet = 'kmon monitoring set RFamp'
     # kmon_sheet = 'kmon monitoring set main'
 
     # get_test_info = False
-    csv_to_excel = False
+    csv_to_excel = True
     add_info_file = False
-    change_file_name = False # # RFAMP 보드 전용
+    change_file_name = True # # RFAMP 보드 전용
 
 
     if csv_to_excel:
@@ -43,7 +51,7 @@ if __name__ == '__main__':
         get_period = False
 
     get_summary = True
-    kmon_csv = True
+    kmon_csv = False
 
     seperate_data_by_tag = False
     if get_summary:
