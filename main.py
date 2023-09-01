@@ -10,27 +10,16 @@ import socket
 if __name__ == '__main__':
     if 'Rainys-MacBook-Air-2' in socket.gethostname():
         path = os.getcwd() + '/data/'
-        path_csv = path + 'tek_csv/'
-        path_excel = path + 'tek_excel/'
-        path_summary = path + 'summary/'
-        path_information = path + 'test_info/'
-        path_kmon = path + 'kmon_csv/'
-
     elif 'SX70' in socket.gethostname():
         path = 'C:/data/PL150/RFAMP Voltage Current Accuracy/1st_correction_function/'
-        path_csv = path + 'tek_csv/'
-        path_excel = path + 'tek_excel/'
-        path_summary = path + 'summary/'
-        path_information = path + 'test_info/'
-        path_kmon = path + 'kmon_csv/'
-
     elif 'note-winston' in socket.gethostname():
         path = 'D:/data/PL150/RFAMP Voltage Current Accuracy/1st_correction_function/'
-        path_csv = path + 'tek_csv/'
-        path_excel = path + 'tek_excel/'
-        path_summary = path + 'summary/'
-        path_information = path + 'test_info/'
-        path_kmon = path + 'kmon_csv/'
+
+    path_csv = path + 'tek_csv/'
+    path_excel = path + 'tek_excel/'
+    path_summary = path + 'summary/'
+    path_information = path + 'test_info/'
+    path_kmon = path + 'kmon_csv/'
 
     evaluation_control_file = 'eval_control.xlsx'
     kmon_sheet = 'kmon monitoring set RFamp'
