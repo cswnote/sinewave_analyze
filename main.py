@@ -39,8 +39,8 @@ if __name__ == '__main__':
         LPF_factor = 0.5
         get_period = False
 
-    get_summary = True
-    kmon_csv = False
+    get_summary = False
+    kmon_csv = True
 
     seperate_data_by_tag = False
     if get_summary:
