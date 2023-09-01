@@ -37,9 +37,9 @@ if __name__ == '__main__':
     # kmon_sheet = 'kmon monitoring set main'
 
     # get_test_info = False
-    csv_to_excel = True
+    csv_to_excel = False
     add_info_file = False
-    change_file_name = True # # RFAMP 보드 전용
+    change_file_name = False # # RFAMP 보드 전용
 
 
     if csv_to_excel:
